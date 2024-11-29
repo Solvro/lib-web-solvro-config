@@ -43,7 +43,6 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-typescript": "^3.6.3",
-    "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jest": "^27.9.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -54,6 +53,7 @@
     "eslint-plugin-tsdoc": "^0.4.0",
     "eslint-plugin-unicorn": "^56.0.1",
     "eslint-plugin-vitest": "^0.3.26",
+    "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-packagejson": "^2.5.6"
   },
   "devDependencies": {
@@ -64,7 +64,6 @@
     "husky": "^9.1.7",
     "lint-staged": "^15.2.10",
     "prettier": "^3.4.1",
-    "prettier-plugin-organize-imports": "^4.1.0",
     "semantic-release": "^23.1.1",
     "typescript": "^5.7.2"
   },

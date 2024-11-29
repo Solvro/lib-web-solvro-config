@@ -6,8 +6,8 @@
 <a aria-label="License" href="https://github.com/Solvro/lib-web-solvro-config/blob/main/LICENSE.md">
   <img alt="" src="https://img.shields.io/npm/l/@solvro/config.svg?style=flat-square&labelColor=000000">
 </a>
-<a aria-label="CI status" href="https://github.com/Solvro/lib-web-solvro-config/actions/workflows/quality.yml?query=event%3Apush+branch%3Amain">
-  <img alt="" src="https://img.shields.io/github/actions/workflow/status/Solvro/lib-web-solvro-config/quality.yml?event=push&branch=main&style=flat-square&labelColor=000000">
+<a aria-label="CI status" href="https://github.com/Solvro/lib-web-solvro-config/actions/workflows/ci.yml?query=event%3Apush+branch%3Amain">
+  <img alt="" src="https://img.shields.io/github/actions/workflow/status/Solvro/lib-web-solvro-config/ci.yml?event=push&branch=main&style=flat-square&labelColor=000000">
 </a>
 
 ## Wprowadzenie
