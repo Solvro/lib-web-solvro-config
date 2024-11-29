@@ -9,7 +9,7 @@ export async function disables(): Promise<TypedFlatConfigItem[]> {
       rules: {
         "antfu/no-top-level-await": "off",
         "no-console": "off",
-        "ts/explicit-function-return-type": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
       },
     },
     {
@@ -33,7 +33,7 @@ export async function disables(): Promise<TypedFlatConfigItem[]> {
       name: "solvro/disables/dts",
       rules: {
         "eslint-comments/no-unlimited-disable": "off",
-        "import/no-duplicates": "off",
+        "import-x/no-duplicates": "off",
         "no-restricted-syntax": "off",
         "unused-imports/no-unused-vars": "off",
       },
@@ -42,7 +42,7 @@ export async function disables(): Promise<TypedFlatConfigItem[]> {
       files: ["**/*.js", "**/*.cjs"],
       name: "solvro/disables/cjs",
       rules: {
-        "ts/no-require-imports": "off",
+        "@typescript-eslint/no-require-imports": "off",
       },
     },
     {
@@ -51,7 +51,7 @@ export async function disables(): Promise<TypedFlatConfigItem[]> {
       rules: {
         "antfu/no-top-level-await": "off",
         "no-console": "off",
-        "ts/explicit-function-return-type": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
       },
     },
   ];

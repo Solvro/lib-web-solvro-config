@@ -11,7 +11,7 @@ import type {
   OptionsTypeScriptWithTypes,
   TypedFlatConfigItem,
 } from "../types";
-import { interopDefault, renameRules } from "../utils";
+import { interopDefault } from "../utils";
 
 export async function typescript(
   options: OptionsFiles &
@@ -43,28 +43,28 @@ export async function typescript(
   const typeAwareRules: TypedFlatConfigItem["rules"] = {
     "dot-notation": "off",
     "no-implied-eval": "off",
-    "ts/await-thenable": "error",
-    "ts/dot-notation": ["error", { allowKeywords: true }],
-    "ts/no-floating-promises": "error",
-    "ts/no-for-in-array": "error",
-    "ts/no-implied-eval": "error",
-    "ts/no-misused-promises": "error",
-    "ts/no-unnecessary-type-assertion": "error",
-    "ts/no-unsafe-argument": "error",
-    "ts/no-unsafe-assignment": "error",
-    "ts/no-unsafe-call": "error",
-    "ts/no-unsafe-member-access": "error",
-    "ts/no-unsafe-return": "error",
-    "ts/promise-function-async": "error",
-    "ts/restrict-plus-operands": "error",
-    "ts/restrict-template-expressions": "error",
-    "ts/return-await": ["error", "in-try-catch"],
-    "ts/strict-boolean-expressions": [
+    "@typescript-eslint/await-thenable": "error",
+    "@typescript-eslint/dot-notation": ["error", { allowKeywords: true }],
+    "@typescript-eslint/no-floating-promises": "error",
+    "@typescript-eslint/no-for-in-array": "error",
+    "@typescript-eslint/no-implied-eval": "error",
+    "@typescript-eslint/no-misused-promises": "error",
+    "@typescript-eslint/no-unnecessary-type-assertion": "error",
+    "@typescript-eslint/no-unsafe-argument": "error",
+    "@typescript-eslint/no-unsafe-assignment": "error",
+    "@typescript-eslint/no-unsafe-call": "error",
+    "@typescript-eslint/no-unsafe-member-access": "error",
+    "@typescript-eslint/no-unsafe-return": "error",
+    "@typescript-eslint/promise-function-async": "error",
+    "@typescript-eslint/restrict-plus-operands": "error",
+    "@typescript-eslint/restrict-template-expressions": "error",
+    "@typescript-eslint/return-await": ["error", "in-try-catch"],
+    "@typescript-eslint/strict-boolean-expressions": [
       "error",
       { allowNullableBoolean: true, allowNullableObject: true },
     ],
-    "ts/switch-exhaustiveness-check": "error",
-    "ts/unbound-method": "error",
+    "@typescript-eslint/switch-exhaustiveness-check": "error",
+    "@typescript-eslint/unbound-method": "error",
   };
 
   const [pluginTs, parserTs] = await Promise.all([
@@ -107,7 +107,7 @@ export async function typescript(
       name: "solvro/typescript/setup",
       plugins: {
         antfu: pluginAntfu,
-        ts: pluginTs as any,
+        "@typescript-eslint": pluginTs,
       },
     },
     // assign type-aware parser for type-aware files and type-unaware parser for the rest
@@ -121,42 +121,42 @@ export async function typescript(
       files,
       name: "solvro/typescript/rules",
       rules: {
-        ...renameRules(
-          pluginTs.configs["eslint-recommended"].overrides![0].rules!,
-          { "@typescript-eslint": "ts" },
-        ),
-        ...renameRules(pluginTs.configs.strict.rules!, {
-          "@typescript-eslint": "ts",
-        }),
+        ...pluginTs.configs["eslint-recommended"].overrides![0].rules!,
+        ...pluginTs.configs.strict.rules,
         "no-dupe-class-members": "off",
         "no-redeclare": "off",
         "no-use-before-define": "off",
         "no-useless-constructor": "off",
-        "ts/ban-ts-comment": [
+        "@typescript-eslint/ban-ts-comment": [
           "error",
           { "ts-expect-error": "allow-with-description" },
         ],
-        "ts/consistent-type-definitions": ["error", "interface"],
-        "ts/consistent-type-imports": [
+        "@typescript-eslint/consistent-type-definitions": [
+          "error",
+          "interface",
+        ],
+        "@typescript-eslint/consistent-type-imports": [
           "error",
           {
             disallowTypeAnnotations: false,
             prefer: "type-imports",
           },
         ],
-
-        "ts/method-signature-style": ["error", "property"], // https://www.totaltypescript.com/method-shorthand-syntax-considered-harmful
-        "ts/no-dupe-class-members": "error",
-        "ts/no-dynamic-delete": "off",
-        "ts/no-empty-object-type": ["error", { allowInterfaces: "always" }],
-        "ts/no-explicit-any": "off",
-        "ts/no-extraneous-class": "off",
-        "ts/no-import-type-side-effects": "error",
-        "ts/no-invalid-void-type": "off",
-        "ts/no-non-null-assertion": "off",
-        "ts/no-redeclare": ["error", { builtinGlobals: false }],
-        "ts/no-require-imports": "error",
-        "ts/no-unused-expressions": [
+        "@typescript-eslint/method-signature-style": ["error", "property"], // https://www.totaltypescript.com/method-shorthand-syntax-considered-harmful
+        "@typescript-eslint/no-dupe-class-members": "error",
+        "@typescript-eslint/no-dynamic-delete": "off",
+        "@typescript-eslint/no-empty-object-type": [
+          "error",
+          { allowInterfaces: "always" },
+        ],
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-extraneous-class": "off",
+        "@typescript-eslint/no-import-type-side-effects": "error",
+        "@typescript-eslint/no-invalid-void-type": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-redeclare": ["error", { builtinGlobals: false }],
+        "@typescript-eslint/no-require-imports": "error",
+        "@typescript-eslint/no-unused-expressions": [
           "error",
           {
             allowShortCircuit: true,
@@ -164,19 +164,18 @@ export async function typescript(
             allowTernary: true,
           },
         ],
-        "ts/no-unused-vars": "off",
-        "ts/no-use-before-define": [
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-use-before-define": [
           "error",
           { classes: false, functions: false, variables: true },
         ],
-        "ts/no-useless-constructor": "off",
-        "ts/no-wrapper-object-types": "error",
-        "ts/triple-slash-reference": "off",
-        "ts/unified-signatures": "off",
-
+        "@typescript-eslint/no-useless-constructor": "off",
+        "@typescript-eslint/no-wrapper-object-types": "error",
+        "@typescript-eslint/triple-slash-reference": "off",
+        "@typescript-eslint/unified-signatures": "off",
         ...(type === "lib"
           ? {
-              "ts/explicit-function-return-type": [
+              "@typescript-eslint/explicit-function-return-type": [
                 "error",
                 {
                   allowExpressions: true,

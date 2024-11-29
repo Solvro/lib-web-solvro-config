@@ -10,10 +10,7 @@ export type Rules = RuleOptions;
 
 export type { ConfigNames };
 
-export type TypedFlatConfigItem = Omit<
-  Linter.Config<Linter.RulesRecord & Rules>,
-  "plugins"
-> & {
+export type TypedFlatConfigItem = Omit<Linter.Config, "plugins" | "rules"> & {
   // Relax plugins type limitation, as most of the plugins did not have correct type info yet.
   /**
    * An object containing a name-value mapping of plugin names to plugin objects. When `files` is specified, these plugins are only available to the matching files.
@@ -21,6 +18,7 @@ export type TypedFlatConfigItem = Omit<
    * @see [Using plugins in your configuration](https://eslint.org/docs/latest/user-guide/configuring/configuration-files-new#using-plugins-in-your-configuration)
    */
   plugins?: Record<string, any>;
+  rules?: Rules;
 };
 
 export interface OptionsFiles {
@@ -73,34 +71,11 @@ export interface OptionsFormatters {
   markdown?: "prettier" | "dprint" | boolean;
 
   /**
-   * Enable formatting support for GraphQL.
-   */
-  graphql?: "prettier" | boolean;
-
-  /**
    * Custom options for dprint.
    *
    * By default it's controlled by our own config.
    */
   dprintOptions?: boolean;
-
-  /**
-   * Install the prettier plugin for handle Slidev markdown
-   *
-   * Only works when `markdown` is enabled with `prettier`.
-   */
-  slidev?:
-    | boolean
-    | {
-        files?: string[];
-      };
-
-  /**
-   * Enable formatting support for Astro.
-   *
-   * Currently only support Prettier.
-   */
-  astro?: "prettier" | boolean;
 }
 
 export interface OptionsComponentExts {

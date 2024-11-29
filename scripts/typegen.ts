@@ -1,3 +1,4 @@
+import type { Linter } from "eslint";
 import { flatConfigsToRulesDTS } from "eslint-typegen/core";
 import { builtinRules } from "eslint/use-at-your-own-risk";
 import fs from "node:fs/promises";
@@ -33,13 +34,10 @@ const configs = await combine(
   javascript(),
   jsx(),
   jsdoc(),
-
   markdown(),
   node(),
   react(),
-
   test(),
-
   regexp(),
   typescript(),
   unicorn(),
@@ -47,7 +45,7 @@ const configs = await combine(
 
 const configNames = configs.map((i) => i.name).filter(Boolean) as string[];
 
-let dts = await flatConfigsToRulesDTS(configs, {
+let dts = await flatConfigsToRulesDTS(configs as Linter.Config[], {
   includeAugmentation: false,
 });
 

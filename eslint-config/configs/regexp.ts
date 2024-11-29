@@ -17,6 +17,7 @@ export async function regexp(
 
   if (options.level === "warn") {
     for (const key in rules) {
+      // @ts-expect-error ???
       if (rules[key] === "error") rules[key] = "warn";
     }
   }

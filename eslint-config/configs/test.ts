@@ -34,30 +34,30 @@ export async function test(
     {
       name: "solvro/test/setup",
       plugins: {
-        test: _pluginTest,
+        "no-only-tests": _pluginTest,
       },
     },
     {
       files,
       name: "solvro/test/rules",
       rules: {
-        "test/consistent-test-it": [
+        "no-only-tests/consistent-test-it": [
           "error",
           { fn: "it", withinDescribe: "it" },
         ],
-        "test/no-identical-title": "error",
-        "test/no-import-node-test": "error",
-        "test/no-only-tests": isInEditor ? "off" : "error",
+        "no-only-tests/no-identical-title": "error",
+        "no-only-tests/no-import-node-test": "error",
+        "no-only-tests/no-only-tests": isInEditor ? "off" : "error",
 
-        "test/prefer-hooks-in-order": "error",
-        "test/prefer-lowercase-title": "error",
+        "no-only-tests/prefer-hooks-in-order": "error",
+        "no-only-tests/prefer-lowercase-title": "error",
 
         // Disables
         ...{
           "antfu/no-top-level-await": "off",
           "no-unused-expressions": "off",
           "node/prefer-global/process": "off",
-          "ts/explicit-function-return-type": "off",
+          "@typescript-eslint/explicit-function-return-type": "off",
         },
 
         ...overrides,

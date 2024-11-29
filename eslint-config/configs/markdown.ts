@@ -65,9 +65,6 @@ export async function markdown(
       name: "solvro/markdown/disables",
       rules: {
         "antfu/no-top-level-await": "off",
-
-        "import/newline-after-import": "off",
-
         "no-alert": "off",
         "no-console": "off",
         "no-labels": "off",
@@ -79,17 +76,15 @@ export async function markdown(
 
         "no-unused-vars": "off",
         "node/prefer-global/process": "off",
-        "style/comma-dangle": "off",
 
-        "style/eol-last": "off",
-        "ts/consistent-type-imports": "off",
-        "ts/explicit-function-return-type": "off",
-        "ts/no-namespace": "off",
-        "ts/no-redeclare": "off",
-        "ts/no-require-imports": "off",
-        "ts/no-unused-expressions": "off",
-        "ts/no-unused-vars": "off",
-        "ts/no-use-before-define": "off",
+        "@typescript-eslint/consistent-type-imports": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/no-redeclare": "off",
+        "@typescript-eslint/no-require-imports": "off",
+        "@typescript-eslint/no-unused-expressions": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "@typescript-eslint/no-use-before-define": "off",
 
         "unicode-bom": "off",
         "unused-imports/no-unused-imports": "off",

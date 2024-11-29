@@ -39,18 +39,6 @@ const flatConfigProps = [
   "settings",
 ] satisfies (keyof TypedFlatConfigItem)[];
 
-export const defaultPluginRenaming = {
-  "@eslint-react": "react",
-  "@eslint-react/dom": "react-dom",
-  "@eslint-react/hooks-extra": "react-hooks-extra",
-  "@eslint-react/naming-convention": "react-naming-convention",
-  "@typescript-eslint": "ts",
-  "import-x": "import",
-  n: "node",
-  vitest: "test",
-  yml: "yaml",
-};
-
 /**
  * Construct an array of ESLint flat config items.
  *
@@ -71,7 +59,6 @@ export function solvro(
   >[]
 ): FlatConfigComposer<TypedFlatConfigItem, ConfigNames> {
   const {
-    autoRenamePlugins = true,
     componentExts = [],
     gitignore: enableGitignore = true,
     jsx: enableJsx = true,
@@ -209,10 +196,6 @@ export function solvro(
   let composer = new FlatConfigComposer<TypedFlatConfigItem, ConfigNames>();
 
   composer = composer.append(...configs, ...(userConfigs as any));
-
-  if (autoRenamePlugins) {
-    composer = composer.renamePlugins(defaultPluginRenaming);
-  }
 
   return composer;
 }
