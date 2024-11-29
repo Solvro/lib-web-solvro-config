@@ -3,7 +3,6 @@ import type { Linter } from "eslint";
 import type { FlatGitignoreOptions } from "eslint-config-flat-gitignore";
 
 import type { ConfigNames, RuleOptions } from "./typegen";
-import type { VendoredPrettierOptions } from "./vender/prettier-types";
 
 export type Awaitable<T> = T | Promise<T>;
 
@@ -77,13 +76,6 @@ export interface OptionsFormatters {
    * Enable formatting support for GraphQL.
    */
   graphql?: "prettier" | boolean;
-
-  /**
-   * Custom options for Prettier.
-   *
-   * By default it's controlled by our own config.
-   */
-  prettierOptions?: VendoredPrettierOptions;
 
   /**
    * Custom options for dprint.

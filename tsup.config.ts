@@ -7,4 +7,5 @@ export default defineConfig({
     "prettier-config/index.ts",
   ],
   shims: true,
+  clean: true,
 });
