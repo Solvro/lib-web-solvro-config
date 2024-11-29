@@ -9,10 +9,21 @@ const overridableDefaults = {
   tabWidth: 2,
   printWidth: 80,
   useTabs: false,
+  arrowParens: "always",
+  trailingComma: "all",
+  semi: true,
+  quoteProps: "as-needed",
 };
 
 module.exports = {
   ...overridableDefaults,
   singleQuote: false,
-  plugins: ["prettier-plugin-packagejson", "prettier-plugin-organize-imports"],
+  plugins: [
+    "prettier-plugin-packagejson",
+    "@trivago/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss",
+  ],
+  importOrderSeparation: true,
+  importOrderSortSpecifiers: true,
+  importOrder: ["^@assets/(.*)$", "<THIRD_PARTY_MODULES>", "^@/(.*)$", "^[./]"],
 };
