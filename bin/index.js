@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-import "../dist/cli.js";
+import "../dist/eslint-config/cli.js";

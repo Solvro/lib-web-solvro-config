@@ -11,19 +11,25 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Solvro/lib-web-solvro-config.git"
+    "url": "git+https://github.com/Solvro/lib-web-solvro-config.git"
   },
   "license": "MPL-2.0",
   "type": "module",
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+    "./eslint": {
+      "import": "./dist/eslint-config/index.js",
+      "require": "./dist/eslint-config/index.cjs",
+      "types": "./dist/eslint-config/index.d.ts"
+    },
+    "./prettier": {
+      "import": "./dist/prettier-config/index.js",
+      "require": "./dist/prettier-config/index.cjs",
+      "types": "./dist/prettier-config/index.d.ts"
     }
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "bin": "./bin/index.js",
+  "bin": {
+    "config": "bin/index.js"
+  },
   "files": [
     "bin",
     "dist"
