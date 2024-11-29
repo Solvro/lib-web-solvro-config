@@ -1,6 +1,6 @@
 {
   "name": "@solvro/config",
-  "version": "6.0.0",
+  "version": "1.0.0",
   "description": "Solvro's engineering style guide",
   "homepage": "https://github.com/Solvro/lib-web-solvro-config#readme",
   "bugs": {
