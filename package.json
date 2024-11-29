@@ -2,6 +2,9 @@
   "name": "@solvro/config",
   "version": "1.0.2",
   "description": "Solvro's engineering style guide",
+  "keywords": [
+    "eslint-config"
+  ],
   "homepage": "https://github.com/Solvro/lib-web-solvro-config#readme",
   "bugs": {
     "url": "https://github.com/Solvro/lib-web-solvro-config/issues"
@@ -11,86 +14,119 @@
     "url": "https://github.com/Solvro/lib-web-solvro-config.git"
   },
   "license": "MPL-2.0",
+  "type": "module",
   "exports": {
-    "./eslint/*": "./eslint/*.js",
-    "./prettier": "./prettier/index.js",
-    "./typescript": "./typescript/tsconfig.base.json",
-    "./typescript/node16": "./typescript/tsconfig.node16.json",
-    "./typescript/node18": "./typescript/tsconfig.node18.json",
-    "./typescript/node20": "./typescript/tsconfig.node20.json"
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": "./bin/index.js",
   "files": [
-    "eslint",
-    "prettier",
-    "typescript"
+    "bin",
+    "dist"
   ],
   "scripts": {
+    "build": "npm run typegen && tsup --format esm,cjs --clean --dts",
+    "dev": "npx @eslint/config-inspector --config eslint.config.ts",
     "format": "prettier --check .",
-    "lint": "eslint --max-warnings=0 .",
+    "lint": "eslint --flag unstable_ts_config .",
     "prepare": "husky",
+    "prepublish": "npm run build",
     "release": "semantic-release",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "typecheck": "tsc --noEmit",
+    "typegen": "tsx ./scripts/typegen.ts"
   },
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"
   },
-  "prettier": "./prettier",
+  "prettier": "./dist/prettier-config/index.js",
   "dependencies": {
+    "@antfu/install-pkg": "^0.5.0",
+    "@clack/prompts": "^0.8.2",
+    "@eslint-community/eslint-plugin-eslint-comments": "^4.4.1",
+    "@eslint/markdown": "^6.2.1",
     "@rushstack/eslint-patch": "^1.10.4",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
+    "@typescript-eslint/eslint-plugin": "^8.16.0",
+    "@typescript-eslint/parser": "^8.16.0",
+    "@vitest/eslint-plugin": "^1.1.12",
+    "eslint-config-flat-gitignore": "^0.3.0",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-flat-config-utils": "^0.4.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-import-resolver-typescript": "^3.6.3",
+    "eslint-merge-processors": "^0.1.0",
+    "eslint-plugin-antfu": "^2.7.0",
+    "eslint-plugin-command": "^0.2.6",
     "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-jest": "^27.9.0",
+    "eslint-plugin-jest": "^28.9.0",
+    "eslint-plugin-jsdoc": "^50.6.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-playwright": "^1.8.3",
+    "eslint-plugin-n": "^17.14.0",
+    "eslint-plugin-no-only-tests": "^3.3.0",
+    "eslint-plugin-perfectionist": "^4.1.2",
+    "eslint-plugin-playwright": "^2.1.0",
     "eslint-plugin-react": "^7.37.2",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-testing-library": "^6.5.0",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-regexp": "^2.7.0",
+    "eslint-plugin-testing-library": "^7.0.0",
     "eslint-plugin-tsdoc": "^0.4.0",
     "eslint-plugin-unicorn": "^56.0.1",
-    "eslint-plugin-vitest": "^0.3.26",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "globals": "^15.12.0",
+    "parse-gitignore": "^2.0.0",
     "prettier-plugin-packagejson": "^2.5.6",
-    "prettier-plugin-tailwindcss": "^0.6.9"
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "yargs": "^17.7.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
-    "@commitlint/config-conventional": "^19.0.3",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@eslint-react/eslint-plugin": "^1.17.1",
+    "@eslint/config-inspector": "^0.5.6",
     "@semantic-release/git": "^10.0.1",
-    "eslint": "^8.57.1",
+    "@types/yargs": "^17.0.33",
+    "eslint": "^9.15.0",
+    "eslint-plugin-format": "^0.1.2",
+    "eslint-plugin-react-hooks": "^5.0.0",
+    "eslint-plugin-react-refresh": "^0.4.14",
+    "eslint-typegen": "^0.3.2",
     "husky": "^9.1.7",
+    "jiti": "^2.4.1",
     "lint-staged": "^15.2.10",
     "prettier": "^3.4.1",
-    "semantic-release": "^23.1.1",
+    "semantic-release": "^24.2.0",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
   "peerDependencies": {
-    "@next/eslint-plugin-next": ">=12.3.0 <15.0.0-0",
-    "eslint": ">=8.48.0 <9",
+    "@next/eslint-plugin-next": ">=12.3.0 <16.0.0-0",
+    "eslint": ">=9.0.0 <10",
     "prettier": ">=3.0.0 <4",
     "typescript": ">=4.8.0 <6"
   },
   "peerDependenciesMeta": {
-    "@next/eslint-plugin-next": {
+    "@eslint-react/eslint-plugin": {
       "optional": true
     },
-    "eslint": {
+    "@unocss/eslint-plugin": {
       "optional": true
     },
-    "prettier": {
+    "eslint-plugin-react-hooks": {
       "optional": true
     },
-    "typescript": {
+    "eslint-plugin-react-refresh": {
       "optional": true
     }
   },
-  "packageManager": "npm@10.8.2",
+  "packageManager": "npm@10.9.1",
   "engines": {
-    "node": ">=18.18"
+    "node": ">=20"
   },
   "publishConfig": {
     "access": "public"
