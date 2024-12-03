@@ -1,12 +1,12 @@
-import type { TypedFlatConfigItem } from "../types";
-import { interopDefault } from "../utils";
+import type { Linter } from "eslint";
+import jsdocPlugin from "eslint-plugin-jsdoc";
 
-export async function jsdoc(): Promise<TypedFlatConfigItem[]> {
+export function jsdoc(): Linter.Config[] {
   return [
     {
       name: "solvro/jsdoc/rules",
       plugins: {
-        jsdoc: await interopDefault(import("eslint-plugin-jsdoc")),
+        jsdoc: jsdocPlugin,
       },
       rules: {
         "jsdoc/check-access": "warn",

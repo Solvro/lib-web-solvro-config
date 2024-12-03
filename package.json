@@ -35,8 +35,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm run typegen && tsup --format esm,cjs --clean --dts",
-    "dev": "npx @eslint/config-inspector --config eslint.config.ts",
+    "build": "npm run typegen && tsup",
+    "build:watch": "tsup --watch",
+    "dev": "npx @eslint/config-inspector --config eslint.config.js",
     "format": "prettier --check .",
     "lint": "eslint --flag unstable_ts_config .",
     "prepare": "husky",
@@ -54,6 +55,7 @@
     "@antfu/install-pkg": "^0.5.0",
     "@clack/prompts": "^0.8.2",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.4.1",
+    "@eslint/js": "^9.16.0",
     "@eslint/markdown": "^6.2.1",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
     "@typescript-eslint/parser": "^8.16.0",
@@ -76,7 +78,8 @@
     "local-pkg": "^0.5.1",
     "picocolors": "^1.1.1",
     "prettier-plugin-packagejson": "^2.5.6",
-    "prettier-plugin-tailwindcss": "^0.6.9"
+    "prettier-plugin-tailwindcss": "^0.6.9",
+    "typescript-eslint": "^8.17.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.6.0",
@@ -89,7 +92,7 @@
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/node": "^22.10.1",
     "@types/yargs": "^17.0.33",
-    "eslint": "^9.15.0",
+    "eslint": "^9.16.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",

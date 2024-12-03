@@ -1,7 +1,8 @@
-import { pluginNode } from "../plugins";
-import type { TypedFlatConfigItem } from "../types";
+import type { Linter } from "eslint";
 
-export async function node(): Promise<TypedFlatConfigItem[]> {
+import { pluginNode } from "../plugins";
+
+export function node(): Linter.Config[] {
   return [
     {
       name: "solvro/node/rules",

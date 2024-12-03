@@ -1,7 +1,8 @@
-import { GLOB_SRC, GLOB_SRC_EXT } from "../globs";
-import type { TypedFlatConfigItem } from "../types";
+import type { Linter } from "eslint";
 
-export async function disables(): Promise<TypedFlatConfigItem[]> {
+import { GLOB_SRC, GLOB_SRC_EXT } from "../globs";
+
+export function disables(): Linter.Config[] {
   return [
     {
       files: [`**/scripts/${GLOB_SRC}`],

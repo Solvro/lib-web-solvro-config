@@ -1,71 +1,26 @@
-import { getPackageInfo, isPackageExists } from "local-pkg";
-
-import { GLOB_MARKDOWN, GLOB_SRC, GLOB_TS, GLOB_TSX } from "../globs";
-import type {
-  OptionsFiles,
-  OptionsOverrides,
-  OptionsTypeScriptParserOptions,
-  OptionsTypeScriptWithTypes,
-  TypedFlatConfigItem,
-} from "../types";
-import { ensurePackages, interopDefault } from "../utils";
-
-// react refresh
-const ReactRefreshAllowConstantExportPackages = ["vite"];
+// @ts-expect-error ???
+import nextPlugin from "@next/eslint-plugin-next";
+import type { Linter } from "eslint";
+import pluginReact from "eslint-plugin-react";
+import pluginReactHooks from "eslint-plugin-react-hooks";
+import pluginReactRefresh from "eslint-plugin-react-refresh";
+import { isPackageExists } from "local-pkg";
 
 const NextJsPackages = ["next"];
 
-export async function react(
-  options: OptionsTypeScriptParserOptions &
-    OptionsTypeScriptWithTypes &
-    OptionsOverrides &
-    OptionsFiles = {},
-): Promise<TypedFlatConfigItem[]> {
-  const {
-    files = [GLOB_SRC],
-    filesTypeAware = [GLOB_TS, GLOB_TSX],
-    ignoresTypeAware = [`${GLOB_MARKDOWN}/**`],
-    overrides = {},
-    tsconfigPath,
-  } = options;
-
-  await ensurePackages([
-    "eslint-plugin-react",
-    "eslint-plugin-react-hooks",
-    "eslint-plugin-react-refresh",
-  ]);
-
-  const isTypeAware = !!tsconfigPath;
-
-  const typeAwareRules: TypedFlatConfigItem["rules"] = {
-    "react/jsx-no-leaked-render": "warn",
-  };
-
-  const [pluginReact, pluginReactHooks, pluginReactRefresh] = await Promise.all(
-    [
-      interopDefault(import("eslint-plugin-react")),
-      interopDefault(import("eslint-plugin-react-hooks")),
-      interopDefault(import("eslint-plugin-react-refresh")),
-    ] as const,
-  );
-
-  const isAllowConstantExport = ReactRefreshAllowConstantExportPackages.some(
-    (i) => isPackageExists(i),
-  );
-  const isUsingNext = NextJsPackages.some((i) => isPackageExists(i));
+export function react(): Linter.Config[] {
+  const isUsingNext = NextJsPackages.some((index) => isPackageExists(index));
 
   const nextjsConfig = [];
 
   if (isUsingNext) {
-    await ensurePackages(["@next/eslint-plugin-next"]);
-    // @ts-expect-error ???
-    const nextPlugin = await interopDefault(import("@next/eslint-plugin-next"));
-
     nextjsConfig.push({
       name: "solvro/next/setup",
       plugins: {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         "@next/next": nextPlugin,
       },
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
       rules: nextPlugin.configs.recommended.rules,
     });
   }
@@ -74,14 +29,17 @@ export async function react(
     {
       name: "solvro/react/setup",
       plugins: {
+        // @ts-expect-error ???
         react: pluginReact,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         "react-hooks": pluginReactHooks,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         "react-refresh": pluginReactRefresh,
       },
     },
     ...nextjsConfig,
     {
-      files,
+      files: ["**/*.{js,jsx,mjs,cjs,ts,tsx}"],
       languageOptions: {
         parserOptions: {
           ecmaFeatures: {
@@ -99,18 +57,17 @@ export async function react(
       rules: {
         ...pluginReact.configs.flat?.recommended.rules,
         ...pluginReact.configs.flat?.["jsx-runtime"].rules,
-
+        "react/jsx-no-leaked-render": "warn",
         // recommended rules react-hooks
         "react-hooks/exhaustive-deps": "warn",
         "react-hooks/rules-of-hooks": "error",
         "react/jsx-no-useless-fragment": "error",
-        "react/jsx-no-leaked-render": "warn",
 
         // react refresh
         "react-refresh/only-export-components": [
           "warn",
           {
-            allowConstantExport: isAllowConstantExport,
+            allowConstantExport: false,
             allowExportNames: [
               ...(isUsingNext
                 ? [
@@ -132,22 +89,7 @@ export async function react(
             ],
           },
         ],
-
-        // overrides
-        ...overrides,
       },
     },
-    ...(isTypeAware
-      ? [
-          {
-            files: filesTypeAware,
-            ignores: ignoresTypeAware,
-            name: "antfu/react/type-aware-rules",
-            rules: {
-              ...typeAwareRules,
-            },
-          },
-        ]
-      : []),
   ];
 }

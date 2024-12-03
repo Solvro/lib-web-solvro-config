@@ -1,9 +1,11 @@
-import type { TypedFlatConfigItem } from "../types";
-import { ensurePackages, interopDefault } from "../utils";
+import type { Linter } from "eslint";
+import prettierConfig from "eslint-config-prettier";
 
-export async function formatters(): Promise<TypedFlatConfigItem[]> {
-  await ensurePackages(["eslint-plugin-prettier"]);
-
-  const prettierConfig = await interopDefault(import("eslint-config-prettier"));
-  return [prettierConfig];
+export function formatters(): Linter.Config[] {
+  return [
+    {
+      name: "solvro/prettier",
+      ...prettierConfig,
+    },
+  ];
 }

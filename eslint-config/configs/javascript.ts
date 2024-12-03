@@ -1,17 +1,10 @@
+import eslint from "@eslint/js";
+import type { Linter } from "eslint";
 import globals from "globals";
 
 import { pluginAntfu, pluginUnusedImports } from "../plugins";
-import type {
-  OptionsIsInEditor,
-  OptionsOverrides,
-  TypedFlatConfigItem,
-} from "../types";
 
-export async function javascript(
-  options: OptionsIsInEditor & OptionsOverrides = {},
-): Promise<TypedFlatConfigItem[]> {
-  const { isInEditor = false, overrides = {} } = options;
-
+export function javascript(): Linter.Config[] {
   return [
     {
       languageOptions: {
@@ -45,13 +38,12 @@ export async function javascript(
         "unused-imports": pluginUnusedImports,
       },
       rules: {
+        ...eslint.configs.recommended.rules,
         "accessor-pairs": [
           "error",
           { enforceForClassMembers: true, setWithoutGet: true },
         ],
-
         "antfu/no-top-level-await": "error",
-
         "array-callback-return": "error",
         "block-scoped-var": "error",
         "constructor-super": "error",
@@ -223,7 +215,7 @@ export async function javascript(
         "prefer-template": "error",
         "symbol-description": "error",
         "unicode-bom": ["error", "never"],
-        "unused-imports/no-unused-imports": isInEditor ? "off" : "error",
+        "unused-imports/no-unused-imports": "error",
         "unused-imports/no-unused-vars": [
           "error",
           {
@@ -241,8 +233,6 @@ export async function javascript(
         "valid-typeof": ["error", { requireStringLiterals: true }],
         "vars-on-top": "error",
         yoda: ["error", "never"],
-
-        ...overrides,
       },
     },
   ];

@@ -1,12 +1,14 @@
-import { pluginAntfu, pluginImport } from "../plugins";
-import type { TypedFlatConfigItem } from "../types";
+import type { Linter } from "eslint";
 
-export async function imports(): Promise<TypedFlatConfigItem[]> {
+import { pluginAntfu, pluginImport } from "../plugins";
+
+export function imports(): Linter.Config[] {
   return [
     {
       name: "solvro/imports/rules",
       plugins: {
         antfu: pluginAntfu,
+        // @ts-expect-error ???
         "import-x": pluginImport,
       },
       rules: {

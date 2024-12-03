@@ -1,3 +1,5 @@
+import markdownPlugin from "@eslint/markdown";
+import type { Linter } from "eslint";
 import { mergeProcessors, processorPassThrough } from "eslint-merge-processors";
 
 import {
@@ -5,30 +7,16 @@ import {
   GLOB_MARKDOWN_CODE,
   GLOB_MARKDOWN_IN_MARKDOWN,
 } from "../globs";
-import type {
-  OptionsComponentExts,
-  OptionsFiles,
-  OptionsOverrides,
-  TypedFlatConfigItem,
-} from "../types";
-import { interopDefault, parserPlain } from "../utils";
+import { parserPlain } from "../utils";
 
-export async function markdown(
-  options: OptionsFiles & OptionsComponentExts & OptionsOverrides = {},
-): Promise<TypedFlatConfigItem[]> {
-  const {
-    componentExts = [],
-    files = [GLOB_MARKDOWN],
-    overrides = {},
-  } = options;
-
-  const markdown = await interopDefault(import("@eslint/markdown"));
+export function markdown(): Linter.Config[] {
+  const files = [GLOB_MARKDOWN];
 
   return [
     {
       name: "solvro/markdown/setup",
       plugins: {
-        markdown,
+        markdown: markdownPlugin,
       },
     },
     {
@@ -39,7 +27,7 @@ export async function markdown(
       // but not the markdown file itself. We use `eslint-merge-processors` to
       // add a pass-through processor for the markdown file itself.
       processor: mergeProcessors([
-        markdown.processors!.markdown,
+        markdownPlugin.processors!.markdown,
         processorPassThrough,
       ]),
     },
@@ -51,10 +39,7 @@ export async function markdown(
       name: "solvro/markdown/parser",
     },
     {
-      files: [
-        GLOB_MARKDOWN_CODE,
-        ...componentExts.map((ext) => `${GLOB_MARKDOWN}/**/*.${ext}`),
-      ],
+      files: [GLOB_MARKDOWN_CODE],
       languageOptions: {
         parserOptions: {
           ecmaFeatures: {
@@ -89,8 +74,6 @@ export async function markdown(
         "unicode-bom": "off",
         "unused-imports/no-unused-imports": "off",
         "unused-imports/no-unused-vars": "off",
-
-        ...overrides,
       },
     },
   ];

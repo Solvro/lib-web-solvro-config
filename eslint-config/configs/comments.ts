@@ -1,11 +1,13 @@
-import { pluginComments } from "../plugins";
-import type { TypedFlatConfigItem } from "../types";
+import type { Linter } from "eslint";
 
-export async function comments(): Promise<TypedFlatConfigItem[]> {
+import { pluginComments } from "../plugins";
+
+export function comments(): Linter.Config[] {
   return [
     {
       name: "solvro/eslint-comments/rules",
       plugins: {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         "eslint-comments": pluginComments,
       },
       rules: {
