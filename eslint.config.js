@@ -1,5 +1,5 @@
 // eslint-disable-next-line antfu/no-import-dist
-import { solvro } from "./dist/eslint-config/index.js";
+import { solvro } from "./dist/eslint/index.js";
 
 export default solvro([
   {

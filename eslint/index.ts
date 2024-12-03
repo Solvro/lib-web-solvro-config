@@ -3,6 +3,7 @@ import { isPackageExists } from "local-pkg";
 import tseslint from "typescript-eslint";
 import type { ConfigWithExtends } from "typescript-eslint";
 
+import { a11y } from "./configs/a11y";
 import { comments } from "./configs/comments";
 import { disables } from "./configs/disables";
 import { formatters } from "./configs/formatters";
@@ -18,7 +19,7 @@ import { unicorn } from "./configs/unicorn";
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 const adonisConfig = [...configApp(), ...node()];
 
-const nextjsConfig = [...react()];
+const nextjsConfig = [...react(), ...a11y()];
 
 export const solvro = (...overrides: ConfigWithExtends[]) => {
   const isAdonis = isPackageExists("@adonisjs/core");
@@ -29,11 +30,14 @@ export const solvro = (...overrides: ConfigWithExtends[]) => {
     ...javascript(),
     ...jsdoc(),
     ...unicorn(),
-    ...disables(),
     ...imports(),
     ...comments(),
+  ];
+
+  const defaultOverrides = [
     ...ignores(),
     ...formatters(),
+    ...disables(),
     ...overrides,
   ];
 
@@ -52,5 +56,5 @@ export const solvro = (...overrides: ConfigWithExtends[]) => {
     configs.push(...nextjsConfig);
   }
 
-  return tseslint.config(configs);
+  return tseslint.config(configs, ...defaultOverrides);
 };
