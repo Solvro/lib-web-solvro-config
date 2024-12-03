@@ -3,7 +3,7 @@
   "version": "1.3.0",
   "description": "Solvro's engineering style guide",
   "keywords": [
-    "eslint-config"
+    "eslint"
   ],
   "homepage": "https://github.com/Solvro/lib-web-solvro-config#readme",
   "bugs": {
@@ -17,14 +17,14 @@
   "type": "module",
   "exports": {
     "./eslint": {
-      "types": "./dist/eslint-config/index.d.ts",
-      "import": "./dist/eslint-config/index.js",
-      "require": "./dist/eslint-config/index.cjs"
+      "types": "./dist/eslint/index.d.ts",
+      "import": "./dist/eslint/index.js",
+      "require": "./dist/eslint/index.cjs"
     },
     "./prettier": {
-      "types": "./dist/prettier-config/index.d.ts",
-      "import": "./dist/prettier-config/index.js",
-      "require": "./dist/prettier-config/index.cjs"
+      "types": "./dist/prettier/index.d.ts",
+      "import": "./dist/prettier/index.js",
+      "require": "./dist/prettier/index.cjs"
     }
   },
   "files": [
@@ -44,7 +44,7 @@
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"
   },
-  "prettier": "./dist/prettier-config/index.js",
+  "prettier": "./dist/prettier/index.js",
   "dependencies": {
     "@adonisjs/eslint-config": "^2.0.0-beta.7",
     "@antfu/install-pkg": "^0.5.0",

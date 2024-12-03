@@ -10,5 +10,5 @@
     "outDir": "./dist"
   },
   "include": ["**/*.ts", "**/*.js", ".commitlintrc.js", ".releaserc.js"],
-  "exclude": ["./dist"]
+  "exclude": ["./dist/**/*"]
 }
