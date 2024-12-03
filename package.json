@@ -35,17 +35,15 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm run typegen && tsup",
+    "build": "tsup",
     "build:watch": "tsup --watch",
     "dev": "npx @eslint/config-inspector --config eslint.config.js",
     "format": "prettier --check .",
-    "lint": "eslint --flag unstable_ts_config .",
+    "lint": "eslint .",
     "prepare": "husky",
     "prepublish": "npm run build",
     "release": "semantic-release",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "typecheck": "tsc --noEmit",
-    "typegen": "tsx ./scripts/typegen.ts"
+    "typecheck": "tsc --noEmit"
   },
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"
