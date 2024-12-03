@@ -43,6 +43,7 @@ export function javascript(): Linter.Config[] {
           "error",
           { enforceForClassMembers: true, setWithoutGet: true },
         ],
+        curly: "error",
         "array-callback-return": "error",
         "block-scoped-var": "error",
         "constructor-super": "error",
@@ -160,15 +161,7 @@ export function javascript(): Linter.Config[] {
             allowTernary: true,
           },
         ],
-        "no-unused-vars": [
-          "error",
-          {
-            args: "none",
-            caughtErrors: "none",
-            ignoreRestSiblings: true,
-            vars: "all",
-          },
-        ],
+
         "no-useless-backreference": "error",
         "no-useless-call": "error",
         "no-useless-catch": "error",

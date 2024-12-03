@@ -3,7 +3,6 @@ import type { Linter } from "eslint";
 import { pluginAntfu, pluginImport } from "../plugins";
 
 export function imports(): Linter.Config[] {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
   return [
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     pluginImport.flatConfigs.typescript,

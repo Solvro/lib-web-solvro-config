@@ -3,21 +3,19 @@ import tseslint from "typescript-eslint";
 
 import { pluginAntfu } from "../plugins";
 
-export function typescriptNext(): Linter.Config[] {
+export function typescriptStrict(): Linter.Config[] {
   return [
-    // @ts-expect-error ???
-    tseslint.configs.strictTypeChecked,
-    // @ts-expect-error ???
-    tseslint.configs.stylisticTypeChecked,
+    ...tseslint.configs.strictTypeChecked,
+    ...tseslint.configs.stylisticTypeChecked,
     {
-      name: "solvro/typescript/setup",
+      name: "solvro/typescript-strict/setup",
       plugins: {
         antfu: pluginAntfu,
       },
     },
     {
       files: ["**/*.{ts,tsx}"],
-      name: "solvro/typescript/rules",
+      name: "solvro/typescript-strict/rules",
       rules: {
         "@typescript-eslint/ban-ts-comment": [
           "error",
@@ -147,5 +145,5 @@ export function typescriptNext(): Linter.Config[] {
         "@typescript-eslint/unbound-method": "error",
       },
     },
-  ];
+  ] as Linter.Config[];
 }

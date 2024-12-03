@@ -6,6 +6,7 @@ import type { Options } from "prettier";
  *
  * See: https://github.com/prettier/prettier/blob/main/docs/configuration.md#editorconfig
  */
+
 const overridableDefaults = {
   arrowParens: "always",
   endOfLine: "lf",
@@ -17,7 +18,6 @@ const overridableDefaults = {
   useTabs: false,
 } as const;
 
-// eslint-disable-next-line import/no-default-export
 export default {
   ...overridableDefaults,
   importOrder: ["^@assets/(.*)$", "<THIRD_PARTY_MODULES>", "^@/(.*)$", "^[./]"],

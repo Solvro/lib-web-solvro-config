@@ -1,5 +1,8 @@
 import { configApp } from "@adonisjs/eslint-config";
+import type { Linter } from "eslint";
+import { findUpSync } from "find-up-simple";
 import { isPackageExists } from "local-pkg";
+import path from "node:path";
 import tseslint from "typescript-eslint";
 import type { ConfigWithExtends } from "typescript-eslint";
 
@@ -13,26 +16,33 @@ import { javascript } from "./configs/javascript";
 import { jsdoc } from "./configs/jsdoc";
 import { node } from "./configs/node";
 import { react } from "./configs/react";
-import { typescriptAdonis } from "./configs/typescript-adonis";
-import { typescriptNext } from "./configs/typescript-next";
+import { typescriptRelaxed } from "./configs/typescript-relaxed";
+import { typescriptStrict } from "./configs/typescript-strict";
 import { unicorn } from "./configs/unicorn";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-const adonisConfig = [...configApp(), ...node(), ...typescriptAdonis()];
+const builtinAdonisConfig: Linter.Config[] = configApp();
+
+const adonisConfig: Linter.Config[] = [...builtinAdonisConfig, ...node()];
 
 const nextjsConfig = [
   ...react(),
   ...a11y(),
   ...unicorn(),
   ...imports(),
-  ...typescriptNext(),
+  ...typescriptStrict(),
 ];
 
 export const solvro = (...overrides: ConfigWithExtends[]) => {
   const isAdonis = isPackageExists("@adonisjs/core");
   const isNext = isPackageExists("next");
 
-  const configs = [...javascript(), ...jsdoc(), ...comments()];
+  const configs = [
+    ...javascript(),
+    ...jsdoc(),
+    ...comments(),
+    ...typescriptRelaxed(),
+  ];
 
   const defaultOverrides = [
     ...ignores(),
@@ -46,15 +56,32 @@ export const solvro = (...overrides: ConfigWithExtends[]) => {
       "You can't use both Adonis and Next.js in the same project",
     );
   }
-
   if (isAdonis) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     configs.push(...adonisConfig);
   }
 
   if (isNext) {
     configs.push(...nextjsConfig);
   }
+
+  const tsConfigPath = findUpSync("tsconfig.json", {
+    cwd: process.cwd(),
+  });
+
+  if (tsConfigPath == null) {
+    throw new Error("No tsconfig.json found");
+  }
+
+  const rootDir = path.dirname(tsConfigPath);
+
+  configs.push({
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: rootDir,
+      },
+    },
+  });
 
   return tseslint.config(configs, ...defaultOverrides);
 };

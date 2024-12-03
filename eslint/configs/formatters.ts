@@ -5,7 +5,10 @@ export function formatters(): Linter.Config[] {
   return [
     {
       name: "solvro/prettier",
-      ...prettierConfig,
+      rules: {
+        ...prettierConfig.rules,
+        curly: "error",
+      },
     },
   ];
 }
