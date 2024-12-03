@@ -15,6 +15,7 @@ export function typescriptAdonis(): Linter.Config[] {
             checksVoidReturn: false,
           },
         ],
+        "@typescript-eslint/no-empty-object-type": "off",
       },
     },
   ] as Linter.Config[];

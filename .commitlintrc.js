@@ -36,13 +36,9 @@ export default {
         // Dependency-related changes
         "deps",
         // ESLint-related changes
-        "eslint",
-        // Prettier-related changes
-        "prettier",
-        // TypeScript-related changes
-        "typescript",
+        "next",
         // Go-related changes
-        "golang",
+        "adonis",
       ],
     ],
     "scope-empty": [1, "never"],
