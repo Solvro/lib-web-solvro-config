@@ -26,10 +26,10 @@ const builtinAdonisConfig: Linter.Config[] = configApp();
 const adonisConfig: Linter.Config[] = [...builtinAdonisConfig, ...node()];
 
 const nextjsConfig = [
-  ...react(),
+  ...imports(),
   ...a11y(),
   ...unicorn(),
-  ...imports(),
+  ...react(),
   ...typescriptStrict(),
 ];
 
