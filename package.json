@@ -27,17 +27,13 @@
       "require": "./dist/prettier-config/index.cjs"
     }
   },
-  "bin": {
-    "config": "bin/index.js"
-  },
   "files": [
-    "bin",
     "dist"
   ],
   "scripts": {
     "build": "tsup",
     "build:watch": "tsup --watch",
-    "dev": "npx @eslint/config-inspector --config eslint.config.js",
+    "dev": "npx @eslint/config-inspector",
     "format": "prettier --check .",
     "lint": "eslint .",
     "prepare": "husky",
