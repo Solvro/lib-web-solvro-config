@@ -19,20 +19,13 @@ import { unicorn } from "./configs/unicorn";
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 const adonisConfig = [...configApp(), ...node()];
 
-const nextjsConfig = [...react(), ...a11y()];
+const nextjsConfig = [...react(), ...a11y(), ...unicorn(), ...imports()];
 
 export const solvro = (...overrides: ConfigWithExtends[]) => {
   const isAdonis = isPackageExists("@adonisjs/core");
   const isNext = isPackageExists("next");
 
-  const configs = [
-    ...typescript(),
-    ...javascript(),
-    ...jsdoc(),
-    ...unicorn(),
-    ...imports(),
-    ...comments(),
-  ];
+  const configs = [...typescript(), ...javascript(), ...jsdoc(), ...comments()];
 
   const defaultOverrides = [
     ...ignores(),

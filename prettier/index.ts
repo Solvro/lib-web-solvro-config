@@ -23,6 +23,7 @@ export default {
   importOrder: ["^@assets/(.*)$", "<THIRD_PARTY_MODULES>", "^@/(.*)$", "^[./]"],
   importOrderSeparation: true,
   importOrderSortSpecifiers: true,
+  importOrderParserPlugins: ["typescript", "decorators-legacy"],
   plugins: [
     "prettier-plugin-packagejson",
     "@trivago/prettier-plugin-sort-imports",
