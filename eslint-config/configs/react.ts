@@ -11,18 +11,30 @@ const NextJsPackages = ["next"];
 export function react(): Linter.Config[] {
   const isUsingNext = NextJsPackages.some((index) => isPackageExists(index));
 
-  const nextjsConfig = [];
+  const nextjsConfig: Linter.Config[] = [];
 
   if (isUsingNext) {
-    nextjsConfig.push({
-      name: "solvro/next/setup",
-      plugins: {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        "@next/next": nextPlugin,
+    nextjsConfig.push(
+      {
+        name: "solvro/next/setup",
+        plugins: {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          "@next/next": nextPlugin,
+        },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+        rules: nextPlugin.configs.recommended.rules,
       },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      rules: nextPlugin.configs.recommended.rules,
-    });
+      {
+        files: [
+          "**/app/**/{page,loading,layout}.{js,jsx,ts,tsx}",
+          "**/pages/**/*.{js,jsx,ts,tsx}",
+        ],
+        name: "solvro/next/pages",
+        rules: {
+          "import/no-default-export": "off",
+        },
+      },
+    );
   }
 
   return [
@@ -57,6 +69,7 @@ export function react(): Linter.Config[] {
       rules: {
         ...pluginReact.configs.flat?.recommended.rules,
         ...pluginReact.configs.flat?.["jsx-runtime"].rules,
+        "react/no-danger": "warn",
         "react/jsx-no-leaked-render": "warn",
         // recommended rules react-hooks
         "react-hooks/exhaustive-deps": "warn",
@@ -80,6 +93,10 @@ export function react(): Linter.Config[] {
                     "maxDuration",
                     "config",
                     "generateStaticParams",
+                    "getStaticProps",
+                    "getServerSideProps",
+                    "getInitialProps",
+                    "getStaticPaths",
                     "metadata",
                     "generateMetadata",
                     "viewport",

@@ -16,6 +16,7 @@ export function typescript(): Linter.Config[] {
       },
     },
     {
+      files: ["**/*.{ts,tsx}"],
       name: "solvro/typescript/rules",
       rules: {
         "@typescript-eslint/ban-ts-comment": [

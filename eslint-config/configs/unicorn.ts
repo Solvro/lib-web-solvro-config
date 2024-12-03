@@ -9,7 +9,11 @@ export function unicorn(): Linter.Config[] {
       plugins: {
         unicorn: pluginUnicorn,
       },
-      rules: pluginUnicorn.configs["flat/recommended"].rules,
+      rules: {
+        ...pluginUnicorn.configs["flat/recommended"].rules,
+        "unicorn/no-array-reduce": "off",
+        "unicorn/no-null": "off",
+      },
     },
   ];
 }
