@@ -3,7 +3,7 @@ import tseslint from "typescript-eslint";
 
 import { pluginAntfu } from "../plugins";
 
-export function typescript(): Linter.Config[] {
+export function typescriptNext(): Linter.Config[] {
   return [
     // @ts-expect-error ???
     tseslint.configs.strictTypeChecked,

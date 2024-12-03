@@ -14,6 +14,11 @@ export function disables(): Linter.Config[] {
       },
     },
     {
+      rules: {
+        "prettier/prettier": "off",
+      },
+    },
+    {
       files: [`**/cli/${GLOB_SRC}`, `**/cli.${GLOB_SRC_EXT}`],
       name: "solvro/disables/cli",
       rules: {

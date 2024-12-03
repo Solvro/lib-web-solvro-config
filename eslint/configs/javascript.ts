@@ -43,8 +43,6 @@ export function javascript(): Linter.Config[] {
           "error",
           { enforceForClassMembers: true, setWithoutGet: true },
         ],
-
-        "antfu/no-top-level-await": "error",
         "array-callback-return": "error",
         "block-scoped-var": "error",
         "constructor-super": "error",
@@ -146,7 +144,6 @@ export function javascript(): Linter.Config[] {
         "no-template-curly-in-string": "error",
         "no-this-before-super": "error",
         "no-throw-literal": "error",
-        "no-undef": "error",
         "no-undef-init": "error",
         "no-unexpected-multiline": "error",
         "no-unmodified-loop-condition": "error",

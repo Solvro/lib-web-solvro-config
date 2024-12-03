@@ -13,19 +13,26 @@ import { javascript } from "./configs/javascript";
 import { jsdoc } from "./configs/jsdoc";
 import { node } from "./configs/node";
 import { react } from "./configs/react";
-import { typescript } from "./configs/typescript";
+import { typescriptAdonis } from "./configs/typescript-adonis";
+import { typescriptNext } from "./configs/typescript-next";
 import { unicorn } from "./configs/unicorn";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-const adonisConfig = [...configApp(), ...node()];
+const adonisConfig = [...configApp(), ...node(), ...typescriptAdonis()];
 
-const nextjsConfig = [...react(), ...a11y(), ...unicorn(), ...imports()];
+const nextjsConfig = [
+  ...react(),
+  ...a11y(),
+  ...unicorn(),
+  ...imports(),
+  ...typescriptNext(),
+];
 
 export const solvro = (...overrides: ConfigWithExtends[]) => {
   const isAdonis = isPackageExists("@adonisjs/core");
   const isNext = isPackageExists("next");
 
-  const configs = [...typescript(), ...javascript(), ...jsdoc(), ...comments()];
+  const configs = [...javascript(), ...jsdoc(), ...comments()];
 
   const defaultOverrides = [
     ...ignores(),
