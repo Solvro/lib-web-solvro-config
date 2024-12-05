@@ -50,7 +50,7 @@
     "@adonisjs/eslint-config": "^2.0.0-beta.7",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.4.1",
     "@eslint/js": "^9.16.0",
-    "@trivago/prettier-plugin-sort-imports": "^4.3.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.0.1",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-antfu": "^2.7.0",
