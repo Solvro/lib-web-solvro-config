@@ -1,8 +1,8 @@
-import type { Linter } from "eslint";
+import type { ConfigWithExtends } from "typescript-eslint";
 
 import { pluginNode } from "../plugins";
 
-export function node(): Linter.Config[] {
+export function node(): ConfigWithExtends[] {
   return [
     {
       name: "solvro/node/rules",

@@ -6,9 +6,6 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "allowJs": true,
     "outDir": "./dist"
-  },
-  "include": ["**/*.ts", "**/*.js", ".commitlintrc.js", ".releaserc.js"],
-  "exclude": ["./dist/**/*"]
+  }
 }

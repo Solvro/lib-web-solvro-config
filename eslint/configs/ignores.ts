@@ -1,8 +1,8 @@
-import type { Linter } from "eslint";
+import type { ConfigWithExtends } from "typescript-eslint";
 
 import { GLOB_EXCLUDE } from "../globs";
 
-export function ignores(): Linter.Config[] {
+export function ignores(): ConfigWithExtends[] {
   return [
     {
       ignores: [...GLOB_EXCLUDE],

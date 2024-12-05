@@ -1,7 +1,6 @@
-import type { Linter } from "eslint";
-import tseslint from "typescript-eslint";
+import tseslint, { type ConfigWithExtends } from "typescript-eslint";
 
-export function typescriptRelaxed(): Linter.Config[] {
+export function typescriptRelaxed(): ConfigWithExtends[] {
   return [
     ...tseslint.configs.recommendedTypeChecked,
     ...tseslint.configs.stylisticTypeChecked,
@@ -16,9 +15,20 @@ export function typescriptRelaxed(): Linter.Config[] {
             checksVoidReturn: false,
           },
         ],
+        "unused-imports/no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            args: "all",
+            argsIgnorePattern: "^_",
+            destructuredArrayIgnorePattern: "^_",
+            varsIgnorePattern: "^_",
+            ignoreRestSiblings: true,
+          },
+        ],
         "@typescript-eslint/no-empty-object-type": "off",
         "@typescript-eslint/no-unnecessary-condition": "warn",
       },
     },
-  ] as Linter.Config[];
+  ];
 }

@@ -1,7 +1,7 @@
-import type { Linter } from "eslint";
 import jsdocPlugin from "eslint-plugin-jsdoc";
+import type { ConfigWithExtends } from "typescript-eslint";
 
-export function jsdoc(): Linter.Config[] {
+export function jsdoc(): ConfigWithExtends[] {
   return [
     {
       name: "solvro/jsdoc/rules",

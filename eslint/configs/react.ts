@@ -1,17 +1,17 @@
 // @ts-expect-error ???
 import nextPlugin from "@next/eslint-plugin-next";
-import type { Linter } from "eslint";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
 import pluginReactRefresh from "eslint-plugin-react-refresh";
 import { isPackageExists } from "local-pkg";
+import type { ConfigWithExtends } from "typescript-eslint";
 
 const NextJsPackages = ["next"];
 
-export function react(): Linter.Config[] {
+export function react(): ConfigWithExtends[] {
   const isUsingNext = NextJsPackages.some((index) => isPackageExists(index));
 
-  const nextjsConfig: Linter.Config[] = [];
+  const nextjsConfig: ConfigWithExtends[] = [];
 
   if (isUsingNext) {
     nextjsConfig.push(

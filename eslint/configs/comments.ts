@@ -1,8 +1,8 @@
-import type { Linter } from "eslint";
+import type { ConfigWithExtends } from "typescript-eslint";
 
 import { pluginComments } from "../plugins";
 
-export function comments(): Linter.Config[] {
+export function comments(): ConfigWithExtends[] {
   return [
     {
       name: "solvro/eslint-comments/rules",

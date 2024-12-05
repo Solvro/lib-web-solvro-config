@@ -1,7 +1,7 @@
-import type { Linter } from "eslint";
 import prettierConfig from "eslint-config-prettier";
+import type { ConfigWithExtends } from "typescript-eslint";
 
-export function formatters(): Linter.Config[] {
+export function formatters(): ConfigWithExtends[] {
   return [
     {
       name: "solvro/prettier",

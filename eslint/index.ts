@@ -1,5 +1,4 @@
 import { configApp } from "@adonisjs/eslint-config";
-import type { Linter } from "eslint";
 import { findUpSync } from "find-up-simple";
 import { isPackageExists } from "local-pkg";
 import path from "node:path";
@@ -21,11 +20,11 @@ import { typescriptStrict } from "./configs/typescript-strict";
 import { unicorn } from "./configs/unicorn";
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-const builtinAdonisConfig: Linter.Config[] = configApp();
+const builtinAdonisConfig: ConfigWithExtends[] = configApp();
 
-const adonisConfig: Linter.Config[] = [...builtinAdonisConfig, ...node()];
+const adonisConfig: ConfigWithExtends[] = [...builtinAdonisConfig, ...node()];
 
-const nextjsConfig = [
+const nextjsConfig: ConfigWithExtends[] = [
   ...imports(),
   ...a11y(),
   ...unicorn(),
@@ -37,7 +36,7 @@ export const solvro = (...overrides: ConfigWithExtends[]) => {
   const isAdonis = isPackageExists("@adonisjs/core");
   const isNext = isPackageExists("next");
 
-  const configs = [
+  const configs: ConfigWithExtends[] = [
     ...javascript(),
     ...jsdoc(),
     ...comments(),

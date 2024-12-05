@@ -1,8 +1,8 @@
-import type { Linter } from "eslint";
+import tseslint, { type ConfigWithExtends } from "typescript-eslint";
 
 import { GLOB_SRC, GLOB_SRC_EXT } from "../globs";
 
-export function disables(): Linter.Config[] {
+export function disables(): ConfigWithExtends[] {
   return [
     {
       files: [`**/scripts/${GLOB_SRC}`],
@@ -53,12 +53,16 @@ export function disables(): Linter.Config[] {
     },
     {
       files: [`**/*.config.${GLOB_SRC_EXT}`, `**/*.config.*.${GLOB_SRC_EXT}`],
-      name: "antfu/disables/config-files",
+      name: "solvro/disables/config-files",
       rules: {
         "antfu/no-top-level-await": "off",
         "no-console": "off",
         "@typescript-eslint/explicit-function-return-type": "off",
       },
+    },
+    {
+      files: ["**/*.js"],
+      extends: [tseslint.configs.disableTypeChecked],
     },
   ];
 }

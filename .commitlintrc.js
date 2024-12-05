@@ -7,6 +7,7 @@ export default {
       [
         // Changes that affect the build system or dependency-only changes
         "build",
+        "chore",
         // Changes to CI workflows
         "ci",
         // Documentation-only changes

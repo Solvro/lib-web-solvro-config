@@ -40,10 +40,10 @@ Niektóre konfiguracje ESLint wymagają zależności pośrednich (peer dependenc
 
 ## Prettier
 
-> Uwaga: Prettier jest zależnością pośrednią tego pakietu i powinien być zainstalowany w głównym katalogu projektu.  
-> Szczegóły: https://prettier.io/docs/en/install.html
+> Uwaga: Musisz mieć zainstalowanego prettiera.
+> Szczegóły: <https://prettier.io/docs/en/install.html>
 
-Aby użyć wspólnej konfiguracji Prettiera, dodaj w `package.json`:
+Aby użyć configu dodaj to pole w `package.json`:
 
 ```json
 {
@@ -53,45 +53,14 @@ Aby użyć wspólnej konfiguracji Prettiera, dodaj w `package.json`:
 
 ## ESLint
 
-> Uwaga: ESLint jest zależnością pośrednią tego pakietu i powinien być zainstalowany w głównym katalogu projektu.  
-> Szczegóły: https://eslint.org/docs/user-guide/getting-started#installation-and-usage
-
-Konfiguracja ESLint jest zaprojektowana jako kompozycyjna.
-
-Dostępne są następujące konfiguracje bazowe, które powinny być zawsze pierwsze w `extends`:
-
-- `@solvro/config/eslint/browser`
-- `@solvro/config/eslint/node`
-
-Dodatkowe konfiguracje:
-
-- `@solvro/config/eslint/jest`
-- `@solvro/config/eslint/jest-react` (z zasadami dla `@testing-library/react`)
-- `@solvro/config/eslint/next` (wymaga `@next/eslint-plugin-next` w tej samej wersji co `next`)
-- `@solvro/config/eslint/playwright-test`
-- `@solvro/config/eslint/react`
-- `@solvro/config/eslint/typescript` (wymaga `typescript` i [dodatkowej konfiguracji](#konfiguracja-eslint-dla-typescripta))
-- `@solvro/config/eslint/vitest`
-
-Ze względu na problem z rozpoznawaniem ścieżek konfiguracji przez ESLint, użyj `require.resolve`.
-
-Przykład dla Next.js:
-
-```js
-module.exports = {
-  extends: [
-    require.resolve("@solvro/config/eslint/browser"),
-    require.resolve("@solvro/config/eslint/react"),
-    require.resolve("@solvro/config/eslint/next"),
-  ],
-};
-```
+> Uwaga: ESLint musi być już zainstalowany
+> Szczegóły: <https://eslint.org/docs/user-guide/getting-started#installation-and-usage>
 
 ### Konfiguracja ESLint dla TypeScripta
 
 Niektóre reguły wymagają dodatkowych informacji o typach. Podaj ścieżkę do `tsconfig.json`.
 
-Szczegóły: https://typescript-eslint.io/docs/linting/type-linting
+Szczegóły: <https://typescript-eslint.io/docs/linting/type-linting>
 
 ```js
 const { resolve } = require("node:path");

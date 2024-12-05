@@ -1,9 +1,9 @@
-import type { Linter } from "eslint";
 import tseslint from "typescript-eslint";
+import type { ConfigWithExtends } from "typescript-eslint";
 
 import { pluginAntfu } from "../plugins";
 
-export function typescriptStrict(): Linter.Config[] {
+export function typescriptStrict(): ConfigWithExtends[] {
   return [
     ...tseslint.configs.strictTypeChecked,
     ...tseslint.configs.stylisticTypeChecked,
@@ -54,7 +54,6 @@ export function typescriptStrict(): Linter.Config[] {
             allowTernary: true,
           },
         ],
-        "@typescript-eslint/no-unused-vars": "off",
         "@typescript-eslint/no-use-before-define": [
           "error",
           { classes: false, functions: false, variables: true },
@@ -145,5 +144,5 @@ export function typescriptStrict(): Linter.Config[] {
         "@typescript-eslint/unbound-method": "error",
       },
     },
-  ] as Linter.Config[];
+  ];
 }

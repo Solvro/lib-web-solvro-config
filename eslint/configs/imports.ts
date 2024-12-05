@@ -1,8 +1,8 @@
-import type { Linter } from "eslint";
+import type { ConfigWithExtends } from "typescript-eslint";
 
 import { pluginAntfu, pluginImport } from "../plugins";
 
-export function imports(): Linter.Config[] {
+export function imports(): ConfigWithExtends[] {
   return [
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     pluginImport.flatConfigs.typescript,

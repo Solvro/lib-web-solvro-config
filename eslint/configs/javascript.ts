@@ -1,10 +1,10 @@
 import eslint from "@eslint/js";
-import type { Linter } from "eslint";
 import globals from "globals";
+import type { ConfigWithExtends } from "typescript-eslint";
 
 import { pluginAntfu, pluginUnusedImports } from "../plugins";
 
-export function javascript(): Linter.Config[] {
+export function javascript(): ConfigWithExtends[] {
   return [
     {
       languageOptions: {

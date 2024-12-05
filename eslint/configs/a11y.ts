@@ -1,7 +1,7 @@
-import type { Linter } from "eslint";
 import jsxA11y from "eslint-plugin-jsx-a11y";
+import type { ConfigWithExtends } from "typescript-eslint";
 
-export function a11y(): Linter.Config[] {
+export function a11y(): ConfigWithExtends[] {
   return [
     {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

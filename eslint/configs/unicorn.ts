@@ -1,8 +1,8 @@
-import type { Linter } from "eslint";
+import type { ConfigWithExtends } from "typescript-eslint";
 
 import { pluginUnicorn } from "../plugins";
 
-export function unicorn(): Linter.Config[] {
+export function unicorn(): ConfigWithExtends[] {
   return [
     {
       name: "solvro/unicorn/rules",
@@ -20,6 +20,7 @@ export function unicorn(): Linter.Config[] {
             replacements: {
               env: false,
               envs: false,
+              props: false,
             },
           },
         ],
