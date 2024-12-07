@@ -28,8 +28,8 @@ const nextjsConfig: ConfigWithExtends[] = [
   ...imports(),
   ...a11y(),
   ...unicorn(),
-  ...react(),
   ...typescriptStrict(),
+  ...react(),
 ];
 
 export const solvro = (...overrides: ConfigWithExtends[]) => {

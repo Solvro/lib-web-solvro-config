@@ -14,6 +14,7 @@ export function unicorn(): ConfigWithExtends[] {
         "unicorn/no-array-reduce": "off",
         "unicorn/no-null": "off",
         "unicorn/no-useless-switch-case": "off",
+        "unicorn/prefer-global-this": "off",
         "unicorn/prevent-abbreviations": [
           "error",
           {
@@ -21,6 +22,8 @@ export function unicorn(): ConfigWithExtends[] {
               env: false,
               envs: false,
               props: false,
+              prop: false,
+              ref: false,
             },
           },
         ],

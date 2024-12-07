@@ -2,7 +2,6 @@
 import nextPlugin from "@next/eslint-plugin-next";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
-import pluginReactRefresh from "eslint-plugin-react-refresh";
 import { isPackageExists } from "local-pkg";
 import type { ConfigWithExtends } from "typescript-eslint";
 
@@ -45,8 +44,6 @@ export function react(): ConfigWithExtends[] {
         react: pluginReact,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         "react-hooks": pluginReactHooks,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        "react-refresh": pluginReactRefresh,
       },
     },
     ...nextjsConfig,
@@ -75,37 +72,18 @@ export function react(): ConfigWithExtends[] {
         "react-hooks/exhaustive-deps": "warn",
         "react-hooks/rules-of-hooks": "error",
         "react/jsx-no-useless-fragment": "error",
-
-        // react refresh
-        "react-refresh/only-export-components": [
-          "warn",
-          {
-            allowConstantExport: false,
-            allowExportNames: [
-              ...(isUsingNext
-                ? [
-                    "dynamic",
-                    "dynamicParams",
-                    "revalidate",
-                    "fetchCache",
-                    "runtime",
-                    "preferredRegion",
-                    "maxDuration",
-                    "config",
-                    "generateStaticParams",
-                    "getStaticProps",
-                    "getServerSideProps",
-                    "getInitialProps",
-                    "getStaticPaths",
-                    "metadata",
-                    "generateMetadata",
-                    "viewport",
-                    "generateViewport",
-                  ]
-                : []),
-            ],
-          },
-        ],
+      },
+    },
+    {
+      name: "solvro/react/disables",
+      files: ["**/components/ui/*.{jsx,tsx}"],
+      rules: {
+        "react/prop-types": "off",
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
+        "unicorn/no-document-cookie": "off",
+        "@typescript-eslint/no-redeclare": "off",
       },
     },
   ];
