@@ -30,18 +30,8 @@ export default {
         "release",
       ],
     ],
-    "scope-enum": [
-      2,
-      "always",
-      [
-        // Dependency-related changes
-        "deps",
-        // ESLint-related changes
-        "next",
-        // Go-related changes
-        "adonis",
-      ],
-    ],
+    "scope-enum": [2, "always", ["deps", "deps-dev", "next", "adonis"]],
     "scope-empty": [1, "never"],
+    "body-max-line-length": [1, "never"],
   },
 };
