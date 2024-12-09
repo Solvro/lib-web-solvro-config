@@ -84,6 +84,7 @@ export function react(): ConfigWithExtends[] {
         "@typescript-eslint/restrict-template-expressions": "off",
         "unicorn/no-document-cookie": "off",
         "@typescript-eslint/no-redeclare": "off",
+        "@typescript-eslint/no-deprecated": "off",
       },
     },
   ];
