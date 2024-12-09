@@ -7,6 +7,16 @@ import type { ConfigWithExtends } from "typescript-eslint";
 
 const NextJsPackages = ["next"];
 
+const forbiddenLibraries = [
+  "@headlessui/react",
+  "@mui/material",
+  "@chakra-ui/react",
+  "@chakra-ui/core",
+  "@nextui-org/react",
+  "react-bootstrap",
+  "antd",
+];
+
 export function react(): ConfigWithExtends[] {
   const isUsingNext = NextJsPackages.some((index) => isPackageExists(index));
 
@@ -72,6 +82,29 @@ export function react(): ConfigWithExtends[] {
         "react-hooks/exhaustive-deps": "warn",
         "react-hooks/rules-of-hooks": "error",
         "react/jsx-no-useless-fragment": "error",
+        "react/function-component-definition": [
+          "error",
+          {
+            unnamedComponents: "arrow-function",
+            namedComponents: "function-declaration",
+          },
+        ],
+        "react/hook-use-state": [
+          "error",
+          {
+            allowDestructuredState: true,
+          },
+        ],
+        "react/no-array-index-key": "warn",
+        "@typescript-eslint/no-restricted-imports": [
+          "error",
+          {
+            paths: forbiddenLibraries.map((library) => ({
+              name: library,
+              message: `Please use ui.shadcn.com components instead.`,
+            })),
+          },
+        ],
       },
     },
     {

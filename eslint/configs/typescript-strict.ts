@@ -142,6 +142,7 @@ export function typescriptStrict(): ConfigWithExtends[] {
         "@typescript-eslint/no-misused-promises": "error",
         "@typescript-eslint/promise-function-async": "error",
         "@typescript-eslint/unbound-method": "error",
+        "no-restricted-imports": "off",
       },
     },
   ];
