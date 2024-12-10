@@ -1,5 +1,4 @@
 import * as p from "@clack/prompts";
-import { $ } from "execa";
 import { loadPackageJSON } from "local-pkg";
 import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
@@ -61,22 +60,22 @@ export const installGithubActions = async () => {
     process.exit(1);
   }
 
-  packageJson.scripts = packageJson.scripts || {};
+  packageJson.scripts = packageJson.scripts ?? {};
 
   if (!packageJson.scripts["format:check"]) {
     packageJson.scripts["format:check"] = "prettier --check .";
   }
 
-  if (!packageJson.scripts["lint"]) {
-    packageJson.scripts["lint"] = "eslint .";
+  if (!packageJson.scripts.lint) {
+    packageJson.scripts.lint = "eslint .";
   }
 
-  if (!packageJson.scripts["format"]) {
-    packageJson.scripts["format"] = "prettier --write .";
+  if (!packageJson.scripts.format) {
+    packageJson.scripts.format = "prettier --write .";
   }
 
-  if (!packageJson.scripts["typecheck"]) {
-    packageJson.scripts["typecheck"] = "tsc --noEmit";
+  if (!packageJson.scripts.typecheck) {
+    packageJson.scripts.typecheck = "tsc --noEmit";
   }
 
   await fs.writeFile(

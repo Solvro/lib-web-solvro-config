@@ -76,13 +76,13 @@ export const solvro = (...overrides: ConfigWithExtends[]) => {
     throw new Error("No tsconfig.json found");
   }
 
-  const rootDir = path.dirname(tsConfigPath);
+  const rootDirectory = path.dirname(tsConfigPath);
 
   configs.push({
     languageOptions: {
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: rootDir,
+        tsconfigRootDir: rootDirectory,
       },
     },
   });

@@ -1,4 +1,5 @@
-import tseslint, { type ConfigWithExtends } from "typescript-eslint";
+import tseslint from "typescript-eslint";
+import type { ConfigWithExtends } from "typescript-eslint";
 
 export function typescriptRelaxed(): ConfigWithExtends[] {
   return [

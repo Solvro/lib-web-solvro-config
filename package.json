@@ -3,7 +3,9 @@
   "version": "1.6.1",
   "description": "Solvro's engineering style guide",
   "keywords": [
-    "eslint"
+    "eslint",
+    "prettier",
+    "solvro"
   ],
   "homepage": "https://github.com/Solvro/lib-web-solvro-config#readme",
   "bugs": {
@@ -27,6 +29,7 @@
       "require": "./dist/prettier/index.cjs"
     }
   },
+  "bin": "./bin/index.js",
   "files": [
     "dist"
   ],
@@ -91,7 +94,6 @@
     "jiti": "^2.4.1",
     "knip": "^5.39.2",
     "lint-staged": "^15.2.10",
-    "next": "^15.0.4",
     "prettier": "^3.4.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

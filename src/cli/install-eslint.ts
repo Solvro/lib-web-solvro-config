@@ -1,11 +1,9 @@
 import * as p from "@clack/prompts";
-import * as eslint from "eslint";
 import { $ } from "execa";
 import { getPackageInfo } from "local-pkg";
 import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import path from "node:path";
-import c from "picocolors";
 import semver from "semver";
 
 import { gitRoot } from "../utils/git-root";

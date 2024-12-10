@@ -17,4 +17,11 @@ export default defineConfig([
     dts: false,
     outDir: "dist/prettier",
   },
+  {
+    entry: ["src/cli/index.ts"],
+    clean: true,
+    format: "esm",
+    dts: false,
+    outDir: "dist/cli",
+  },
 ]);

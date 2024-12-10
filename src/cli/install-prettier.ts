@@ -1,9 +1,9 @@
 import * as p from "@clack/prompts";
 import { $ } from "execa";
 import { getPackageInfo, loadPackageJSON } from "local-pkg";
+import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import path from "node:path";
-import c from "picocolors";
 import semver from "semver";
 
 import { gitRoot } from "../utils/git-root";
@@ -53,7 +53,7 @@ export const installPrettier = async () => {
       message: `Prettier jest zainstalowany, ale trzeba go zaktualizować. Czy chcesz zaktualizować?`,
     });
 
-    if (!isConfirmed || p.isCancel(isConfirmed)) {
+    if (p.isCancel(isConfirmed) || !isConfirmed) {
       p.cancel("Zaktualizuj Prettiera i spróbuj ponownie.");
       process.exit(1);
     }
@@ -65,10 +65,7 @@ export const installPrettier = async () => {
   }
 
   const prettierConfig = prettierConfigNames.find((configName) =>
-    fs
-      .access(path.join(root, configName))
-      .then(() => true)
-      .catch(() => false),
+    existsSync(path.join(root, configName)),
   );
 
   const packageJson = await loadPackageJSON();
@@ -96,13 +93,16 @@ export const installPrettier = async () => {
     }
 
     for (const configName of prettierConfigNames) {
-      await fs.rm(path.join(root, configName)).catch(() => {});
+      await fs.rm(path.join(root, configName)).catch(() => null);
     }
   }
 
-  const newPackageJson = JSON.parse(
-    await fs.readFile(packageJsonPath, "utf-8"),
-  );
+  const newPackageJson = await loadPackageJSON();
+
+  if (!newPackageJson) {
+    p.cancel("Nie znaleziono pliku package.json.");
+    process.exit(1);
+  }
 
   newPackageJson.prettier = solvroPrettierPath;
 
