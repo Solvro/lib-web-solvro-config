@@ -45,8 +45,8 @@ export const installGithubActions = async () => {
 
   p.note("Dodano konfigurację CI.");
 
-  if (!existsSync(path.join(root, ".github/depenabot.yml"))) {
-    await fs.writeFile(path.join(root, ".github/depenabot.yml"), dependabot());
+  if (!existsSync(path.join(root, ".github/dependabot.yml"))) {
+    await fs.writeFile(path.join(root, ".github/dependabot.yml"), dependabot());
   }
 
   p.note("Dodano automatyczne aktualizacje configu.");
