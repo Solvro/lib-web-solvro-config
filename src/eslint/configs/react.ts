@@ -5,7 +5,7 @@ import pluginReactHooks from "eslint-plugin-react-hooks";
 import { isPackageExists } from "local-pkg";
 import type { ConfigWithExtends } from "typescript-eslint";
 
-const NextJsPackages = ["next"];
+const nextJsPackages = ["next"];
 
 const forbiddenLibraries = [
   "@headlessui/react",
@@ -18,7 +18,7 @@ const forbiddenLibraries = [
 ];
 
 export function react(): ConfigWithExtends[] {
-  const isUsingNext = NextJsPackages.some((index) => isPackageExists(index));
+  const isUsingNext = nextJsPackages.some((index) => isPackageExists(index));
 
   const nextjsConfig: ConfigWithExtends[] = [];
 

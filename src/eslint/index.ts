@@ -27,6 +27,27 @@ const adonisConfig: ConfigWithExtends[] = [
   ...builtinAdonisConfig,
   ...node(),
   ...imports(),
+  {
+    rules: {
+      "@typescript-eslint/naming-convention": [
+        "error",
+        {
+          selector: ["enum", "enumMember", "class", "interface", "typeLike"],
+          format: ["PascalCase"],
+        },
+        {
+          selector: ["classProperty", "classMethod", "method", "variableLike"],
+          format: ["camelCase"],
+        },
+        {
+          selector: "variable",
+          format: ["camelCase", "UPPER_CASE"],
+          leadingUnderscore: "allow",
+          trailingUnderscore: "allow",
+        },
+      ],
+    },
+  },
 ];
 
 const nextjsConfig: ConfigWithExtends[] = [
@@ -37,35 +58,33 @@ const nextjsConfig: ConfigWithExtends[] = [
   ...imports({ forbidDefaultExport: true }),
 ];
 
+const configs: ConfigWithExtends[] = [
+  ...javascript(),
+  ...jsdoc(),
+  ...comments(),
+  ...typescriptRelaxed(),
+];
+
+const defaultOverrides = [...ignores(), ...formatters(), ...disables()];
+
 export const solvro = (...overrides: ConfigWithExtends[]) => {
   const isAdonis = isPackageExists("@adonisjs/core");
   const isNext = isPackageExists("next");
-
-  const configs: ConfigWithExtends[] = [
-    ...javascript(),
-    ...jsdoc(),
-    ...comments(),
-    ...typescriptRelaxed(),
-  ];
-
-  const defaultOverrides = [
-    ...ignores(),
-    ...formatters(),
-    ...disables(),
-    ...overrides,
-  ];
 
   if (isNext && isAdonis) {
     throw new Error(
       "You can't use both Adonis and Next.js in the same project",
     );
   }
+
+  const newConfig: ConfigWithExtends[] = [];
+
   if (isAdonis) {
-    configs.push(...adonisConfig);
+    newConfig.push(...adonisConfig);
   }
 
   if (isNext) {
-    configs.push(...nextjsConfig);
+    newConfig.push(...nextjsConfig);
   }
 
   const tsConfigPath = findUpSync("tsconfig.json", {
@@ -87,5 +106,10 @@ export const solvro = (...overrides: ConfigWithExtends[]) => {
     },
   });
 
-  return tseslint.config(configs, ...defaultOverrides);
+  return tseslint.config(
+    ...configs,
+    ...newConfig,
+    ...defaultOverrides,
+    ...overrides,
+  );
 };
