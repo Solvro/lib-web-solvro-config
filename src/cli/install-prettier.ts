@@ -1,12 +1,13 @@
 import * as p from "@clack/prompts";
-import * as eslint from "eslint";
 import { $ } from "execa";
+import { getPackageInfo, loadPackageJSON } from "local-pkg";
 import * as fs from "node:fs/promises";
 import path from "node:path";
 import c from "picocolors";
 import semver from "semver";
 
 import { gitRoot } from "../utils/git-root";
+import { polishConfirm } from "../utils/polish-confirm";
 
 const $$ = $({
   cwd: gitRoot(),
@@ -32,16 +33,14 @@ export const installPrettier = async () => {
   const root = gitRoot();
   const packageJsonPath = path.join(root, "package.json");
 
-  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf-8"));
+  const prettier = await getPackageInfo("prettier");
 
-  const prettierVersion = packageJson.devDependencies?.prettier;
-
-  if (typeof prettierVersion !== "string") {
-    const isConfirmed = await p.confirm({
+  if (typeof prettier?.version !== "string") {
+    const isConfirmed = await polishConfirm({
       message: `Prettier nie jest zainstalowany. Czy chcesz go zainstalować?`,
     });
 
-    if (!isConfirmed) {
+    if (!isConfirmed || p.isCancel(isConfirmed)) {
       p.cancel("Zainstaluj Prettiera i spróbuj ponownie.");
       process.exit(1);
     }
@@ -49,12 +48,12 @@ export const installPrettier = async () => {
     spinner.start("Instalowanie Prettiera");
     await $$`npm i -D prettier`;
     spinner.stop("Prettiera zainstalowany");
-  } else if (!semver.satisfies(prettierVersion, ">=3")) {
-    const isConfirmed = await p.confirm({
+  } else if (!semver.satisfies(prettier.version, ">=3")) {
+    const isConfirmed = await polishConfirm({
       message: `Prettier jest zainstalowany, ale trzeba go zaktualizować. Czy chcesz zaktualizować?`,
     });
 
-    if (!isConfirmed) {
+    if (!isConfirmed || p.isCancel(isConfirmed)) {
       p.cancel("Zaktualizuj Prettiera i spróbuj ponownie.");
       process.exit(1);
     }
@@ -72,15 +71,27 @@ export const installPrettier = async () => {
       .catch(() => false),
   );
 
-  const packageJsonPrettier = packageJson.prettier;
+  const packageJson = await loadPackageJSON();
 
-  if (prettierConfig || packageJsonPrettier) {
-    const isConfirmed = await p.confirm({
+  if (!packageJson) {
+    p.cancel("Nie znaleziono pliku package.json.");
+    process.exit(1);
+  }
+
+  const solvroPrettierPath = "@solvro/config/prettier";
+
+  if (prettierConfig || packageJson.prettier) {
+    if (packageJson.prettier === solvroPrettierPath) {
+      p.note("Konfiguracja Prettiera jest już ustawiona. Pomijam.");
+      return;
+    }
+
+    const isConfirmed = await polishConfirm({
       message: `Znaleziono konfigurację Prettiera. Czy chcesz ją nadpisać?`,
     });
 
-    if (!isConfirmed) {
-      p.cancel("Nadpisz plik konfiguracyjny Eslint i spróbuj ponownie.");
+    if (!isConfirmed || p.isCancel(isConfirmed)) {
+      p.cancel("Usuń konfiguracje Prettiera i spróbuj ponownie.");
       process.exit(1);
     }
 
@@ -93,7 +104,7 @@ export const installPrettier = async () => {
     await fs.readFile(packageJsonPath, "utf-8"),
   );
 
-  newPackageJson.prettier = "@solvro/config/prettier";
+  newPackageJson.prettier = solvroPrettierPath;
 
   await fs.writeFile(packageJsonPath, JSON.stringify(newPackageJson, null, 2));
 

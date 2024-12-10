@@ -30,7 +30,7 @@ export default {
         "release",
       ],
     ],
-    "scope-enum": [2, "always", ["deps", "deps-dev", "next", "adonis"]],
+    "scope-enum": [2, "always", ["deps", "deps-dev", "next", "adonis", "cli"]],
     "scope-empty": [1, "never"],
     "body-max-line-length": [1, "never"],
   },

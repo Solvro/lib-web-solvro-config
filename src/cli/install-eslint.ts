@@ -1,12 +1,15 @@
 import * as p from "@clack/prompts";
 import * as eslint from "eslint";
 import { $ } from "execa";
+import { getPackageInfo } from "local-pkg";
+import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import path from "node:path";
 import c from "picocolors";
 import semver from "semver";
 
 import { gitRoot } from "../utils/git-root";
+import { polishConfirm } from "../utils/polish-confirm";
 
 const $$ = $({
   cwd: gitRoot(),
@@ -30,31 +33,29 @@ const eslintConfigNames = [
 
 export const installEslint = async () => {
   const root = gitRoot();
-  const packageJsonPath = path.join(root, "package.json");
 
-  const packageJson = JSON.parse(await fs.readFile(packageJsonPath, "utf-8"));
+  const eslint = await getPackageInfo("eslint");
 
-  const eslintVersion = packageJson.devDependencies?.eslint;
-
-  if (typeof eslintVersion !== "string") {
-    const isConfirmed = await p.confirm({
+  if (typeof eslint?.version !== "string") {
+    const isConfirmed = await polishConfirm({
       message: `Eslint nie jest zainstalowany. Czy chcesz go zainstalować?`,
     });
 
-    if (!isConfirmed) {
+    if (!isConfirmed || p.isCancel(isConfirmed)) {
       p.cancel("Zainstaluj Eslint i spróbuj ponownie.");
       process.exit(1);
     }
+
     const spinner = p.spinner();
     spinner.start("Instalowanie Eslint");
     await $$`npm i -D eslint`;
     spinner.stop("Eslint zainstalowany");
-  } else if (!semver.satisfies(eslintVersion, ">=9")) {
-    const isConfirmed = await p.confirm({
+  } else if (!semver.satisfies(eslint.version, ">=9")) {
+    const isConfirmed = await polishConfirm({
       message: `Eslint jest zainstalowany, ale trzeba go zaktualizować. Czy chcesz zaktualizować?`,
     });
 
-    if (!isConfirmed) {
+    if (!isConfirmed || p.isCancel(isConfirmed)) {
       p.cancel("Zaktualizuj Eslint i spróbuj ponownie.");
       process.exit(1);
     }
@@ -66,23 +67,31 @@ export const installEslint = async () => {
   }
 
   const eslintConfig = eslintConfigNames.find((configName) =>
-    fs
-      .access(path.join(root, configName))
-      .then(() => true)
-      .catch(() => false),
+    existsSync(path.join(root, configName)),
   );
 
   if (eslintConfig) {
-    const isConfirmed = await p.confirm({
-      message: `Znaleziono plik konfiguracyjny Eslint. Czy chcesz go nadpisać?`,
-    });
+    const eslintContent = await fs.readFile(
+      path.join(root, eslintConfig),
+      "utf-8",
+    );
 
-    if (!isConfirmed) {
-      p.cancel("Nadpisz plik konfiguracyjny Eslint i spróbuj ponownie.");
-      process.exit(1);
+    if (eslintContent.includes("export default solvro(")) {
+      p.note("Eslint jest już skonfigurowany. Pomijam.");
+
+      return;
+    } else {
+      const isConfirmed = await polishConfirm({
+        message: `Znaleziono plik konfiguracyjny Eslint. Czy chcesz go nadpisać?`,
+      });
+
+      if (!isConfirmed || p.isCancel(isConfirmed)) {
+        p.cancel("Nadpisz plik konfiguracyjny Eslint i spróbuj ponownie.");
+        process.exit(1);
+      }
+
+      await fs.rm(path.join(root, eslintConfig));
     }
-
-    await fs.rm(path.join(root, eslintConfig));
   }
 
   await fs.writeFile(

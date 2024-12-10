@@ -1,5 +1,6 @@
 import * as p from "@clack/prompts";
 import { $ } from "execa";
+import { isPackageListed } from "local-pkg";
 import c from "picocolors";
 
 import { getProjectType } from "../utils/get-project-type";
@@ -7,6 +8,8 @@ import { gitRoot } from "../utils/git-root";
 import { isGitClean } from "../utils/is-git-clean";
 import { polishConfirm } from "../utils/polish-confirm";
 import { installEslint } from "./install-eslint";
+import { installGithubActions } from "./install-ga";
+import { installLintStaged } from "./install-lint-staged";
 import { installPrettier } from "./install-prettier";
 
 p.intro(`${c.bold(c.bgBlue("  @solvro/config  "))}`);
@@ -18,7 +21,7 @@ if (!isGitClean()) {
     message: `Masz niezapisane zmiany w Git. Czy chcesz kontynuować?`,
   });
 
-  if (!isConfirmed) {
+  if (!isConfirmed || p.isCancel(isConfirmed)) {
     p.cancel("Zapisz zmiany w Git i spróbuj ponownie.");
     process.exit(1);
   }
@@ -29,7 +32,7 @@ if (projectType === "adonis") {
     message: `Wygląda jakbyś używał Adonisa. Czy to się zgadza?`,
   });
 
-  if (!isConfirmed) {
+  if (!isConfirmed || p.isCancel(isConfirmed)) {
     p.cancel("Zgłoś błąd na GitHubie :(, a my spróbujemy pomóc.");
     process.exit(1);
   }
@@ -39,6 +42,11 @@ if (projectType === "next") {
   const isConfirmed = await polishConfirm({
     message: `Wygląda jakbyś używał Next.js. Czy to się zgadza?`,
   });
+
+  if (p.isCancel(isConfirmed)) {
+    p.cancel("😡");
+    process.exit(1);
+  }
 
   if (!isConfirmed) {
     p.cancel("Zgłoś błąd na GitHubie :(, a my spróbujemy pomóc.");
@@ -81,7 +89,7 @@ const $$ = $({
   stdout: ["pipe", "inherit"],
 });
 
-if (!Array.isArray(additionalTools)) {
+if (p.isCancel(additionalTools)) {
   p.cancel("Nie wybrano żadnych narzędzi.");
   process.exit(1);
 }
@@ -89,22 +97,23 @@ if (!Array.isArray(additionalTools)) {
 await p.tasks([
   {
     title: "Instalowanie @solvro/config",
+    enabled: !(await isPackageListed("@solvro/config")),
     task: async () => {
       await $$`npm i -D @solvro/config`;
     },
   },
-  {
-    title: "Konfigurowanie ESLinta",
-    enabled: additionalTools.includes("eslint"),
-    task: async () => {
-      await installEslint();
-    },
-  },
-  {
-    title: "Konfigurowanie Prettiera",
-    enabled: additionalTools.includes("prettier"),
-    task: async () => {
-      await installPrettier();
-    },
-  },
 ]);
+
+if (additionalTools.includes("eslint")) {
+  await installEslint();
+}
+
+if (additionalTools.includes("prettier")) {
+  await installPrettier();
+
+  await installLintStaged();
+}
+
+if (additionalTools.includes("gh-action")) {
+  await installGithubActions();
+}

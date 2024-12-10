@@ -34,16 +34,11 @@ export function typescriptStrict(): ConfigWithExtends[] {
         ],
         "@typescript-eslint/method-signature-style": ["error", "property"], // https://www.totaltypescript.com/method-shorthand-syntax-considered-harmful
         "@typescript-eslint/no-dupe-class-members": "error",
-        "@typescript-eslint/no-dynamic-delete": "off",
         "@typescript-eslint/no-empty-object-type": [
           "error",
           { allowInterfaces: "always" },
         ],
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-extraneous-class": "off",
         "@typescript-eslint/no-import-type-side-effects": "error",
-        "@typescript-eslint/no-invalid-void-type": "off",
-        "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-redeclare": ["error", { builtinGlobals: false }],
         "@typescript-eslint/no-require-imports": "error",
         "@typescript-eslint/no-unused-expressions": [
@@ -58,10 +53,7 @@ export function typescriptStrict(): ConfigWithExtends[] {
           "error",
           { classes: false, functions: false, variables: true },
         ],
-        "@typescript-eslint/no-useless-constructor": "off",
         "@typescript-eslint/no-wrapper-object-types": "error",
-        "@typescript-eslint/triple-slash-reference": "off",
-        "@typescript-eslint/unified-signatures": "off",
         // prevent unnecessary use of void operator
         "@typescript-eslint/no-meaningless-void-operator": "error",
         // "using non-null assertions cancels the benefits of the strict
