@@ -23,8 +23,10 @@ export default {
   importOrder: [
     "^@assets/(.*)$",
     "<THIRD_PARTY_MODULES>",
+    "^@japa/(.*)$",
+    "^@adonisjs/(.*)$",
     "^@/(.*)$",
-    "^#/(.*)$",
+    "^#(.*)$",
     "^[./]",
   ],
   importOrderSeparation: true,

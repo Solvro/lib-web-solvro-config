@@ -22,7 +22,6 @@ export function imports(
         "antfu/no-import-node-modules-by-path": "error",
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         ...pluginImport.flatConfigs.recommended.rules,
-        "import/no-default-export": "error",
         "import/no-dynamic-require": "warn",
         "import/no-unresolved": "off",
         "import/consistent-type-specifier-style": "warn",
@@ -42,20 +41,25 @@ export function imports(
   ];
 
   if (options.forbidDefaultExport) {
-    config.push({
-      files: [
-        "tsup.config.*",
-        "eslint.config.*",
-        ".commitlintrc.*",
-        "knip.*",
-        "next.config.*",
-        "commitlint.config.*",
-        ".releaserc.*",
-      ],
-      rules: {
-        "import/no-default-export": "off",
+    config.push(
+      {
+        "import/no-default-export": "error",
       },
-    });
+      {
+        files: [
+          "tsup.config.*",
+          "eslint.config.*",
+          ".commitlintrc.*",
+          "knip.*",
+          "next.config.*",
+          "commitlint.config.*",
+          ".releaserc.*",
+        ],
+        rules: {
+          "import/no-default-export": "off",
+        },
+      },
+    );
   }
 
   return config;
