@@ -2,8 +2,10 @@ import type { ConfigWithExtends } from "typescript-eslint";
 
 import { pluginAntfu, pluginImport } from "../plugins";
 
-export function imports(): ConfigWithExtends[] {
-  return [
+export function imports(
+  options: { forbidDefaultExport: boolean } = { forbidDefaultExport: false },
+): ConfigWithExtends[] {
+  const config = [
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     pluginImport.flatConfigs.typescript,
     {
@@ -24,9 +26,23 @@ export function imports(): ConfigWithExtends[] {
         "import/no-dynamic-require": "warn",
         "import/no-unresolved": "off",
         "import/consistent-type-specifier-style": "warn",
+        "@typescript-eslint/no-restricted-imports": [
+          "error",
+          {
+            paths: [
+              {
+                name: "axios",
+                message: "Please use fetch instead",
+              },
+            ],
+          },
+        ],
       },
     },
-    {
+  ];
+
+  if (options.forbidDefaultExport) {
+    config.push({
       files: [
         "tsup.config.*",
         "eslint.config.*",
@@ -39,6 +55,8 @@ export function imports(): ConfigWithExtends[] {
       rules: {
         "import/no-default-export": "off",
       },
-    },
-  ];
+    });
+  }
+
+  return config;
 }

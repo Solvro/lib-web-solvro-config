@@ -22,14 +22,18 @@ import { unicorn } from "./configs/unicorn";
 // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 const builtinAdonisConfig: ConfigWithExtends[] = configApp();
 
-const adonisConfig: ConfigWithExtends[] = [...builtinAdonisConfig, ...node()];
+const adonisConfig: ConfigWithExtends[] = [
+  ...builtinAdonisConfig,
+  ...node(),
+  ...imports(),
+];
 
 const nextjsConfig: ConfigWithExtends[] = [
-  ...imports(),
   ...a11y(),
   ...unicorn(),
   ...typescriptStrict(),
   ...react(),
+  ...imports({ forbidDefaultExport: true }),
 ];
 
 export const solvro = (...overrides: ConfigWithExtends[]) => {
