@@ -1,9 +1,10 @@
-import { configApp } from "@adonisjs/eslint-config";
 import { findUpSync } from "find-up-simple";
 import { isPackageExists } from "local-pkg";
 import path from "node:path";
 import tseslint from "typescript-eslint";
 import type { ConfigWithExtends } from "typescript-eslint";
+
+import { configApp } from "@adonisjs/eslint-config";
 
 import { a11y } from "./configs/a11y";
 import { comments } from "./configs/comments";
@@ -75,13 +76,13 @@ export const solvro = (...overrides: ConfigWithExtends[]) => {
     throw new Error("No tsconfig.json found");
   }
 
-  const rootDir = path.dirname(tsConfigPath);
+  const rootDirectory = path.dirname(tsConfigPath);
 
   configs.push({
     languageOptions: {
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: rootDir,
+        tsconfigRootDir: rootDirectory,
       },
     },
   });
