@@ -1,19 +1,28 @@
 import * as p from "@clack/prompts";
+import { $ } from "execa";
 import c from "picocolors";
 
 import { getProjectType } from "../utils/get-project-type";
+import { gitRoot } from "../utils/git-root";
+import { isGitClean } from "../utils/is-git-clean";
+import { polishConfirm } from "../utils/polish-confirm";
+import { installEslint } from "./install-eslint";
+import { installPrettier } from "./install-prettier";
 
 p.intro(`${c.bold(c.bgBlue("  @solvro/config  "))}`);
 
 const projectType = getProjectType();
 
-const polishConfirm = async (props: p.ConfirmOptions) => {
-  return p.confirm({
-    active: "Tak",
-    inactive: "Nie",
-    ...props,
+if (!isGitClean()) {
+  const isConfirmed = await polishConfirm({
+    message: `Masz niezapisane zmiany w Git. Czy chcesz kontynuować?`,
   });
-};
+
+  if (!isConfirmed) {
+    p.cancel("Zapisz zmiany w Git i spróbuj ponownie.");
+    process.exit(1);
+  }
+}
 
 if (projectType === "adonis") {
   const isConfirmed = await polishConfirm({
@@ -67,11 +76,35 @@ const additionalTools = await p.multiselect({
   required: false,
 });
 
+const $$ = $({
+  cwd: gitRoot(),
+  stdout: ["pipe", "inherit"],
+});
+
+if (!Array.isArray(additionalTools)) {
+  p.cancel("Nie wybrano żadnych narzędzi.");
+  process.exit(1);
+}
+
 await p.tasks([
   {
     title: "Instalowanie @solvro/config",
     task: async () => {
-      await p.exec("npm install --save-dev @solvro/config");
+      await $$`npm i -D @solvro/config`;
+    },
+  },
+  {
+    title: "Konfigurowanie ESLinta",
+    enabled: additionalTools.includes("eslint"),
+    task: async () => {
+      await installEslint();
+    },
+  },
+  {
+    title: "Konfigurowanie Prettiera",
+    enabled: additionalTools.includes("prettier"),
+    task: async () => {
+      await installPrettier();
     },
   },
 ]);
