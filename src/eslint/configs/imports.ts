@@ -41,25 +41,25 @@ export function imports(
   ];
 
   if (options.forbidDefaultExport) {
-    config.push(
-      {
-        "import/no-default-export": "error",
+    config[0].rules = {
+      "import/no-default-export": "error",
+      ...config[0].rules,
+    };
+
+    config.push({
+      files: [
+        "tsup.config.*",
+        "eslint.config.*",
+        ".commitlintrc.*",
+        "knip.*",
+        "next.config.*",
+        "commitlint.config.*",
+        ".releaserc.*",
+      ],
+      rules: {
+        "import/no-default-export": "off",
       },
-      {
-        files: [
-          "tsup.config.*",
-          "eslint.config.*",
-          ".commitlintrc.*",
-          "knip.*",
-          "next.config.*",
-          "commitlint.config.*",
-          ".releaserc.*",
-        ],
-        rules: {
-          "import/no-default-export": "off",
-        },
-      },
-    );
+    });
   }
 
   return config;

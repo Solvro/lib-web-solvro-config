@@ -2,7 +2,7 @@ import { defineConfig } from "tsup";
 
 export default defineConfig([
   {
-    entry: ["eslint/index.ts"],
+    entry: ["src/eslint/index.ts"],
     shims: true,
     clean: true,
     dts: true,
@@ -11,7 +11,7 @@ export default defineConfig([
     outDir: "dist/eslint",
   },
   {
-    entry: ["prettier/index.ts"],
+    entry: ["src/prettier/index.ts"],
     clean: true,
     format: "esm",
     dts: false,

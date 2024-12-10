@@ -33,6 +33,7 @@
   "scripts": {
     "build": "tsup",
     "build:watch": "tsup --watch",
+    "cli": "tsx ./src/cli/index.ts",
     "dev": "npx @eslint/config-inspector",
     "format": "prettier --check .",
     "knip": "knip",
@@ -48,6 +49,7 @@
   "prettier": "./dist/prettier/index.js",
   "dependencies": {
     "@adonisjs/eslint-config": "^2.0.0-beta.7",
+    "@clack/prompts": "^0.8.2",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.4.1",
     "@eslint/js": "^9.16.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.0",
@@ -63,9 +65,11 @@
     "eslint-plugin-react-refresh": "^0.4.14",
     "eslint-plugin-unicorn": "^56.0.1",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "execa": "^9.5.2",
     "find-up-simple": "^1.0.0",
     "globals": "^15.12.0",
     "local-pkg": "^0.5.1",
+    "picocolors": "^1.1.1",
     "prettier-plugin-packagejson": "^2.5.6",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "typescript-eslint": "^8.17.0"
@@ -85,11 +89,13 @@
     "jiti": "^2.4.1",
     "knip": "^5.39.2",
     "lint-staged": "^15.2.10",
+    "next": "^15.0.4",
     "prettier": "^3.4.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "semantic-release": "^24.2.0",
     "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
   "peerDependencies": {
