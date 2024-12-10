@@ -43,13 +43,9 @@ export const installGithubActions = async () => {
     );
   }
 
-  p.note("Dodano konfigurację CI.");
-
   if (!existsSync(path.join(root, ".github/dependabot.yml"))) {
     await fs.writeFile(path.join(root, ".github/dependabot.yml"), dependabot());
   }
-
-  p.note("Dodano automatyczne aktualizacje configu.");
 
   const packageJson = await loadPackageJSON(root);
 
@@ -83,5 +79,5 @@ export const installGithubActions = async () => {
     JSON.stringify(packageJson, null, 2),
   );
 
-  p.note("Dodano skrypty do package.json.");
+  p.note("Dodano konfigurację CI i skrypty.");
 };

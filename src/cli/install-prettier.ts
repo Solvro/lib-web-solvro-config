@@ -11,7 +11,6 @@ import { polishConfirm } from "../utils/polish-confirm";
 
 const $$ = $({
   cwd: gitRoot(),
-  stdout: ["pipe", "inherit"],
 });
 
 const prettierConfigNames = [

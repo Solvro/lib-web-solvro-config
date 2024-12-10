@@ -8,7 +8,6 @@ import { gitRoot } from "../utils/git-root";
 
 const $$ = $({
   cwd: gitRoot(),
-  stdout: ["pipe", "inherit"],
 });
 
 export const installLintStaged = async () => {
@@ -51,6 +50,4 @@ export const installLintStaged = async () => {
     path.join(gitRoot(), "package.json"),
     JSON.stringify(packageJson, null, 2),
   );
-
-  p.note("Dodano automatyczne formatowanie przy commicie.");
 };

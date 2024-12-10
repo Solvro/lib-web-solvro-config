@@ -86,7 +86,6 @@ const additionalTools = await p.multiselect({
 
 const $$ = $({
   cwd: gitRoot(),
-  stdout: ["pipe", "inherit"],
 });
 
 if (p.isCancel(additionalTools)) {
