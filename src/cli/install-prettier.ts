@@ -39,7 +39,7 @@ export const installPrettier = async () => {
       message: `Prettier nie jest zainstalowany. Czy chcesz go zainstalować?`,
     });
 
-    if (!isConfirmed || p.isCancel(isConfirmed)) {
+    if (p.isCancel(isConfirmed) || !isConfirmed) {
       p.cancel("Zainstaluj Prettiera i spróbuj ponownie.");
       process.exit(1);
     }
@@ -69,14 +69,14 @@ export const installPrettier = async () => {
 
   const packageJson = await loadPackageJSON();
 
-  if (!packageJson) {
+  if (packageJson === null) {
     p.cancel("Nie znaleziono pliku package.json.");
     process.exit(1);
   }
 
   const solvroPrettierPath = "@solvro/config/prettier";
 
-  if (prettierConfig || packageJson.prettier) {
+  if (prettierConfig !== undefined || packageJson.prettier !== undefined) {
     if (packageJson.prettier === solvroPrettierPath) {
       p.note("Konfiguracja Prettiera jest już ustawiona. Pomijam.");
       return;
@@ -86,7 +86,7 @@ export const installPrettier = async () => {
       message: `Znaleziono konfigurację Prettiera. Czy chcesz ją nadpisać?`,
     });
 
-    if (!isConfirmed || p.isCancel(isConfirmed)) {
+    if (p.isCancel(isConfirmed) || !isConfirmed) {
       p.cancel("Usuń konfiguracje Prettiera i spróbuj ponownie.");
       process.exit(1);
     }
@@ -98,7 +98,7 @@ export const installPrettier = async () => {
 
   const newPackageJson = await loadPackageJSON();
 
-  if (!newPackageJson) {
+  if (newPackageJson === null) {
     p.cancel("Nie znaleziono pliku package.json.");
     process.exit(1);
   }

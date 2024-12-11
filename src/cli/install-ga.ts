@@ -49,7 +49,7 @@ export const installGithubActions = async () => {
 
   const packageJson = await loadPackageJSON(root);
 
-  if (!packageJson) {
+  if (packageJson === null) {
     p.cancel(
       "Nie znaleziono package.json. Upewnij się, że jesteś w katalogu projektu.",
     );

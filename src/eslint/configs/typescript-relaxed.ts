@@ -29,6 +29,14 @@ export function typescriptRelaxed(): ConfigWithExtends[] {
         ],
         "@typescript-eslint/no-empty-object-type": "off",
         "@typescript-eslint/no-unnecessary-condition": "warn",
+        "@typescript-eslint/no-non-null-assertion": "error",
+        "@typescript-eslint/no-unnecessary-template-expression": "error",
+        "@typescript-eslint/strict-boolean-expressions": [
+          "error",
+          {
+            allowNullableObject: false,
+          },
+        ],
       },
     },
   ];

@@ -38,7 +38,7 @@ export const installEslint = async () => {
       message: `Eslint nie jest zainstalowany. Czy chcesz go zainstalować?`,
     });
 
-    if (!isConfirmed || p.isCancel(isConfirmed)) {
+    if (p.isCancel(isConfirmed) || !isConfirmed) {
       p.cancel("Zainstaluj Eslint i spróbuj ponownie.");
       process.exit(1);
     }
@@ -52,7 +52,7 @@ export const installEslint = async () => {
       message: `Eslint jest zainstalowany, ale trzeba go zaktualizować. Czy chcesz zaktualizować?`,
     });
 
-    if (!isConfirmed || p.isCancel(isConfirmed)) {
+    if (p.isCancel(isConfirmed) || !isConfirmed) {
       p.cancel("Zaktualizuj Eslint i spróbuj ponownie.");
       process.exit(1);
     }
@@ -67,7 +67,7 @@ export const installEslint = async () => {
     existsSync(path.join(root, configName)),
   );
 
-  if (eslintConfig) {
+  if (eslintConfig !== undefined) {
     const eslintContent = await fs.readFile(
       path.join(root, eslintConfig),
       "utf-8",
@@ -82,7 +82,7 @@ export const installEslint = async () => {
         message: `Znaleziono plik konfiguracyjny Eslint. Czy chcesz go nadpisać?`,
       });
 
-      if (!isConfirmed || p.isCancel(isConfirmed)) {
+      if (p.isCancel(isConfirmed) || !isConfirmed) {
         p.cancel("Nadpisz plik konfiguracyjny Eslint i spróbuj ponownie.");
         process.exit(1);
       }

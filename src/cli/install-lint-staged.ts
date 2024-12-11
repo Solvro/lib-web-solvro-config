@@ -35,7 +35,7 @@ export const installLintStaged = async () => {
 
   const packageJson = await loadPackageJSON(gitRoot());
 
-  if (!packageJson) {
+  if (packageJson === null) {
     p.cancel(
       "Nie znaleziono package.json. Upewnij się, że jesteś w katalogu projektu.",
     );

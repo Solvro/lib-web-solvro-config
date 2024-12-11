@@ -12,7 +12,7 @@ import { installGithubActions } from "./install-ga";
 import { installLintStaged } from "./install-lint-staged";
 import { installPrettier } from "./install-prettier";
 
-p.intro(`${c.bold(c.bgBlue("  @solvro/config  "))}`);
+p.intro(c.bold(c.bgBlue("  @solvro/config  ")));
 
 const projectType = getProjectType();
 
@@ -21,7 +21,7 @@ if (!isGitClean()) {
     message: `Masz niezapisane zmiany w Git. Czy chcesz kontynuować?`,
   });
 
-  if (!isConfirmed || p.isCancel(isConfirmed)) {
+  if (p.isCancel(isConfirmed) || !isConfirmed) {
     p.cancel("Zapisz zmiany w Git i spróbuj ponownie.");
     process.exit(1);
   }
@@ -32,7 +32,7 @@ if (projectType === "adonis") {
     message: `Wygląda jakbyś używał Adonisa. Czy to się zgadza?`,
   });
 
-  if (!isConfirmed || p.isCancel(isConfirmed)) {
+  if (p.isCancel(isConfirmed) || !isConfirmed) {
     p.cancel("Zgłoś błąd na GitHubie :(, a my spróbujemy pomóc.");
     process.exit(1);
   }
@@ -67,17 +67,17 @@ const additionalTools = await p.multiselect({
   options: [
     {
       value: "eslint",
-      label: `${c.bold(c.blueBright("ESLint"))}`,
+      label: c.bold(c.blueBright("ESLint")),
       hint: "sprawdzanie jakości kodu",
     },
     {
       value: "prettier",
-      label: `${c.bold(c.yellowBright("Prettier"))}`,
+      label: c.bold(c.yellowBright("Prettier")),
       hint: "formatowanie",
     },
     {
       value: "gh-action",
-      label: `${c.bold("GitHub Actions")}`,
+      label: c.bold("GitHub Actions"),
       hint: "automatyczne testy na Githubie",
     },
   ],
