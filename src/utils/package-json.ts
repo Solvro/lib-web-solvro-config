@@ -1,11 +1,6 @@
 import * as p from "@clack/prompts";
 import { $ } from "execa";
-import {
-  getPackageInfo,
-  isPackageExists,
-  isPackageListed,
-  loadPackageJSON,
-} from "local-pkg";
+import { getPackageInfo, isPackageListed, loadPackageJSON } from "local-pkg";
 import assert from "node:assert";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -74,8 +69,8 @@ export class PackageJson {
   }
 
   async getProjectType() {
-    const isAdonis = isPackageExists("@adonisjs/core");
-    const isNext = isPackageExists("next");
+    const isAdonis = await isPackageListed("@adonisjs/core");
+    const isNext = await isPackageListed("next");
 
     if (isNext && isAdonis) {
       throw new Error(
