@@ -53,6 +53,12 @@ export class PackageJson {
   async ensureESM() {
     await this.load();
 
+    assert(this.json !== null);
+
+    if (this.json.type === "module") {
+      return;
+    }
+
     const isConfirmed = await polishConfirm({
       message: `Twój projekt nie używa ESM (brak type: "module" w package.json). Czy chcesz to dodać? (Wymagane by kontynuować)`,
     });
@@ -61,8 +67,6 @@ export class PackageJson {
       p.cancel("Zmień projekt na ESM i spróbuj ponownie.");
       process.exit(1);
     }
-
-    assert(this.json !== null);
 
     this.json.type = "module";
 
