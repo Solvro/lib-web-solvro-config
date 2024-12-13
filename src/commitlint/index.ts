@@ -8,6 +8,7 @@ const Configuration: UserConfig = {
       2,
       "always",
       [
+        "build",
         // Boring changes
         "chore",
         // Changes to CI workflows
