@@ -27,7 +27,7 @@ const Configuration: UserConfig = {
         "release",
       ],
     ],
-    "body-max-length": [0],
+    "body-max-length": [0, "always", Infinity],
   },
 };
 
