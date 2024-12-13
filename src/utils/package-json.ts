@@ -34,11 +34,13 @@ export class PackageJson {
 
     assert(this.json !== null);
 
-    if (this.json.dependencies?.[pkg] === undefined) {
+    const packageInfo = await getPackageInfo(pkg);
+
+    if (packageInfo?.version === undefined) {
       return false;
     }
 
-    return semver.satisfies(this.json.dependencies[pkg], version);
+    return semver.satisfies(packageInfo.version, version);
   }
 
   async ensureESM() {
