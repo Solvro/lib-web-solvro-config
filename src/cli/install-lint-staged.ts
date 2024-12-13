@@ -12,9 +12,11 @@ export const installLintStaged = async () => {
   assert(packageJson.json !== null);
 
   if (!(await packageJson.hasPackage("husky"))) {
-    await packageJson.install("husky");
+    await packageJson.install("husky", { dev: true });
     await $$`npx husky init`;
   }
+
+  await packageJson.install("lint-staged", { dev: true });
 
   await writeFile(".husky/pre-commit", "npx lint-staged\n");
 
