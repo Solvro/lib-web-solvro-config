@@ -23,7 +23,10 @@ export async function react(): Promise<ConfigWithExtends[]> {
   if (isUsingNext) {
     // @ts-expect-error ???
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const nextPlugin = await import("@next/eslint-plugin-next");
+    const nextPlugin = await import("@next/eslint-plugin-next").then(
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      (d) => d.default,
+    );
 
     nextjsConfig.push(
       {

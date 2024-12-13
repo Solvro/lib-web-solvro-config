@@ -1,5 +1,5 @@
 import { findUpSync } from "find-up-simple";
-import { isPackageExists } from "local-pkg";
+import { isPackageListed } from "local-pkg";
 import path from "node:path";
 import tseslint from "typescript-eslint";
 import type { ConfigWithExtends } from "typescript-eslint";
@@ -54,8 +54,8 @@ const nextjsConfig = async (): Promise<ConfigWithExtends[]> => [
   ...a11y(),
   ...unicorn(),
   ...typescriptStrict(),
-  ...(await react()),
   ...imports({ forbidDefaultExport: true }),
+  ...(await react()),
 ];
 
 const configs: ConfigWithExtends[] = [
@@ -68,8 +68,8 @@ const configs: ConfigWithExtends[] = [
 const defaultOverrides = [...ignores(), ...formatters(), ...disables()];
 
 export const solvro = async (...overrides: ConfigWithExtends[]) => {
-  const isAdonis = isPackageExists("@adonisjs/core");
-  const isNext = isPackageExists("next");
+  const isAdonis = await isPackageListed("@adonisjs/core");
+  const isNext = await isPackageListed("next");
 
   if (isNext && isAdonis) {
     throw new Error(

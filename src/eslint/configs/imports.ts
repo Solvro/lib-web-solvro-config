@@ -43,7 +43,7 @@ export function imports(
   if (options.forbidDefaultExport) {
     config.push(
       {
-        "import/no-default-export": "error",
+        rules: { "import/no-default-export": "error" },
       },
       {
         files: [
