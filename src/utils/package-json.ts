@@ -109,7 +109,10 @@ export class PackageJson {
     await this.save();
   }
 
-  async install(pkg: string, options?: { minVersion?: string; dev?: boolean }) {
+  async install(
+    pkg: string,
+    options?: { minVersion?: string; dev?: boolean; alwaysUpdate?: boolean },
+  ) {
     const isInstalled = await this.hasPackage(pkg);
 
     if (!isInstalled) {
@@ -125,15 +128,18 @@ export class PackageJson {
 
     const info = await getPackageInfo(pkg);
 
-    if (info?.version !== undefined && options?.minVersion !== undefined) {
-      if (!semver.satisfies(info.version, options.minVersion)) {
-        const spinner = p.spinner();
-        spinner.start(`Aktualizowanie ${pkg}`);
-        await $$`npm i ${options.dev === true ? "-D" : ""} ${pkg}@latest`;
-        spinner.stop(`${pkg} zaktualizowany 😍`);
+    if (
+      (info?.version !== undefined &&
+        options?.minVersion !== undefined &&
+        !semver.satisfies(info.version, options.minVersion)) ||
+      options?.alwaysUpdate === true
+    ) {
+      const spinner = p.spinner();
+      spinner.start(`Aktualizowanie ${pkg}`);
+      await $$`npm i ${options.dev === true ? "-D" : ""} ${pkg}@latest`;
+      spinner.stop(`${pkg} zaktualizowany 😍`);
 
-        await this.load();
-      }
+      await this.load();
     }
   }
 }

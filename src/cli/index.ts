@@ -96,7 +96,7 @@ if (p.isCancel(additionalTools) || additionalTools.length === 0) {
   process.exit(1);
 }
 
-await packageJson.install("@solvro/config", { dev: true });
+await packageJson.install("@solvro/config", { dev: true, alwaysUpdate: true });
 
 if (additionalTools.includes("eslint")) {
   await installEslint();
