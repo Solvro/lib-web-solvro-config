@@ -17,7 +17,6 @@ export const installCommitLint = async () => {
   }
 
   await packageJson.install("@commitlint/cli", { dev: true });
-  await packageJson.install("@commitlint/config-conventional", { dev: true });
 
   await writeFile(
     path.join(root, ".husky/commit-msg"),
