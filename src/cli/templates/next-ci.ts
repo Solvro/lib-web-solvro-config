@@ -1,4 +1,12 @@
-export const nextCi = ({ nodeVersion }: { nodeVersion: string }) => `name: CI
+import { commitLintCi } from "./commit-lint-ci";
+
+export const nextCi = ({
+  nodeVersion,
+  withCommitlint,
+}: {
+  nodeVersion: string;
+  withCommitlint: boolean;
+}) => `name: CI
 
 on:
   push:
@@ -20,7 +28,7 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
+${withCommitlint ? commitLintCi() : ""}
       - name: Format check
         run: npm run format:check
         if: always()

@@ -1,20 +1,16 @@
 import * as p from "@clack/prompts";
-import { $ } from "execa";
-import { isPackageListed } from "local-pkg";
 import c from "picocolors";
 
-import { getProjectType } from "../utils/get-project-type";
-import { gitRoot } from "../utils/git-root";
 import { isGitClean } from "../utils/is-git-clean";
+import { PackageJson } from "../utils/package-json";
 import { polishConfirm } from "../utils/polish-confirm";
+import { installCommitLint } from "./install-commitlint";
 import { installEslint } from "./install-eslint";
 import { installGithubActions } from "./install-ga";
 import { installLintStaged } from "./install-lint-staged";
 import { installPrettier } from "./install-prettier";
 
 p.intro(c.bold(c.bgBlue("  @solvro/config  ")));
-
-const projectType = getProjectType();
 
 if (!isGitClean()) {
   const isConfirmed = await polishConfirm({
@@ -26,6 +22,12 @@ if (!isGitClean()) {
     process.exit(1);
   }
 }
+
+const packageJson = new PackageJson();
+
+await packageJson.ensureESM();
+
+const projectType = await packageJson.getProjectType();
 
 if (projectType === "adonis") {
   const isConfirmed = await polishConfirm({
@@ -63,7 +65,7 @@ if (projectType === "node") {
 
 const additionalTools = await p.multiselect({
   message: `Które rzeczy Cię interesują? ${c.gray("zaznacz spacją, potwierdź enterem")}`,
-  initialValues: ["eslint", "prettier", "gh-action"],
+  initialValues: ["eslint", "prettier", "gh-action", "commitlint"],
   options: [
     {
       value: "eslint",
@@ -80,28 +82,21 @@ const additionalTools = await p.multiselect({
       label: c.bold("GitHub Actions"),
       hint: "automatyczne testy na Githubie",
     },
+    {
+      value: "commitlint",
+      label: c.bold("Commitlint"),
+      hint: "walidacja treści commitów",
+    },
   ],
   required: false,
 });
 
-const $$ = $({
-  cwd: gitRoot(),
-});
-
-if (p.isCancel(additionalTools)) {
+if (p.isCancel(additionalTools) || additionalTools.length === 0) {
   p.cancel("Nie wybrano żadnych narzędzi.");
   process.exit(1);
 }
 
-await p.tasks([
-  {
-    title: "Instalowanie @solvro/config",
-    enabled: !(await isPackageListed("@solvro/config")),
-    task: async () => {
-      await $$`npm i -D @solvro/config`;
-    },
-  },
-]);
+await packageJson.install("@solvro/config", { dev: true });
 
 if (additionalTools.includes("eslint")) {
   await installEslint();
@@ -111,6 +106,10 @@ if (additionalTools.includes("prettier")) {
   await installPrettier();
 
   await installLintStaged();
+}
+
+if (additionalTools.includes("commitlint")) {
+  await installCommitLint();
 }
 
 if (additionalTools.includes("gh-action")) {

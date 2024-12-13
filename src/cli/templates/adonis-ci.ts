@@ -1,4 +1,12 @@
-export const adonisCi = ({ nodeVersion }: { nodeVersion: string }) => `name: CI
+import { commitLintCi } from "./commit-lint-ci";
+
+export const adonisCi = ({
+  nodeVersion,
+  withCommitlint,
+}: {
+  nodeVersion: string;
+  withCommitlint: boolean;
+}) => `name: CI
 
 on:
   push:
@@ -25,7 +33,7 @@ jobs:
         run: |
           cp .env.example .env
           node ace generate:key
-
+${withCommitlint ? commitLintCi() : ""}
       - name: Run prettier
         run: npm run format:check
         if: always()

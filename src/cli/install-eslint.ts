@@ -1,17 +1,11 @@
 import * as p from "@clack/prompts";
-import { $ } from "execa";
-import { getPackageInfo } from "local-pkg";
 import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import path from "node:path";
-import semver from "semver";
 
 import { gitRoot } from "../utils/git-root";
+import { PackageJson } from "../utils/package-json";
 import { polishConfirm } from "../utils/polish-confirm";
-
-const $$ = $({
-  cwd: gitRoot(),
-});
 
 const eslintConfigNames = [
   ".eslintrc.js",
@@ -28,39 +22,28 @@ const eslintConfigNames = [
   "eslint.config.cts",
 ];
 
+const packageJson = new PackageJson();
+
 export const installEslint = async () => {
   const root = gitRoot();
 
-  const eslint = await getPackageInfo("eslint");
+  await packageJson.load();
 
-  if (typeof eslint?.version !== "string") {
-    const isConfirmed = await polishConfirm({
-      message: `Eslint nie jest zainstalowany. Czy chcesz go zainstalować?`,
-    });
+  await packageJson.install("eslint", { dev: true, minVersion: ">=9" });
 
-    if (p.isCancel(isConfirmed) || !isConfirmed) {
-      p.cancel("Zainstaluj Eslint i spróbuj ponownie.");
+  const type = await packageJson.getProjectType();
+
+  if (type === "next") {
+    const is15 = await packageJson.doesSatisfies("next", ">=15");
+
+    if (!is15) {
+      p.cancel(
+        "Next.js musi być w conajmniej wersji 15. Zaktualizuj Next.js i spróbuj ponownie.\nWięcej informacji tutaj: https://nextjs.org/docs/app/building-your-application/upgrading/version-15",
+      );
       process.exit(1);
     }
 
-    const spinner = p.spinner();
-    spinner.start("Instalowanie Eslint");
-    await $$`npm i -D eslint`;
-    spinner.stop("Eslint zainstalowany");
-  } else if (!semver.satisfies(eslint.version, ">=9")) {
-    const isConfirmed = await polishConfirm({
-      message: `Eslint jest zainstalowany, ale trzeba go zaktualizować. Czy chcesz zaktualizować?`,
-    });
-
-    if (p.isCancel(isConfirmed) || !isConfirmed) {
-      p.cancel("Zaktualizuj Eslint i spróbuj ponownie.");
-      process.exit(1);
-    }
-    const spinner = p.spinner();
-
-    spinner.start("Aktualizowanie Eslinta");
-    await $$`npm i -D eslint@latest`;
-    spinner.stop("Eslint zaktualizowany");
+    await packageJson.install("@next/eslint-plugin-next", { dev: true });
   }
 
   const eslintConfig = eslintConfigNames.find((configName) =>
