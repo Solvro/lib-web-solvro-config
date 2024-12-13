@@ -107,6 +107,9 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
+  "peerDependencies": {
+    "@next/eslint-plugin-next": ">=12.3.0 <16.0.0-0"
+  },
   "packageManager": "npm@10.9.2",
   "engines": {
     "node": ">=20"

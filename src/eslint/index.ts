@@ -50,11 +50,11 @@ const adonisConfig: ConfigWithExtends[] = [
   },
 ];
 
-const nextjsConfig: ConfigWithExtends[] = [
+const nextjsConfig = async (): Promise<ConfigWithExtends[]> => [
   ...a11y(),
   ...unicorn(),
   ...typescriptStrict(),
-  ...react(),
+  ...(await react()),
   ...imports({ forbidDefaultExport: true }),
 ];
 
@@ -67,7 +67,7 @@ const configs: ConfigWithExtends[] = [
 
 const defaultOverrides = [...ignores(), ...formatters(), ...disables()];
 
-export const solvro = (...overrides: ConfigWithExtends[]) => {
+export const solvro = async (...overrides: ConfigWithExtends[]) => {
   const isAdonis = isPackageExists("@adonisjs/core");
   const isNext = isPackageExists("next");
 
@@ -84,7 +84,7 @@ export const solvro = (...overrides: ConfigWithExtends[]) => {
   }
 
   if (isNext) {
-    newConfig.push(...nextjsConfig);
+    newConfig.push(...(await nextjsConfig()));
   }
 
   const tsConfigPath = findUpSync("tsconfig.json", {

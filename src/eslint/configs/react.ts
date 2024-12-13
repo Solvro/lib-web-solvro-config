@@ -1,5 +1,3 @@
-// @ts-expect-error ???
-import nextPlugin from "@next/eslint-plugin-next";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
 import { isPackageExists } from "local-pkg";
@@ -17,12 +15,16 @@ const forbiddenLibraries = [
   "antd",
 ];
 
-export function react(): ConfigWithExtends[] {
+export async function react(): Promise<ConfigWithExtends[]> {
   const isUsingNext = nextJsPackages.some((index) => isPackageExists(index));
 
   const nextjsConfig: ConfigWithExtends[] = [];
 
   if (isUsingNext) {
+    // @ts-expect-error ???
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const nextPlugin = await import("@next/eslint-plugin-next");
+
     nextjsConfig.push(
       {
         name: "solvro/next/setup",
