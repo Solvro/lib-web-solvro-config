@@ -107,23 +107,6 @@
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   },
-  "peerDependencies": {
-    "@next/eslint-plugin-next": ">=12.3.0 <16.0.0-0",
-    "eslint": "^9.10.0",
-    "prettier": ">=3.0.0 <4",
-    "typescript": ">=4.8.0 <6"
-  },
-  "peerDependenciesMeta": {
-    "@eslint-react/eslint-plugin": {
-      "optional": true
-    },
-    "eslint-plugin-react-hooks": {
-      "optional": true
-    },
-    "eslint-plugin-react-refresh": {
-      "optional": true
-    }
-  },
   "packageManager": "npm@10.9.2",
   "engines": {
     "node": ">=20"

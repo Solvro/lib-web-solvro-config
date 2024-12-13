@@ -1,17 +1,13 @@
 import * as p from "@clack/prompts";
-import { $ } from "execa";
 import { getPackageInfo, isPackageListed, loadPackageJSON } from "local-pkg";
 import assert from "node:assert";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 import semver from "semver";
 
+import { $$ } from "./$$";
 import { gitRoot } from "./git-root";
 import { polishConfirm } from "./polish-confirm";
-
-const $$ = $({
-  cwd: gitRoot(),
-});
 
 export class PackageJson {
   public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
