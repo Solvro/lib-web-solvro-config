@@ -116,7 +116,7 @@ export class PackageJson {
       if (!semver.satisfies(info.version, options.minVersion)) {
         const spinner = p.spinner();
         spinner.start(`Aktualizowanie ${pkg}`);
-        await $$`npm i ${options.dev === true ? "-D" : ""}@latest ${pkg}`;
+        await $$`npm i ${options.dev === true ? "-D" : ""} ${pkg}@latest`;
         spinner.stop(`${pkg} zaktualizowany 😍`);
 
         await this.load();
@@ -133,7 +133,7 @@ export class PackageJson {
 
     const spinner = p.spinner();
     spinner.start(`Instalowanie ${pkg}`);
-    await $$`npm i ${options?.dev === true ? "-D" : ""}@latest ${pkg}`;
+    await $$`npm i ${options?.dev === true ? "-D" : ""} ${pkg}@latest`;
     spinner.stop(`${pkg} zainstalowany 😍`);
 
     await this.load();
