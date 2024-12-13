@@ -1,22 +1,26 @@
 import * as p from "@clack/prompts";
-import { loadPackageJSON } from "local-pkg";
 import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import path from "node:path";
 
-import { getProjectType } from "../utils/get-project-type";
 import { gitRoot } from "../utils/git-root";
+import { PackageJson } from "../utils/package-json";
 import { adonisCi } from "./templates/adonis-ci";
 import { dependabot } from "./templates/dependabot";
 import { nextCi } from "./templates/next-ci";
 
+const packageJson = new PackageJson();
+
 export const installGithubActions = async () => {
   const root = gitRoot();
+  await packageJson.load();
 
   const ghWorkflowsDir = path.join(root, ".github/workflows");
   await fs.mkdir(ghWorkflowsDir, { recursive: true });
 
-  const type = getProjectType();
+  const type = await packageJson.getProjectType();
+
+  const withCommitlint = await packageJson.hasPackage("@commitlint/cli");
 
   if (type === "adonis") {
     if (!existsSync(path.join(root, ".env.example"))) {
@@ -30,6 +34,7 @@ export const installGithubActions = async () => {
       path.join(ghWorkflowsDir, "ci.yml"),
       adonisCi({
         nodeVersion: "22",
+        withCommitlint,
       }),
     );
   }
@@ -39,6 +44,7 @@ export const installGithubActions = async () => {
       path.join(ghWorkflowsDir, "ci.yml"),
       nextCi({
         nodeVersion: "22",
+        withCommitlint,
       }),
     );
   }
@@ -47,37 +53,10 @@ export const installGithubActions = async () => {
     await fs.writeFile(path.join(root, ".github/dependabot.yml"), dependabot());
   }
 
-  const packageJson = await loadPackageJSON(root);
-
-  if (packageJson === null) {
-    p.cancel(
-      "Nie znaleziono package.json. Upewnij się, że jesteś w katalogu projektu.",
-    );
-    process.exit(1);
-  }
-
-  packageJson.scripts = packageJson.scripts ?? {};
-
-  if (!packageJson.scripts["format:check"]) {
-    packageJson.scripts["format:check"] = "prettier --check .";
-  }
-
-  if (!packageJson.scripts.lint) {
-    packageJson.scripts.lint = "eslint .";
-  }
-
-  if (!packageJson.scripts.format) {
-    packageJson.scripts.format = "prettier --write .";
-  }
-
-  if (!packageJson.scripts.typecheck) {
-    packageJson.scripts.typecheck = "tsc --noEmit";
-  }
-
-  await fs.writeFile(
-    path.join(root, "package.json"),
-    JSON.stringify(packageJson, null, 2),
-  );
+  await packageJson.addScriptIfNotExists("format:check", "prettier --check .");
+  await packageJson.addScriptIfNotExists("lint", "eslint . --max-warnings=0");
+  await packageJson.addScriptIfNotExists("format", "prettier --write .");
+  await packageJson.addScriptIfNotExists("typecheck", "tsc --noEmit");
 
   p.note("Dodano konfigurację CI i skrypty.");
 };

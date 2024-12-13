@@ -27,6 +27,11 @@
       "types": "./dist/prettier/index.d.ts",
       "import": "./dist/prettier/index.js",
       "require": "./dist/prettier/index.cjs"
+    },
+    "./commitlint": {
+      "types": "./dist/commitlint/index.d.ts",
+      "import": "./dist/commitlint/index.js",
+      "require": "./dist/commitlint/index.cjs"
     }
   },
   "bin": "./bin/index.js",
@@ -53,6 +58,8 @@
   "dependencies": {
     "@adonisjs/eslint-config": "^2.0.0-beta.7",
     "@clack/prompts": "^0.8.2",
+    "@commitlint/cli": "^19.6.0",
+    "@commitlint/config-conventional": "^19.6.0",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.4.1",
     "@eslint/js": "^9.16.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.0",
@@ -79,10 +86,8 @@
     "typescript-eslint": "^8.18.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^19.6.0",
-    "@commitlint/config-conventional": "^19.6.0",
     "@eslint/config-inspector": "^0.6.0",
-    "@next/eslint-plugin-next": "^15.0.4",
+    "@next/eslint-plugin-next": "^15.1.0",
     "@semantic-release/git": "^10.0.1",
     "@types/eslint-config-prettier": "^6.11.3",
     "@types/node": "^22.10.1",

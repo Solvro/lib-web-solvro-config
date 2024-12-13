@@ -38,4 +38,4 @@ export default {
     "prettier-plugin-tailwindcss",
   ],
   singleQuote: false,
-} satisfies Options;
+} as const satisfies Options;
