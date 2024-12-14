@@ -1,3 +1,4 @@
+import gitignore from "eslint-config-flat-gitignore";
 import { findUpSync } from "find-up-simple";
 import { isPackageListed } from "local-pkg";
 import path from "node:path";
@@ -59,6 +60,7 @@ const nextjsConfig = async (): Promise<ConfigWithExtends[]> => [
 ];
 
 const configs: ConfigWithExtends[] = [
+  gitignore(),
   ...javascript(),
   ...jsdoc(),
   ...comments(),
