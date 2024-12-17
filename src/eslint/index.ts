@@ -35,10 +35,14 @@ const adonisConfig: ConfigWithExtends[] = [
         {
           selector: ["enum", "enumMember", "class", "interface", "typeLike"],
           format: ["PascalCase"],
+          leadingUnderscore: "allow",
+          trailingUnderscore: "allow",
         },
         {
           selector: ["classProperty", "classMethod", "method", "variableLike"],
           format: ["camelCase"],
+          leadingUnderscore: "allow",
+          trailingUnderscore: "allow",
         },
         {
           selector: "variable",
