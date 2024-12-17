@@ -27,7 +27,15 @@ const Configuration: UserConfig = {
         "release",
       ],
     ],
-    "body-max-length": [1, "never", 100],
+
+    // @ts-expect-error ???
+    "body-max-length": [0, "always"],
+    // @ts-expect-error ???
+    "body-max-line-length": [0, "always"],
+    // @ts-expect-error ???
+    "footer-max-length": [0, "always"],
+    // @ts-expect-error ???
+    "footer-max-line-length": [0, "always"],
   },
 };
 
