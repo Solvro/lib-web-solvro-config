@@ -6,6 +6,7 @@ import path from "node:path";
 import { gitRoot } from "../utils/git-root";
 import { PackageJson } from "../utils/package-json";
 import { adonisCi } from "./templates/adonis-ci";
+import { adonisMigrationsCi } from "./templates/adonis-ci-migrations";
 import { dependabot } from "./templates/dependabot";
 import { nextCi } from "./templates/next-ci";
 
@@ -36,6 +37,11 @@ export const installGithubActions = async () => {
         nodeVersion: "22",
         withCommitlint,
       }),
+    );
+
+    await fs.writeFile(
+      path.join(ghWorkflowsDir, "db.yml"),
+      adonisMigrationsCi(),
     );
   }
 
