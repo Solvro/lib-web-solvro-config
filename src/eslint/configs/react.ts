@@ -1,3 +1,4 @@
+import pluginQuery from "@tanstack/eslint-plugin-query";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
 import { isPackageExists } from "local-pkg";
@@ -112,6 +113,7 @@ export async function react(): Promise<ConfigWithExtends[]> {
         ],
       },
     },
+    ...pluginQuery.configs["flat/recommended"],
     {
       name: "solvro/react/disables",
       files: ["**/components/ui/*.{jsx,tsx}"],
