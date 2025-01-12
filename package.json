@@ -46,7 +46,7 @@
     "format": "prettier --check .",
     "knip": "knip",
     "lint": "eslint .",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "prepublish": "npm run build",
     "release": "semantic-release",
     "typecheck": "tsc --noEmit"
