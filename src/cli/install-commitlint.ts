@@ -1,9 +1,9 @@
 import { writeFile } from "fs/promises";
 import path from "path";
 
-import { $$ } from "../utils/$$";
 import { gitRoot } from "../utils/git-root";
 import { PackageJson } from "../utils/package-json";
+import { installHusky } from "./install-husky";
 import { commitlint } from "./templates/commitlint";
 
 const root = gitRoot();
@@ -11,10 +11,7 @@ const root = gitRoot();
 const packageJson = new PackageJson();
 
 export const installCommitLint = async () => {
-  if (!(await packageJson.hasPackage("husky"))) {
-    await packageJson.install("husky", { dev: true });
-    await $$`npx husky init`;
-  }
+  await installHusky();
 
   await packageJson.install("@commitlint/cli", { dev: true });
 

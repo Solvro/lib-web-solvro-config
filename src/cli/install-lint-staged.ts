@@ -1,8 +1,8 @@
 import assert from "assert";
 import { writeFile } from "fs/promises";
 
-import { $$ } from "../utils/$$";
 import { PackageJson } from "../utils/package-json";
+import { installHusky } from "./install-husky";
 
 const packageJson = new PackageJson();
 
@@ -11,10 +11,7 @@ export const installLintStaged = async () => {
 
   assert(packageJson.json !== null);
 
-  if (!(await packageJson.hasPackage("husky"))) {
-    await packageJson.install("husky", { dev: true });
-    await $$`npx husky init`;
-  }
+  await installHusky();
 
   await packageJson.install("lint-staged", { dev: true });
 

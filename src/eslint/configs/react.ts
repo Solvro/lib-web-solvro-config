@@ -56,7 +56,6 @@ export async function react(): Promise<ConfigWithExtends[]> {
     {
       name: "solvro/react/setup",
       plugins: {
-        // @ts-expect-error ???
         react: pluginReact,
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         "react-hooks": pluginReactHooks,
