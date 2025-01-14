@@ -17,5 +17,7 @@ export const installHusky = async () => {
     if (packageJson.json.scripts?.husky !== undefined) {
       packageJson.json.scripts.husky = `husky || true`;
     }
+
+    await packageJson.save();
   }
 };
