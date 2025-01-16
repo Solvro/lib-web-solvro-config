@@ -16,7 +16,7 @@ export const installHusky = async () => {
   assert(packageJson.json !== null);
 
   packageJson.json.scripts = packageJson.json.scripts ?? {};
-  packageJson.json.scripts.husky = `husky || true`;
+  packageJson.json.scripts.prepare = `husky || true`;
 
   await packageJson.save();
 };
