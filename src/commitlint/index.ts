@@ -22,6 +22,8 @@ const Configuration: UserConfig = {
         "ci",
         // Adding missing tests or correcting existing tests
         "test",
+        "build",
+        "release",
       ],
     ],
 
