@@ -79,8 +79,8 @@ export async function react(): Promise<ConfigWithExtends[]> {
       },
       name: "solvro/react/rules",
       rules: {
-        ...pluginReact.configs.flat?.recommended.rules,
-        ...pluginReact.configs.flat?.["jsx-runtime"].rules,
+        ...pluginReact.configs.flat.recommended.rules,
+        ...pluginReact.configs.flat["jsx-runtime"].rules,
         "react/no-danger": "warn",
         "react/jsx-no-leaked-render": "warn",
         // recommended rules react-hooks
