@@ -83,6 +83,7 @@ export function javascript(): ConfigWithExtends[] {
         "no-func-assign": "error",
         "no-global-assign": "error",
         "no-implied-eval": "error",
+        "no-implicit-coercion": "error",
         "no-import-assign": "error",
         "no-invalid-regexp": "error",
         "no-irregular-whitespace": "error",
