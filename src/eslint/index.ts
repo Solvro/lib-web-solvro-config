@@ -55,7 +55,7 @@ const adonisConfig: ConfigWithExtends[] = [
   },
 ];
 
-const nextjsConfig = async (): Promise<ConfigWithExtends[]> => [
+const reactConfig = async (): Promise<ConfigWithExtends[]> => [
   ...a11y(),
   ...unicorn(),
   ...typescriptStrict(),
@@ -75,12 +75,10 @@ const defaultOverrides = [...ignores(), ...formatters(), ...disables()];
 
 export const solvro = async (...overrides: ConfigWithExtends[]) => {
   const isAdonis = await isPackageListed("@adonisjs/core");
-  const isNext = await isPackageListed("next");
+  const isReact = await isPackageListed("react");
 
-  if (isNext && isAdonis) {
-    throw new Error(
-      "You can't use both Adonis and Next.js in the same project",
-    );
+  if (isReact && isAdonis) {
+    throw new Error("You can't use both Adonis and React in the same project");
   }
 
   const newConfig: ConfigWithExtends[] = [];
@@ -89,8 +87,8 @@ export const solvro = async (...overrides: ConfigWithExtends[]) => {
     newConfig.push(...adonisConfig);
   }
 
-  if (isNext) {
-    newConfig.push(...(await nextjsConfig()));
+  if (isReact) {
+    newConfig.push(...(await reactConfig()));
   }
 
   const tsConfigPath = findUpSync("tsconfig.json", {
