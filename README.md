@@ -34,7 +34,7 @@ Konfiguracja eslinta:
 
 ```js
 // eslint.config.js
-import { solvro } from "@solro/config/eslint";
+import { solvro } from "@solvro/config/eslint";
 
 export default solvro();
 ```
