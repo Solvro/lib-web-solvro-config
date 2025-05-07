@@ -41,7 +41,7 @@ export async function react(): Promise<ConfigWithExtends[]> {
       },
       {
         files: [
-          "**/app/**/{page,loading,layout}.{js,jsx,ts,tsx}",
+          "**/app/**/{page,loading,layout,template,error,not-found,unauthorized,forbidden,default}.{js,jsx,ts,tsx}",
           "**/pages/**/*.{js,jsx,ts,tsx}",
         ],
         name: "solvro/next/pages",
