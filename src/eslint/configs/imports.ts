@@ -54,6 +54,8 @@ export function imports(
           "next.config.*",
           "commitlint.config.*",
           ".releaserc.*",
+          "vitest.config.*",
+          "playwright.config.*",
         ],
         rules: {
           "import/no-default-export": "off",
