@@ -1,6 +1,6 @@
 {
   "name": "@solvro/config",
-  "version": "1.13.5",
+  "version": "1.13.6",
   "description": "Solvro's engineering style guide",
   "keywords": [
     "eslint",
