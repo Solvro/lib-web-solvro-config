@@ -2,9 +2,19 @@ import type { ConfigWithExtends } from "typescript-eslint";
 
 import { pluginAntfu, pluginImport } from "../plugins";
 
-export function imports(
-  options: { forbidDefaultExport: boolean } = { forbidDefaultExport: false },
-): ConfigWithExtends[] {
+const forbiddenUiLibraries = [
+  "@headlessui/react",
+  "@mui/material",
+  "@chakra-ui/react",
+  "@chakra-ui/core",
+  "@nextui-org/react",
+  "react-bootstrap",
+  "antd",
+];
+
+export function imports({
+  forbidDefaultExport = true,
+} = {}): ConfigWithExtends[] {
   const config = [
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     pluginImport.flatConfigs.typescript,
@@ -12,8 +22,6 @@ export function imports(
       name: "solvro/imports/rules",
       plugins: {
         antfu: pluginAntfu,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        import: pluginImport,
       },
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       rules: {
@@ -33,6 +41,10 @@ export function imports(
                 name: "axios",
                 message: "Please use fetch instead",
               },
+              ...forbiddenUiLibraries.map((library) => ({
+                name: library,
+                message: `Please use ui.shadcn.com components instead.`,
+              })),
             ],
           },
         ],
@@ -40,7 +52,7 @@ export function imports(
     },
   ];
 
-  if (options.forbidDefaultExport) {
+  if (forbidDefaultExport) {
     config.push(
       {
         rules: { "import/no-default-export": "error" },
