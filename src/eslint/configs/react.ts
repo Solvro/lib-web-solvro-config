@@ -6,16 +6,6 @@ import type { ConfigWithExtends } from "typescript-eslint";
 
 const nextJsPackages = ["next"];
 
-const forbiddenLibraries = [
-  "@headlessui/react",
-  "@mui/material",
-  "@chakra-ui/react",
-  "@chakra-ui/core",
-  "@nextui-org/react",
-  "react-bootstrap",
-  "antd",
-];
-
 export async function react(): Promise<ConfigWithExtends[]> {
   const isUsingNext = nextJsPackages.some((index) => isPackageExists(index));
 
@@ -101,15 +91,6 @@ export async function react(): Promise<ConfigWithExtends[]> {
           },
         ],
         "react/no-array-index-key": "warn",
-        "@typescript-eslint/no-restricted-imports": [
-          "error",
-          {
-            paths: forbiddenLibraries.map((library) => ({
-              name: library,
-              message: `Please use ui.shadcn.com components instead.`,
-            })),
-          },
-        ],
       },
     },
     ...pluginQuery.configs["flat/recommended"],
