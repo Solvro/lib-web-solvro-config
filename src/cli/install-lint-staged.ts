@@ -1,5 +1,5 @@
-import assert from "assert";
-import { writeFile } from "fs/promises";
+import assert from "node:assert";
+import { writeFile } from "node:fs/promises";
 
 import { PackageJson } from "../utils/package-json";
 import { installHusky } from "./install-husky";

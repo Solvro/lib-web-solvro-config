@@ -25,6 +25,10 @@ export function unicorn(): ConfigWithExtends[] {
               prop: false,
               ref: false,
             },
+            allowList: {
+              e2e: true,
+            },
+            ignore: [String.raw`e2e`],
           },
         ],
       },
