@@ -25,6 +25,7 @@ export default {
     "<THIRD_PARTY_MODULES>",
     "^@japa/(.*)$",
     "^@adonisjs/(.*)$",
+    "^@nestjs/(.*)$",
     "^@/(.*)$",
     "^#(.*)$",
     "^[./]",

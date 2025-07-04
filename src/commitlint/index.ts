@@ -1,6 +1,6 @@
-import { type UserConfig } from "@commitlint/types";
+import type { UserConfig } from "@commitlint/types";
 
-const Configuration: UserConfig = {
+const config: UserConfig = {
   extends: ["@commitlint/config-conventional"],
   helpUrl: "https://docs.solvro.pl/github#nazewnictwo-commit%C3%B3w",
   rules: {
@@ -38,4 +38,5 @@ const Configuration: UserConfig = {
   },
 };
 
-export default Configuration;
+// eslint-disable-next-line import/no-default-export
+export default config;

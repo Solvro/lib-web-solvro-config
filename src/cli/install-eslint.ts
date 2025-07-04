@@ -33,7 +33,7 @@ export const installEslint = async () => {
 
   const type = await packageJson.getProjectType();
 
-  if (type === "next") {
+  if (type === "react" && (await packageJson.hasPackage("next"))) {
     const is15 = await packageJson.doesSatisfies("next", ">=15");
 
     if (!is15) {
@@ -53,7 +53,7 @@ export const installEslint = async () => {
   if (eslintConfig !== undefined) {
     const eslintContent = await fs.readFile(
       path.join(root, eslintConfig),
-      "utf-8",
+      "utf8",
     );
 
     if (eslintContent.includes("export default solvro(")) {

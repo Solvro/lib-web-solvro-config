@@ -12,10 +12,7 @@ export async function react(): Promise<ConfigWithExtends[]> {
   const nextjsConfig: ConfigWithExtends[] = [];
 
   if (isUsingNext) {
-    // @ts-expect-error ???
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const nextPlugin = await import("@next/eslint-plugin-next").then(
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       (d) => d.default,
     );
 
@@ -23,10 +20,9 @@ export async function react(): Promise<ConfigWithExtends[]> {
       {
         name: "solvro/next/setup",
         plugins: {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           "@next/next": nextPlugin,
         },
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+
         rules: nextPlugin.configs.recommended.rules,
       },
       {
@@ -47,7 +43,7 @@ export async function react(): Promise<ConfigWithExtends[]> {
       name: "solvro/react/setup",
       plugins: {
         react: pluginReact,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
         "react-hooks": pluginReactHooks,
       },
     },
