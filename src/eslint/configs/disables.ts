@@ -1,7 +1,7 @@
 import tseslint from "typescript-eslint";
 import type { ConfigWithExtends } from "typescript-eslint";
 
-import { GLOB_SRC, GLOB_SRC_EXT } from "../globs";
+import { GLOB_JS, GLOB_SRC, GLOB_SRC_EXT } from "../globs";
 
 export function disables(): ConfigWithExtends[] {
   return [
@@ -62,7 +62,7 @@ export function disables(): ConfigWithExtends[] {
       },
     },
     {
-      files: ["**/*.js"],
+      files: [GLOB_JS],
       extends: [tseslint.configs.disableTypeChecked],
     },
   ];
