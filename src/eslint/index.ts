@@ -82,6 +82,12 @@ const nestjsConfig: ConfigWithExtends[] = [
     },
     files: ["**/*.module.ts"],
   },
+  {
+    rules: {
+      "@typescript-eslint/no-floating-promises": "off",
+    },
+    files: ["./src/main.ts"],
+  },
 ];
 
 const reactConfig = async (): Promise<ConfigWithExtends[]> => [
