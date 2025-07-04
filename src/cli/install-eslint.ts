@@ -74,8 +74,12 @@ export const installEslint = async () => {
     }
   }
 
+  const isESM = await packageJson.isESM();
+
+  const eslintFilename = isESM ? "eslint.config.js" : "eslint.config.mjs";
+
   await fs.writeFile(
-    path.join(gitRoot(), "eslint.config.js"),
+    path.join(gitRoot(), eslintFilename),
     `import { solvro } from "@solvro/config/eslint";
 
 export default solvro();

@@ -43,14 +43,20 @@ export class PackageJson {
     return semver.satisfies(packageInfo.version, version);
   }
 
-  async ensureESM() {
+  async isESM() {
     await this.load();
 
     assert(this.json !== null);
 
-    if (this.json.type === "module") {
+    return this.json.type === "module";
+  }
+
+  async ensureESM() {
+    if (await this.isESM()) {
       return;
     }
+
+    assert(this.json !== null);
 
     const isConfirmed = await polishConfirm({
       message: `Twój projekt nie używa ESM (brak type: "module" w package.json). Czy chcesz to dodać? (Wymagane by kontynuować)`,

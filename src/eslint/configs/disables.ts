@@ -1,4 +1,5 @@
-import tseslint, { type ConfigWithExtends } from "typescript-eslint";
+import tseslint from "typescript-eslint";
+import type { ConfigWithExtends } from "typescript-eslint";
 
 import { GLOB_SRC, GLOB_SRC_EXT } from "../globs";
 
