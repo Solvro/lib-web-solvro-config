@@ -25,8 +25,6 @@ if (!isGitClean()) {
 
 const packageJson = new PackageJson();
 
-await packageJson.ensureESM();
-
 const projectType = await packageJson.getProjectType();
 
 if (projectType === "adonis") {
@@ -38,11 +36,13 @@ if (projectType === "adonis") {
     p.cancel("Zgłoś błąd na GitHubie :(, a my spróbujemy pomóc.");
     process.exit(1);
   }
+
+  await packageJson.ensureESM();
 }
 
-if (projectType === "next") {
+if (projectType === "react") {
   const isConfirmed = await polishConfirm({
-    message: `Wygląda jakbyś używał Next.js. Czy to się zgadza?`,
+    message: `Wygląda jakbyś używał Reacta. Czy to się zgadza?`,
   });
 
   if (p.isCancel(isConfirmed)) {
@@ -54,11 +54,24 @@ if (projectType === "next") {
     p.cancel("Zgłoś błąd na GitHubie :(, a my spróbujemy pomóc.");
     process.exit(1);
   }
+
+  await packageJson.ensureESM();
+}
+
+if (projectType === "nestjs") {
+  const isConfirmed = await polishConfirm({
+    message: `Wygląda jakbyś używał NestJsa. Czy to się zgadza?`,
+  });
+
+  if (p.isCancel(isConfirmed)) {
+    p.cancel("😡");
+    process.exit(1);
+  }
 }
 
 if (projectType === "node") {
   p.cancel(
-    "Nie znaleziono ani Adonisa, ani Next.js. Musisz ręcznie konfigurować projekt.",
+    "Nie znaleziono ani Adonisa, Reacta, ani NestJsa. Musisz ręcznie konfigurować projekt.",
   );
   process.exit(1);
 }

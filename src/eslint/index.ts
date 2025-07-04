@@ -55,6 +55,35 @@ const adonisConfig: ConfigWithExtends[] = [
   },
 ];
 
+const nestjsConfig: ConfigWithExtends[] = [
+  ...node(),
+  ...unicorn(),
+  ...typescriptStrict(),
+  ...imports({ forbidDefaultExport: true }),
+  {
+    rules: {
+      "no-implicit-coercion": [
+        "error",
+        {
+          allow: ["+"],
+        },
+      ],
+      "unicorn/prefer-top-level-await": "off",
+    },
+  },
+  {
+    rules: {
+      "@typescript-eslint/no-extraneous-class": [
+        "error",
+        {
+          allowEmpty: true,
+        },
+      ],
+    },
+    files: ["**/*.module.ts"],
+  },
+];
+
 const reactConfig = async (): Promise<ConfigWithExtends[]> => [
   ...a11y(),
   ...unicorn(),
@@ -76,7 +105,7 @@ const defaultOverrides = [...ignores(), ...formatters(), ...disables()];
 export const solvro = async (...overrides: ConfigWithExtends[]) => {
   const isAdonis = await isPackageListed("@adonisjs/core");
   const isReact = await isPackageListed("react");
-
+  const isNestJs = await isPackageListed("@nestjs/core");
   if (isReact && isAdonis) {
     throw new Error("You can't use both Adonis and React in the same project");
   }
@@ -85,6 +114,10 @@ export const solvro = async (...overrides: ConfigWithExtends[]) => {
 
   if (isAdonis) {
     newConfig.push(...adonisConfig);
+  }
+
+  if (isNestJs) {
+    newConfig.push(...nestjsConfig);
   }
 
   if (isReact) {

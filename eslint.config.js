@@ -1,8 +1,13 @@
+// eslint-disable-next-line antfu/no-import-dist
 import { solvro } from "./dist/eslint/index.js";
 
-export default solvro({
-  files: ["./src/cli/**/*.ts"],
-  rules: {
-    "unicorn/no-process-exit": "off",
+export default solvro(
+  {
+    rules: {
+      "unicorn/no-process-exit": "off",
+    },
   },
-});
+  {
+    ignores: ["tests/**"],
+  },
+);

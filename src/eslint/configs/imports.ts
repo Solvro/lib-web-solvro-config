@@ -16,20 +16,20 @@ export function imports({
   forbidDefaultExport = true,
 } = {}): ConfigWithExtends[] {
   const config = [
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     pluginImport.flatConfigs.typescript,
     {
       name: "solvro/imports/rules",
       plugins: {
         antfu: pluginAntfu,
       },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       rules: {
         "antfu/import-dedupe": "error",
         "antfu/no-import-dist": "error",
         "antfu/no-import-node-modules-by-path": "error",
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        ...pluginImport.flatConfigs.recommended.rules,
+
+        ...(pluginImport.flatConfigs.recommended
+          .rules as ConfigWithExtends["rules"]),
         "import/no-dynamic-require": "warn",
         "import/no-unresolved": "off",
         "import/consistent-type-specifier-style": "warn",
@@ -50,7 +50,7 @@ export function imports({
         ],
       },
     },
-  ];
+  ] satisfies ConfigWithExtends[];
 
   if (forbidDefaultExport) {
     config.push(
