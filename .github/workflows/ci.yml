@@ -47,3 +47,95 @@ jobs:
 
       - name: Run Prettier check
         run: npm run format
+
+  integration-test:
+    name: Integration Test - Next.js
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Install
+        uses: ./.github/composite-actions/install
+
+      - name: Build the package
+        run: npm run build
+
+      - name: Pack the package
+        run: npm pack
+
+      - name: Create test directory
+        run: mkdir -p /tmp/nextjs-test && cd /tmp/nextjs-test
+
+      - name: Create Next.js app
+        run: |
+          cd /tmp/nextjs-test
+          npx create-next-app@latest test-app \
+            --typescript \
+            --tailwind \
+            --eslint \
+            --app \
+            --src-dir \
+            --import-alias "@/*" \
+            --no-git
+
+      - name: Copy packed package to test app
+        run: |
+          cp ${{ github.workspace }}/solvro-config-*.tgz /tmp/nextjs-test/test-app/
+          cd /tmp/nextjs-test/test-app
+          ls -la *.tgz
+
+      - name: Install @solvro/config from local package
+        run: |
+          cd /tmp/nextjs-test/test-app
+          npm install ./solvro-config-*.tgz
+
+      - name: Run @solvro/config setup
+        run: |
+          cd /tmp/nextjs-test/test-app
+          npx @solvro/config --all --force
+
+      - name: Verify configuration files were created
+        run: |
+          cd /tmp/nextjs-test/test-app
+          echo "Checking for configuration files..."
+          test -f eslint.config.js && echo "✓ eslint.config.js exists" || (echo "✗ eslint.config.js missing" && exit 1)
+          test -f .prettierrc.js && echo "✓ .prettierrc.js exists" || echo "ℹ .prettierrc.js not found (checking package.json)"
+
+          # Check if prettier config is in package.json
+          if grep -q '"prettier"' package.json; then
+            echo "✓ Prettier config found in package.json"
+          else
+            echo "✗ Prettier config not found" && exit 1
+          fi
+
+      - name: Run ESLint
+        run: |
+          cd /tmp/nextjs-test/test-app
+          echo "Running ESLint..."
+          npx eslint . --max-warnings 0
+
+      - name: Run Prettier check
+        run: |
+          cd /tmp/nextjs-test/test-app
+          echo "Running Prettier check..."
+          npx prettier --check .
+
+      - name: Format with Prettier
+        run: |
+          cd /tmp/nextjs-test/test-app
+          echo "Running Prettier format..."
+          npx prettier --write .
+
+      - name: Verify no changes after format
+        run: |
+          cd /tmp/nextjs-test/test-app
+          echo "Checking if files are properly formatted..."
+          npx prettier --check . || (echo "✗ Files were not properly formatted initially" && exit 1)
+          echo "✓ All files are properly formatted"
+
+      - name: Test build after configuration
+        run: |
+          cd /tmp/nextjs-test/test-app
+          echo "Testing Next.js build..."
+          npm run build

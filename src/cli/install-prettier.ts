@@ -25,7 +25,7 @@ const prettierConfigNames = [
 
 const packageJson = new PackageJson();
 
-export const installPrettier = async () => {
+export const installPrettier = async (isNonInteractive = false) => {
   const root = gitRoot();
 
   await packageJson.load();
@@ -45,17 +45,24 @@ export const installPrettier = async () => {
       return;
     }
 
-    const isConfirmed = await polishConfirm({
-      message: `Znaleziono konfigurację Prettiera. Czy chcesz ją nadpisać?`,
-    });
+    if (isNonInteractive) {
+      // In non-interactive mode, automatically overwrite existing config
+      for (const configName of prettierConfigNames) {
+        await fs.rm(path.join(root, configName)).catch(() => null);
+      }
+    } else {
+      const isConfirmed = await polishConfirm({
+        message: `Znaleziono konfigurację Prettiera. Czy chcesz ją nadpisać?`,
+      });
 
-    if (p.isCancel(isConfirmed) || !isConfirmed) {
-      p.cancel("Usuń konfiguracje Prettiera i spróbuj ponownie.");
-      process.exit(1);
-    }
+      if (p.isCancel(isConfirmed) || !isConfirmed) {
+        p.cancel("Usuń konfiguracje Prettiera i spróbuj ponownie.");
+        process.exit(1);
+      }
 
-    for (const configName of prettierConfigNames) {
-      await fs.rm(path.join(root, configName)).catch(() => null);
+      for (const configName of prettierConfigNames) {
+        await fs.rm(path.join(root, configName)).catch(() => null);
+      }
     }
   }
 

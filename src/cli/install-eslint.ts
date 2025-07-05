@@ -24,7 +24,7 @@ const eslintConfigNames = [
 
 const packageJson = new PackageJson();
 
-export const installEslint = async () => {
+export const installEslint = async (isNonInteractive = false) => {
   const root = gitRoot();
 
   await packageJson.load();
@@ -61,16 +61,21 @@ export const installEslint = async () => {
 
       return;
     } else {
-      const isConfirmed = await polishConfirm({
-        message: `Znaleziono plik konfiguracyjny Eslint. Czy chcesz go nadpisać?`,
-      });
+      if (isNonInteractive) {
+        // In non-interactive mode, automatically overwrite existing config
+        await fs.rm(path.join(root, eslintConfig));
+      } else {
+        const isConfirmed = await polishConfirm({
+          message: `Znaleziono plik konfiguracyjny Eslint. Czy chcesz go nadpisać?`,
+        });
 
-      if (p.isCancel(isConfirmed) || !isConfirmed) {
-        p.cancel("Nadpisz plik konfiguracyjny Eslint i spróbuj ponownie.");
-        process.exit(1);
+        if (p.isCancel(isConfirmed) || !isConfirmed) {
+          p.cancel("Nadpisz plik konfiguracyjny Eslint i spróbuj ponownie.");
+          process.exit(1);
+        }
+
+        await fs.rm(path.join(root, eslintConfig));
       }
-
-      await fs.rm(path.join(root, eslintConfig));
     }
   }
 

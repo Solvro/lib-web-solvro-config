@@ -7,7 +7,6 @@ import semver from "semver";
 
 import { $$ } from "./$$";
 import { gitRoot } from "./git-root";
-import { polishConfirm } from "./polish-confirm";
 
 export class PackageJson {
   public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
@@ -57,15 +56,6 @@ export class PackageJson {
     }
 
     assert(this.json !== null);
-
-    const isConfirmed = await polishConfirm({
-      message: `Twój projekt nie używa ESM (brak type: "module" w package.json). Czy chcesz to dodać? (Wymagane by kontynuować)`,
-    });
-
-    if (p.isCancel(isConfirmed) || !isConfirmed) {
-      p.cancel("Zmień projekt na ESM i spróbuj ponownie.");
-      process.exit(1);
-    }
 
     this.json.type = "module";
 
