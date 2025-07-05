@@ -50,8 +50,6 @@
     "prepublish": "npm run build",
     "release": "semantic-release",
     "test": "vitest run",
-    "test:integration": "./scripts/test-integration.sh",
-    "test:quick": "./scripts/quick-test.sh",
     "test:ui": "vitest --ui",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"

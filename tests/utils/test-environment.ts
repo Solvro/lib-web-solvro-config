@@ -170,9 +170,34 @@ export class TestEnvironment {
       "npm-install",
     );
   }
-
   async initGitRepo(appPath: string): Promise<void> {
     await execWithLogging("git", ["init"], { cwd: appPath }, "git-init");
+
+    // Check if git user is configured, if not configure it for this repository
+    try {
+      await execSimple("git", ["config", "user.email"], { cwd: appPath });
+    } catch {
+      // No email configured, set it
+      await execWithLogging(
+        "git",
+        ["config", "user.email", "test@example.com"],
+        { cwd: appPath },
+        "git-config-email",
+      );
+    }
+
+    try {
+      await execSimple("git", ["config", "user.name"], { cwd: appPath });
+    } catch {
+      // No name configured, set it
+      await execWithLogging(
+        "git",
+        ["config", "user.name", "Test User"],
+        { cwd: appPath },
+        "git-config-name",
+      );
+    }
+
     await execWithLogging("git", ["add", "."], { cwd: appPath }, "git-add");
     await execWithLogging(
       "git",
