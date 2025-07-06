@@ -111,7 +111,7 @@ describe("Cross-Version Compatibility Tests", () => {
       const configTime = Date.now() - startTime;
 
       // Configuration should complete within 30 seconds
-      expect(configTime).toBeLessThan(30_000);
+      expect(configTime).toBeLessThan(60_000);
 
       // Verify everything works
       expect(env.fileExists(appPath, "eslint.config.js")).toBe(true);

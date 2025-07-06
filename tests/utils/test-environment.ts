@@ -54,7 +54,7 @@ async function execSimple(
   };
 }
 
-export interface TestAppOptions {
+interface TestAppOptions {
   name?: string;
   typescript?: boolean;
   tailwind?: boolean;
@@ -306,16 +306,4 @@ export class TestEnvironment {
     }
     // Package cleanup is now handled by global teardown
   }
-}
-
-export async function withTimeout<T>(
-  promise: Promise<T>,
-  timeoutMs: number,
-  errorMessage = "Operation timed out",
-): Promise<T> {
-  const timeout = new Promise<never>((_, reject) => {
-    setTimeout(() => reject(new Error(errorMessage)), timeoutMs);
-  });
-
-  return Promise.race([promise, timeout]);
 }
