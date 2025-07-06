@@ -65,6 +65,7 @@ export function imports({
           "knip.*",
           "next.config.*",
           "commitlint.config.*",
+          "vite.config.*",
           ".releaserc.*",
           "vitest.config.*",
           "postcss.config.*",

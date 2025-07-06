@@ -173,6 +173,35 @@ export class TestEnvironment {
     return appPath;
   }
 
+  /**
+   * Create a Vite application using create-vite CLI.
+   */
+  async createViteApp(appName: string, template = "react-ts"): Promise<string> {
+    const appPath = join(this.testDir, appName);
+    await execWithLogging(
+      "npm",
+      ["create", "vite@latest", appName, "--", "--template", template],
+      {
+        cwd: this.testDir,
+        timeout: 120_000, // 2 minutes for project creation
+      },
+      "create-vite",
+    );
+
+    // Install dependencies
+    await execWithLogging(
+      "npm",
+      ["install"],
+      {
+        cwd: appPath,
+        timeout: 120_000, // 2 minutes for dependency installation
+      },
+      "npm-install-deps",
+    );
+
+    return appPath;
+  }
+
   async installSolvroConfig(appPath: string): Promise<void> {
     // Copy package to app directory
     await execWithLogging(
@@ -335,6 +364,31 @@ export class TestEnvironment {
           timeout: 180_000, // 3 minutes for build
         },
         "nestjs-build",
+      );
+      return { success: true, output: stdout + stderr };
+    } catch (error: any) {
+      return {
+        success: false,
+        output: (error.stdout || "") + (error.stderr || ""),
+      };
+    }
+  }
+
+  /**
+   * Build a Vite application by running its build script.
+   */
+  async buildViteApp(
+    appPath: string,
+  ): Promise<{ success: boolean; output: string }> {
+    try {
+      const { stdout, stderr } = await execWithLogging(
+        "npm",
+        ["run", "build"],
+        {
+          cwd: appPath,
+          timeout: 180_000, // 3 minutes for build
+        },
+        "vite-build",
       );
       return { success: true, output: stdout + stderr };
     } catch (error: any) {
