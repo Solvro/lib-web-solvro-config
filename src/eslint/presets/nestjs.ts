@@ -1,3 +1,4 @@
+import eslintNestJs from "@darraghor/eslint-plugin-nestjs-typed";
 import type { ConfigWithExtends } from "typescript-eslint";
 
 import { imports } from "../configs/imports";
@@ -10,6 +11,7 @@ export const nestjsPreset = (): ConfigWithExtends[] => [
   ...unicorn(),
   ...typescriptStrict(),
   ...imports({ forbidDefaultExport: true }),
+  ...eslintNestJs.configs.flatRecommended,
   {
     rules: {
       "no-implicit-coercion": [
