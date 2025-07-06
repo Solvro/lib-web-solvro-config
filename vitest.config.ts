@@ -7,5 +7,6 @@ export default defineConfig({
     hookTimeout: 60_000, // 1 minute for setup/teardown
     pool: "threads",
     silent: "passed-only",
+    globalSetup: ["./tests/global-setup.ts"],
   },
 });

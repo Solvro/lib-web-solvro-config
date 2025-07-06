@@ -73,39 +73,26 @@ export class TestEnvironment {
   constructor(testName: string) {
     this.testDir = join("/tmp", `solvro-test-${testName}-${Date.now()}`);
     this.projectRoot = process.cwd();
-    this.packageFile = "";
+
+    // Get the package file path from the global setup
+    const packageFile = process.env.SOLVRO_TEST_PACKAGE_FILE;
+    if (!packageFile) {
+      throw new Error(
+        "Package file not found. Make sure global setup has run successfully.",
+      );
+    }
+    this.packageFile = packageFile;
   }
 
   async setup(): Promise<void> {
     console.debug("🏗️  Setting up test environment...");
 
-    // Build and pack the project
-    await execWithLogging(
-      "npm",
-      ["run", "build"],
-      { cwd: this.projectRoot },
-      "build",
-    );
-
-    // Verify the CLI was built
-    const cliPath = join(this.projectRoot, "dist/cli/index.js");
-    if (!existsSync(cliPath)) {
+    // Verify the package file exists (built by global setup)
+    if (!existsSync(this.packageFile)) {
       throw new Error(
-        `Built CLI not found at ${cliPath}. Make sure build completed successfully.`,
+        `Package file not found at ${this.packageFile}. Make sure global setup completed successfully.`,
       );
     }
-
-    const { stdout } = await execWithLogging(
-      "npm",
-      ["pack"],
-      { cwd: this.projectRoot },
-      "pack",
-    );
-
-    // Extract package filename from npm pack output
-    const lines = stdout.trim().split("\n");
-    const packageFile = lines[lines.length - 1];
-    (this as any).packageFile = join(this.projectRoot, packageFile);
 
     // Create test directory
     mkdirSync(this.testDir, { recursive: true });
@@ -317,15 +304,7 @@ export class TestEnvironment {
     if (existsSync(this.testDir)) {
       rmSync(this.testDir, { recursive: true, force: true });
     }
-
-    // Clean up package files in project root
-    try {
-      execSimple("rm", ["-f", "solvro-config-*.tgz"], {
-        cwd: this.projectRoot,
-      });
-    } catch {
-      // Ignore cleanup errors
-    }
+    // Package cleanup is now handled by global teardown
   }
 }
 
