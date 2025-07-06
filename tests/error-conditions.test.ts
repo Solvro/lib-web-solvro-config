@@ -152,7 +152,7 @@ describe("Error Conditions and Edge Cases", () => {
 
       // Should be able to lint React/Next.js code without errors
       await env.runPrettier(appPath, true); // Format first
-      const eslintResult = await env.runESLint(appPath, 0);
+      const eslintResult = await env.runESLint(appPath);
       expect(eslintResult.success).toBe(true);
     });
   });

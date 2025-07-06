@@ -67,7 +67,7 @@ describe("Cross-Version Compatibility Tests", () => {
 
       // Verify all tools work together
       await env.runPrettier(appPath, true);
-      const eslintResult = await env.runESLint(appPath, 0);
+      const eslintResult = await env.runESLint(appPath);
       expect(eslintResult.success).toBe(true);
 
       const buildResult = await env.buildNextjsApp(appPath);
@@ -90,7 +90,7 @@ describe("Cross-Version Compatibility Tests", () => {
 
       // Should work with minimal setup
       await env.runPrettier(appPath, true);
-      const eslintResult = await env.runESLint(appPath, 0);
+      const eslintResult = await env.runESLint(appPath);
       expect(eslintResult.success).toBe(true);
 
       const buildResult = await env.buildNextjsApp(appPath);

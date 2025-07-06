@@ -1,5 +1,5 @@
 import { execa } from "execa";
-import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 
 // Helper function to run commands with real-time output logging
@@ -126,15 +126,31 @@ export class TestEnvironment {
       "--yes",
     ];
 
-    await execWithLogging(
-      "npx",
-      [`create-next-app@${nextVersion}`, appName, ...flags],
-      {
-        cwd: this.testDir,
-        timeout: 120_000, // 2 minutes timeout for app creation
-      },
-      "create-next-app",
+    const templateDir = join(
+      this.testDir,
+      `create-next-app-${flags.join("-").replace(/[^a-z0-9]/gi, "_")}`,
     );
+
+    if (existsSync(templateDir)) {
+      // Template already exists, copy it to the app path
+      console.debug(`🎯 Using cached template: ${templateDir}`);
+      cpSync(templateDir, appPath, { recursive: true });
+    } else {
+      // Create new template and cache it
+      console.debug(`🏗️  Creating new template: ${templateDir}`);
+      await execWithLogging(
+        "npx",
+        [`create-next-app@${nextVersion}`, templateDir, ...flags],
+        {
+          cwd: this.testDir,
+          timeout: 120_000, // 2 minutes timeout for app creation
+        },
+        "create-next-app",
+      );
+
+      // Copy template to the app path
+      cpSync(templateDir, appPath, { recursive: true });
+    }
 
     return appPath;
   }

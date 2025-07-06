@@ -7,6 +7,7 @@ import semver from "semver";
 
 import { $$ } from "./$$";
 import { gitRoot } from "./git-root";
+import { runIfInteractive } from "./run-if-interactive";
 
 export class PackageJson {
   public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
@@ -117,9 +118,10 @@ export class PackageJson {
 
     if (!isInstalled) {
       const spinner = p.spinner();
-      spinner.start(`Instalowanie ${package_}`);
+      runIfInteractive(() => spinner.start(`Instalowanie ${package_}`));
+
       await $$`npm i ${options?.dev === true ? "-D" : ""} ${package_}@latest`;
-      spinner.stop(`${package_} zainstalowany 😍`);
+      runIfInteractive(() => spinner.stop(`${package_} zainstalowany 😍`));
 
       await this.load();
 
@@ -135,9 +137,9 @@ export class PackageJson {
       options?.alwaysUpdate === true
     ) {
       const spinner = p.spinner();
-      spinner.start(`Aktualizowanie ${package_}`);
+      runIfInteractive(() => spinner.start(`Aktualizowanie ${package_}`));
       await $$`npm i ${options.dev === true ? "-D" : ""} ${package_}@latest`;
-      spinner.stop(`${package_} zaktualizowany 😍`);
+      runIfInteractive(() => spinner.stop(`${package_} zaktualizowany 😍`));
 
       await this.load();
     }
