@@ -203,7 +203,7 @@ async function main() {
   // Install the base package
   await packageJson.install("@solvro/config", {
     dev: true,
-    alwaysUpdate: true,
+    alwaysUpdate: !isNonInteractive,
   });
 
   // Install selected tools

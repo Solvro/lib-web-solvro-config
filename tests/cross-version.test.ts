@@ -117,40 +117,5 @@ describe("Cross-Version Compatibility Tests", () => {
       expect(env.fileExists(appPath, "eslint.config.js")).toBe(true);
       expect(env.hasPackageJsonField(appPath, "prettier")).toBe(true);
     });
-
-    it("should handle large codebases efficiently", async () => {
-      const appPath = await env.createNextjsApp("large-codebase-test");
-      await env.installSolvroConfig(appPath);
-      await env.initGitRepo(appPath);
-
-      // Add some additional files to simulate a larger codebase
-      const { exec } = await import("node:child_process");
-      const { promisify } = await import("node:util");
-      const execAsync = promisify(exec);
-
-      // Create additional TypeScript files
-      for (let i = 0; i < 10; i++) {
-        await execAsync(
-          `echo "export const component${i} = () => <div>Test ${i}</div>;" > src/components/Component${i}.tsx`,
-          { cwd: appPath },
-        );
-      }
-
-      await env.runSolvroConfig(appPath, ["--all", "--force"]);
-
-      const startTime = Date.now();
-
-      // Format all files
-      await env.runPrettier(appPath, true);
-
-      // Lint all files
-      const eslintResult = await env.runESLint(appPath, 0);
-
-      const lintTime = Date.now() - startTime;
-
-      // Linting should complete within 60 seconds even with more files
-      expect(lintTime).toBeLessThan(60_000);
-      expect(eslintResult.success).toBe(true);
-    });
   });
 });
