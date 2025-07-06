@@ -10,7 +10,7 @@ export function unicorn(): ConfigWithExtends[] {
         unicorn: pluginUnicorn,
       },
       rules: {
-        ...pluginUnicorn.configs["flat/recommended"].rules,
+        ...pluginUnicorn.configs.recommended.rules,
         "unicorn/no-array-reduce": "off",
         "unicorn/no-null": "off",
         "unicorn/no-useless-switch-case": "off",

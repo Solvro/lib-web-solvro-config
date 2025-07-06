@@ -31,7 +31,7 @@ export class PackageJson {
   async doesSatisfies(package_: string, version: string) {
     await this.load();
 
-    assert(this.json !== null);
+    assert.ok(this.json !== null);
 
     const packageInfo = await getPackageInfo(package_);
 
@@ -45,7 +45,7 @@ export class PackageJson {
   async isESM() {
     await this.load();
 
-    assert(this.json !== null);
+    assert.ok(this.json !== null);
 
     return this.json.type === "module";
   }
@@ -55,7 +55,7 @@ export class PackageJson {
       return;
     }
 
-    assert(this.json !== null);
+    assert.ok(this.json !== null);
 
     this.json.type = "module";
 
@@ -97,7 +97,7 @@ export class PackageJson {
   async addScriptIfNotExists(name: string, script: string) {
     await this.load();
 
-    assert(this.json !== null);
+    assert.ok(this.json !== null);
 
     if (this.json.scripts?.[name] !== undefined) {
       return;

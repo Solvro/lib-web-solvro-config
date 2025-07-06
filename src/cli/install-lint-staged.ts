@@ -9,7 +9,7 @@ const packageJson = new PackageJson();
 export const installLintStaged = async () => {
   await packageJson.load();
 
-  assert(packageJson.json !== null);
+  assert.ok(packageJson.json !== null);
 
   await installHusky();
 

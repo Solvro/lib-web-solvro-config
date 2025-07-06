@@ -29,7 +29,7 @@ export const installPrettier = async (isNonInteractive = false) => {
   const root = gitRoot();
 
   await packageJson.load();
-  assert(packageJson.json !== null);
+  assert.ok(packageJson.json !== null);
 
   await packageJson.install("prettier", { dev: true, minVersion: ">=3" });
 
