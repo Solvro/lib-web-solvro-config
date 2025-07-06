@@ -5,6 +5,27 @@ declare module "eslint-plugin-react-hooks" {
 
   export = plugin;
 }
+declare module "eslint-plugin-import" {
+  import type { ESLint, Linter } from "eslint";
+
+  interface FlatConfig {
+    languageOptions?: Linter.LanguageOptions;
+    plugins?: Record<string, ESLint.Plugin>;
+    rules?: Linter.RulesRecord;
+    settings?: Record<string, unknown>;
+  }
+
+  interface FlatConfigs {
+    recommended: FlatConfig;
+    typescript: FlatConfig;
+  }
+
+  const plugin: ESLint.Plugin & {
+    flatConfigs: FlatConfigs;
+  };
+
+  export = plugin;
+}
 declare module "eslint-plugin-react-refresh";
 declare module "@adonisjs/eslint-config";
 declare module "eslint-plugin-jsx-a11y" {

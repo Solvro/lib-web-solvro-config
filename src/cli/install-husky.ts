@@ -1,4 +1,4 @@
-import assert from "assert";
+import assert from "node:assert";
 
 import { $$ } from "../utils/$$";
 import { PackageJson } from "../utils/package-json";
