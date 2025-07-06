@@ -21,16 +21,15 @@ export const solvro = async (...overrides: ConfigWithExtends[]) => {
   if (isAdonis) {
     const { adonisPreset } = await import("./presets/adonis.js");
     projectConfigs.push(...adonisPreset());
-  }
-
-  if (isNestJs) {
+  } else if (isNestJs) {
     const { nestjsPreset } = await import("./presets/nestjs.js");
     projectConfigs.push(...nestjsPreset());
-  }
-
-  if (isReact) {
+  } else if (isReact) {
     const { reactPreset } = await import("./presets/react.js");
     projectConfigs.push(...(await reactPreset()));
+  } else {
+    const { nodePreset } = await import("./presets/node.js");
+    projectConfigs.push(...nodePreset());
   }
 
   const tsConfigPath = findUpSync("tsconfig.json", {
