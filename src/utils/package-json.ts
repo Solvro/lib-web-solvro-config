@@ -7,7 +7,7 @@ import semver from "semver";
 
 import { $$ } from "./$$";
 import { gitRoot } from "./git-root";
-import { polishConfirm } from "./polish-confirm";
+import { runIfInteractive } from "./run-if-interactive";
 
 export class PackageJson {
   public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
@@ -32,7 +32,7 @@ export class PackageJson {
   async doesSatisfies(package_: string, version: string) {
     await this.load();
 
-    assert(this.json !== null);
+    assert.ok(this.json !== null);
 
     const packageInfo = await getPackageInfo(package_);
 
@@ -46,7 +46,7 @@ export class PackageJson {
   async isESM() {
     await this.load();
 
-    assert(this.json !== null);
+    assert.ok(this.json !== null);
 
     return this.json.type === "module";
   }
@@ -56,16 +56,7 @@ export class PackageJson {
       return;
     }
 
-    assert(this.json !== null);
-
-    const isConfirmed = await polishConfirm({
-      message: `Twój projekt nie używa ESM (brak type: "module" w package.json). Czy chcesz to dodać? (Wymagane by kontynuować)`,
-    });
-
-    if (p.isCancel(isConfirmed) || !isConfirmed) {
-      p.cancel("Zmień projekt na ESM i spróbuj ponownie.");
-      process.exit(1);
-    }
+    assert.ok(this.json !== null);
 
     this.json.type = "module";
 
@@ -107,7 +98,7 @@ export class PackageJson {
   async addScriptIfNotExists(name: string, script: string) {
     await this.load();
 
-    assert(this.json !== null);
+    assert.ok(this.json !== null);
 
     if (this.json.scripts?.[name] !== undefined) {
       return;
@@ -127,9 +118,14 @@ export class PackageJson {
 
     if (!isInstalled) {
       const spinner = p.spinner();
-      spinner.start(`Instalowanie ${package_}`);
+      runIfInteractive(() => {
+        spinner.start(`Instalowanie ${package_}`);
+      });
+
       await $$`npm i ${options?.dev === true ? "-D" : ""} ${package_}@latest`;
-      spinner.stop(`${package_} zainstalowany 😍`);
+      runIfInteractive(() => {
+        spinner.stop(`${package_} zainstalowany 😍`);
+      });
 
       await this.load();
 
@@ -145,11 +141,19 @@ export class PackageJson {
       options?.alwaysUpdate === true
     ) {
       const spinner = p.spinner();
-      spinner.start(`Aktualizowanie ${package_}`);
+      runIfInteractive(() => {
+        spinner.start(`Aktualizowanie ${package_}`);
+      });
       await $$`npm i ${options.dev === true ? "-D" : ""} ${package_}@latest`;
-      spinner.stop(`${package_} zaktualizowany 😍`);
+      runIfInteractive(() => {
+        spinner.stop(`${package_} zaktualizowany 😍`);
+      });
 
       await this.load();
     }
+  }
+
+  async clearInstall() {
+    await $$`npm ci`;
   }
 }
