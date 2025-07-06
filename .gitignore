@@ -18,3 +18,4 @@ eslint-config/typegen.d.ts
 
 # Keys
 .env
+*.tgz

@@ -1,8 +1,8 @@
 import isInteractive from "is-interactive";
 
-export const runIfInteractive = <T>(fn: () => T): T | undefined => {
+export const runIfInteractive = <T>(function_: () => T): T | undefined => {
   if (isInteractive()) {
-    return fn();
+    return function_();
   }
 
   return undefined;

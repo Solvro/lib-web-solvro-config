@@ -118,10 +118,14 @@ export class PackageJson {
 
     if (!isInstalled) {
       const spinner = p.spinner();
-      runIfInteractive(() => spinner.start(`Instalowanie ${package_}`));
+      runIfInteractive(() => {
+        spinner.start(`Instalowanie ${package_}`);
+      });
 
       await $$`npm i ${options?.dev === true ? "-D" : ""} ${package_}@latest`;
-      runIfInteractive(() => spinner.stop(`${package_} zainstalowany 😍`));
+      runIfInteractive(() => {
+        spinner.stop(`${package_} zainstalowany 😍`);
+      });
 
       await this.load();
 
@@ -137,9 +141,13 @@ export class PackageJson {
       options?.alwaysUpdate === true
     ) {
       const spinner = p.spinner();
-      runIfInteractive(() => spinner.start(`Aktualizowanie ${package_}`));
+      runIfInteractive(() => {
+        spinner.start(`Aktualizowanie ${package_}`);
+      });
       await $$`npm i ${options.dev === true ? "-D" : ""} ${package_}@latest`;
-      runIfInteractive(() => spinner.stop(`${package_} zaktualizowany 😍`));
+      runIfInteractive(() => {
+        spinner.stop(`${package_} zaktualizowany 😍`);
+      });
 
       await this.load();
     }
