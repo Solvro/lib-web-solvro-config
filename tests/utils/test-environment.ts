@@ -1,6 +1,23 @@
 import { execa } from "execa";
 import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
+import pino from "pino";
+
+// Create logger instance - silent by default, can be enabled with LOG_LEVEL=debug
+const logger = pino({
+  level: process.env.LOG_LEVEL || "silent",
+  transport: process.env.LOG_LEVEL
+    ? {
+        target: "pino-pretty",
+        options: {
+          colorize: true,
+          translateTime: "HH:MM:ss",
+          ignore: "pid,hostname",
+          messageFormat: "{msg}",
+        },
+      }
+    : undefined,
+});
 
 // Helper function to run commands with real-time output logging
 async function execWithLogging(
@@ -10,7 +27,7 @@ async function execWithLogging(
   label?: string,
 ): Promise<{ stdout: string; stderr: string }> {
   const displayLabel = label || command;
-  console.log(`🔧 [${displayLabel}] Running: ${command} ${args.join(" ")}`);
+  logger.debug(`🔧 [${displayLabel}] Running: ${command} ${args.join(" ")}`);
 
   try {
     const subprocess = execa(command, args, {
@@ -20,23 +37,23 @@ async function execWithLogging(
 
     // Stream stdout in real-time
     subprocess.stdout?.on("data", (data) => {
-      process.stdout.write(`📤 [${displayLabel}] ${data}`);
+      logger.debug(`📤 [${displayLabel}] ${data.toString().trim()}`);
     });
 
     // Stream stderr in real-time
     subprocess.stderr?.on("data", (data) => {
-      process.stderr.write(`⚠️  [${displayLabel}] ${data}`);
+      logger.debug(`⚠️  [${displayLabel}] ${data.toString().trim()}`);
     });
 
     const result = await subprocess;
-    console.log(`✅ [${displayLabel}] Command completed successfully`);
+    logger.debug(`✅ [${displayLabel}] Command completed successfully`);
 
     return {
       stdout: result.stdout || "",
       stderr: result.stderr || "",
     };
   } catch (error: any) {
-    console.log(`❌ [${displayLabel}] Command failed with error:`);
+    logger.debug(`❌ [${displayLabel}] Command failed with error:`);
     throw error;
   }
 }
@@ -77,7 +94,7 @@ export class TestEnvironment {
   }
 
   async setup(): Promise<void> {
-    console.log("🏗️  Setting up test environment...");
+    logger.debug("🏗️  Setting up test environment...");
 
     // Build and pack the project
     await execWithLogging(
@@ -109,7 +126,7 @@ export class TestEnvironment {
 
     // Create test directory
     mkdirSync(this.testDir, { recursive: true });
-    console.log(`📁 Test directory created: ${this.testDir}`);
+    logger.debug(`📁 Test directory created: ${this.testDir}`);
   }
 
   async createNextjsApp(
@@ -339,4 +356,12 @@ export async function withTimeout<T>(
   });
 
   return Promise.race([promise, timeout]);
+}
+
+// Export logger for use in other test files
+export { logger };
+
+// Utility function to enable debug logging for tests
+export function enableDebugLogging(): void {
+  logger.level = "debug";
 }

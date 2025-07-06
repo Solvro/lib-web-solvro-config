@@ -31,7 +31,7 @@ describe("Cross-Version Compatibility Tests", () => {
       // Format and build
       await env.runPrettier(appPath, true);
       const buildResult = await env.buildNextjsApp(appPath);
-      expect(buildResult.success).toBe(true);
+      expect(buildResult.success, buildResult.output).toBe(true);
     });
 
     // Note: Testing canary might be flaky in CI, so we'll make it optional
