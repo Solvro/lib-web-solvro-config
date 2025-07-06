@@ -139,6 +139,24 @@ export class TestEnvironment {
     return appPath;
   }
 
+  /**
+   * Create a NestJS application using the Nest CLI.
+   */
+  async createNestjsApp(appName: string): Promise<string> {
+    const appPath = join(this.testDir, appName);
+    await execWithLogging(
+      "npx",
+      ["@nestjs/cli", "new", appName, "-p", "npm"],
+      {
+        cwd: this.testDir,
+        timeout: 180_000, // 3 minutes for project creation
+      },
+      "nest-cli",
+    );
+
+    return appPath;
+  }
+
   async installSolvroConfig(appPath: string): Promise<void> {
     // Copy package to app directory
     await execWithLogging(
@@ -226,12 +244,11 @@ export class TestEnvironment {
 
   async runESLint(
     appPath: string,
-    maxWarnings = 0,
   ): Promise<{ success: boolean; output: string }> {
     try {
       const { stdout, stderr } = await execWithLogging(
-        "npx",
-        ["eslint", ".", "--max-warnings", maxWarnings.toString()],
+        "npm",
+        ["run", "lint"],
         { cwd: appPath },
         "eslint",
       );
@@ -277,6 +294,31 @@ export class TestEnvironment {
           timeout: 180_000, // 3 minutes for build
         },
         "nextjs-build",
+      );
+      return { success: true, output: stdout + stderr };
+    } catch (error: any) {
+      return {
+        success: false,
+        output: (error.stdout || "") + (error.stderr || ""),
+      };
+    }
+  }
+
+  /**
+   * Build a NestJS application by running its build script.
+   */
+  async buildNestjsApp(
+    appPath: string,
+  ): Promise<{ success: boolean; output: string }> {
+    try {
+      const { stdout, stderr } = await execWithLogging(
+        "npm",
+        ["run", "build"],
+        {
+          cwd: appPath,
+          timeout: 180_000, // 3 minutes for build
+        },
+        "nestjs-build",
       );
       return { success: true, output: stdout + stderr };
     } catch (error: any) {
