@@ -1,6 +1,7 @@
 import pluginQuery from "@tanstack/eslint-plugin-query";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
+import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need-an-effect";
 import { isPackageExists } from "local-pkg";
 import type { ConfigWithExtends } from "typescript-eslint";
 
@@ -90,6 +91,7 @@ export async function react(): Promise<ConfigWithExtends[]> {
       },
     },
     ...pluginQuery.configs["flat/recommended"],
+    reactYouMightNotNeedAnEffect.configs.recommended,
     {
       name: "solvro/react/disables",
       files: ["**/components/ui/*.{jsx,tsx}"],
