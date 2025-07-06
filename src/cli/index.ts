@@ -224,6 +224,8 @@ async function main() {
     await installGithubActions();
   }
 
+  await packageJson.clearInstall();
+
   if (isNonInteractive) {
     console.log("✅ Configuration completed successfully!");
   } else {

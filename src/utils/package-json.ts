@@ -152,4 +152,8 @@ export class PackageJson {
       await this.load();
     }
   }
+
+  async clearInstall() {
+    await $$`npm ci`;
+  }
 }
