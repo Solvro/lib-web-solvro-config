@@ -314,11 +314,12 @@ export class TestEnvironment {
 
   async runESLint(
     appPath: string,
+    args: string[] = [],
   ): Promise<{ success: boolean; output: string }> {
     try {
       const { stdout, stderr } = await execWithLogging(
         "npm",
-        ["run", "lint"],
+        ["run", "lint", ...args],
         { cwd: appPath },
         "eslint",
       );

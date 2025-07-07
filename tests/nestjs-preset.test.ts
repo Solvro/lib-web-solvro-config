@@ -159,7 +159,11 @@ export class TestController {
       expect(prettierResult.success).toBe(true);
 
       // Run ESLint on the default template - it should fail with Swagger rules
-      const eslintResult = await env.runESLint(appPath);
+      const eslintResult = await env.runESLint(appPath, [
+        "--",
+        "--max-warnings",
+        "0",
+      ]);
 
       // The default NestJS template doesn't follow Swagger conventions
       // so it should fail when Swagger rules are enabled
