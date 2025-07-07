@@ -26,7 +26,7 @@ declare module "eslint-plugin-import" {
 
   export = plugin;
 }
-declare module "eslint-plugin-react-refresh";
+
 declare module "@adonisjs/eslint-config";
 declare module "eslint-plugin-jsx-a11y" {
   import type { ESLint, Linter } from "eslint";

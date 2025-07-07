@@ -46,6 +46,8 @@ export const nestjsPreset = async (): Promise<ConfigWithExtends[]> => {
           },
         ],
         "unicorn/prefer-top-level-await": "off",
+        // flaky as hell
+        "@darraghor/nestjs-typed/injectable-should-be-provided": "off",
       },
     },
     {

@@ -93,5 +93,14 @@ export async function teardown() {
     console.debug("⚠️  Package cleanup failed (non-critical)");
   }
 
+  // Clean up global test cache directory
+  try {
+    await execa("rm", ["-rf", "/tmp/solvro-test-cache"], {});
+    console.debug("🗂️  Cleaned up global test cache");
+  } catch {
+    // Ignore cleanup errors
+    console.debug("⚠️  Global cache cleanup failed (non-critical)");
+  }
+
   console.debug("✅ Global test teardown completed");
 }

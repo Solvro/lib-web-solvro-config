@@ -1,6 +1,13 @@
 import { execa } from "execa";
-import { cpSync, existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, join } from "node:path";
 
 // Helper function to run commands with real-time output logging
 async function execWithLogging(
@@ -153,22 +160,40 @@ export class TestEnvironment {
     }
 
     return appPath;
-  }
-
-  /**
+  } /**
    * Create a NestJS application using the Nest CLI.
    */
   async createNestjsApp(appName: string): Promise<string> {
     const appPath = join(this.testDir, appName);
-    await execWithLogging(
-      "npx",
-      ["@nestjs/cli", "new", appName, "-p", "npm"],
-      {
-        cwd: this.testDir,
-        timeout: 180_000, // 3 minutes for project creation
-      },
-      "nest-cli",
-    );
+
+    // Use a global cache directory that's shared across all test environments
+    const globalCacheDir = join("/tmp", "solvro-test-cache");
+    const templateDir = join(globalCacheDir, "nestjs-template");
+
+    if (existsSync(templateDir)) {
+      // Template already exists, copy it to the app path
+      console.debug(`🎯 Using cached NestJS template: ${templateDir}`);
+      cpSync(templateDir, appPath, { recursive: true });
+    } else {
+      // Create new template and cache it
+      console.debug(`🏗️  Creating new NestJS template: ${templateDir}`);
+
+      // Ensure cache directory exists
+      mkdirSync(globalCacheDir, { recursive: true });
+
+      await execWithLogging(
+        "npx",
+        ["@nestjs/cli", "new", "nestjs-template", "-p", "npm"],
+        {
+          cwd: globalCacheDir,
+          timeout: 180_000, // 3 minutes for project creation
+        },
+        "nest-cli",
+      );
+
+      // Copy template to the app path
+      cpSync(templateDir, appPath, { recursive: true });
+    }
 
     return appPath;
   }
@@ -410,6 +435,25 @@ export class TestEnvironment {
   hasPackageJsonField(appPath: string, field: string): boolean {
     const packageJson = JSON.parse(this.readFile(appPath, "package.json"));
     return field in packageJson;
+  }
+
+  async installPackage(appPath: string, packageName: string): Promise<void> {
+    await execWithLogging(
+      "npm",
+      ["install", packageName],
+      { cwd: appPath },
+      "npm-install-package",
+    );
+  }
+
+  writeFile(appPath: string, filePath: string, content: string): void {
+    const fullPath = join(appPath, filePath);
+
+    // Ensure directory exists
+    const dir = dirname(fullPath);
+    mkdirSync(dir, { recursive: true });
+
+    writeFileSync(fullPath, content, "utf-8");
   }
 
   cleanup(): void {
