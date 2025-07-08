@@ -18,6 +18,7 @@ const overridableDefaults = {
   useTabs: false,
 } as const;
 
+// eslint-disable-next-line import/no-default-export
 export default {
   ...overridableDefaults,
   importOrder: [
@@ -25,6 +26,7 @@ export default {
     "<THIRD_PARTY_MODULES>",
     "^@japa/(.*)$",
     "^@adonisjs/(.*)$",
+    "^@nestjs/(.*)$",
     "^@/(.*)$",
     "^#(.*)$",
     "^[./]",

@@ -1,5 +1,12 @@
 export default {
-  branches: ["main"],
+  branches: [
+    "main",
+    {
+      name: "next",
+      prerelease: "beta",
+      channel: "next",
+    },
+  ],
   plugins: [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",

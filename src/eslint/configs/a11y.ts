@@ -6,11 +6,8 @@ export function a11y(): ConfigWithExtends[] {
   return [
     {
       files: ["**/*.{js,mjs,cjs,jsx,mjsx,ts,tsx,mtsx}"],
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       ...jsxA11y.flatConfigs.recommended,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       languageOptions: {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         ...jsxA11y.flatConfigs.recommended.languageOptions,
         globals: {
           ...globals.serviceworker,

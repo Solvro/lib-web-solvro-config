@@ -7,7 +7,7 @@ import semver from "semver";
 
 import { $$ } from "./$$";
 import { gitRoot } from "./git-root";
-import { polishConfirm } from "./polish-confirm";
+import { runIfInteractive } from "./run-if-interactive";
 
 export class PackageJson {
   public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
@@ -25,16 +25,16 @@ export class PackageJson {
     this.json = json;
   }
 
-  hasPackage(pkg: string) {
-    return isPackageListed(pkg);
+  hasPackage(package_: string) {
+    return isPackageListed(package_);
   }
 
-  async doesSatisfies(pkg: string, version: string) {
+  async doesSatisfies(package_: string, version: string) {
     await this.load();
 
-    assert(this.json !== null);
+    assert.ok(this.json !== null);
 
-    const packageInfo = await getPackageInfo(pkg);
+    const packageInfo = await getPackageInfo(package_);
 
     if (packageInfo?.version === undefined) {
       return false;
@@ -43,23 +43,20 @@ export class PackageJson {
     return semver.satisfies(packageInfo.version, version);
   }
 
-  async ensureESM() {
+  async isESM() {
     await this.load();
 
-    assert(this.json !== null);
+    assert.ok(this.json !== null);
 
-    if (this.json.type === "module") {
+    return this.json.type === "module";
+  }
+
+  async ensureESM() {
+    if (await this.isESM()) {
       return;
     }
 
-    const isConfirmed = await polishConfirm({
-      message: `Twój projekt nie używa ESM (brak type: "module" w package.json). Czy chcesz to dodać? (Wymagane by kontynuować)`,
-    });
-
-    if (p.isCancel(isConfirmed) || !isConfirmed) {
-      p.cancel("Zmień projekt na ESM i spróbuj ponownie.");
-      process.exit(1);
-    }
+    assert.ok(this.json !== null);
 
     this.json.type = "module";
 
@@ -68,20 +65,24 @@ export class PackageJson {
 
   async getProjectType() {
     const isAdonis = await isPackageListed("@adonisjs/core");
-    const isNext = await isPackageListed("next");
-
-    if (isNext && isAdonis) {
+    const isReact = await isPackageListed("react");
+    const isNestJs = await isPackageListed("@nestjs/core");
+    if (isReact && isAdonis) {
       throw new Error(
-        "You can't use both Adonis and Next.js in the same project",
+        "You can't use both Adonis and React in the same project",
       );
+    }
+
+    if (isNestJs) {
+      return "nestjs";
     }
 
     if (isAdonis) {
       return "adonis";
     }
 
-    if (isNext) {
-      return "next";
+    if (isReact) {
+      return "react";
     }
 
     return "node";
@@ -97,7 +98,7 @@ export class PackageJson {
   async addScriptIfNotExists(name: string, script: string) {
     await this.load();
 
-    assert(this.json !== null);
+    assert.ok(this.json !== null);
 
     if (this.json.scripts?.[name] !== undefined) {
       return;
@@ -110,23 +111,28 @@ export class PackageJson {
   }
 
   async install(
-    pkg: string,
+    package_: string,
     options?: { minVersion?: string; dev?: boolean; alwaysUpdate?: boolean },
   ) {
-    const isInstalled = await this.hasPackage(pkg);
+    const isInstalled = await this.hasPackage(package_);
 
     if (!isInstalled) {
       const spinner = p.spinner();
-      spinner.start(`Instalowanie ${pkg}`);
-      await $$`npm i ${options?.dev === true ? "-D" : ""} ${pkg}@latest`;
-      spinner.stop(`${pkg} zainstalowany 😍`);
+      runIfInteractive(() => {
+        spinner.start(`Instalowanie ${package_}`);
+      });
+
+      await $$`npm i ${options?.dev === true ? "-D" : ""} ${package_}@latest`;
+      runIfInteractive(() => {
+        spinner.stop(`${package_} zainstalowany 😍`);
+      });
 
       await this.load();
 
       return;
     }
 
-    const info = await getPackageInfo(pkg);
+    const info = await getPackageInfo(package_);
 
     if (
       (info?.version !== undefined &&
@@ -135,11 +141,19 @@ export class PackageJson {
       options?.alwaysUpdate === true
     ) {
       const spinner = p.spinner();
-      spinner.start(`Aktualizowanie ${pkg}`);
-      await $$`npm i ${options.dev === true ? "-D" : ""} ${pkg}@latest`;
-      spinner.stop(`${pkg} zaktualizowany 😍`);
+      runIfInteractive(() => {
+        spinner.start(`Aktualizowanie ${package_}`);
+      });
+      await $$`npm i ${options.dev === true ? "-D" : ""} ${package_}@latest`;
+      runIfInteractive(() => {
+        spinner.stop(`${package_} zaktualizowany 😍`);
+      });
 
       await this.load();
     }
+  }
+
+  async clearInstall() {
+    await $$`npm ci`;
   }
 }

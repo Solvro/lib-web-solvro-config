@@ -1,6 +1,6 @@
 import { commitLintCi } from "./commit-lint-ci";
 
-export const nextCi = ({
+export const reactCi = ({
   nodeVersion,
   withCommitlint,
 }: {
