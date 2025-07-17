@@ -16,6 +16,8 @@ export function typescriptRelaxed(): ConfigWithExtends[] {
             checksVoidReturn: false,
           },
         ],
+        "no-useless-constructor": "off",
+        "@typescript-eslint/no-useless-constructor": "error",
         "unused-imports/no-unused-vars": "off",
         "@typescript-eslint/no-unused-vars": [
           "error",

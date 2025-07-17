@@ -8,7 +8,8 @@ import { PackageJson } from "../utils/package-json";
 import { adonisCi } from "./templates/adonis-ci";
 import { adonisMigrationsCi } from "./templates/adonis-ci-migrations";
 import { dependabot } from "./templates/dependabot";
-import { nextCi } from "./templates/next-ci";
+import { nestjsCi } from "./templates/nestjs-ci";
+import { reactCi } from "./templates/react-ci";
 
 const packageJson = new PackageJson();
 
@@ -16,8 +17,8 @@ export const installGithubActions = async () => {
   const root = gitRoot();
   await packageJson.load();
 
-  const ghWorkflowsDir = path.join(root, ".github/workflows");
-  await fs.mkdir(ghWorkflowsDir, { recursive: true });
+  const ghWorkflowsDirectory = path.join(root, ".github/workflows");
+  await fs.mkdir(ghWorkflowsDirectory, { recursive: true });
 
   const type = await packageJson.getProjectType();
 
@@ -32,7 +33,7 @@ export const installGithubActions = async () => {
     }
 
     await fs.writeFile(
-      path.join(ghWorkflowsDir, "ci.yml"),
+      path.join(ghWorkflowsDirectory, "ci.yml"),
       adonisCi({
         nodeVersion: "22",
         withCommitlint,
@@ -40,15 +41,25 @@ export const installGithubActions = async () => {
     );
 
     await fs.writeFile(
-      path.join(ghWorkflowsDir, "db.yml"),
+      path.join(ghWorkflowsDirectory, "db.yml"),
       adonisMigrationsCi(),
     );
   }
 
-  if (type === "next") {
+  if (type === "react") {
     await fs.writeFile(
-      path.join(ghWorkflowsDir, "ci.yml"),
-      nextCi({
+      path.join(ghWorkflowsDirectory, "ci.yml"),
+      reactCi({
+        nodeVersion: "22",
+        withCommitlint,
+      }),
+    );
+  }
+
+  if (type === "nestjs") {
+    await fs.writeFile(
+      path.join(ghWorkflowsDirectory, "ci.yml"),
+      nestjsCi({
         nodeVersion: "22",
         withCommitlint,
       }),

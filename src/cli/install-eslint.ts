@@ -24,7 +24,7 @@ const eslintConfigNames = [
 
 const packageJson = new PackageJson();
 
-export const installEslint = async () => {
+export const installEslint = async (isNonInteractive = false) => {
   const root = gitRoot();
 
   await packageJson.load();
@@ -33,7 +33,7 @@ export const installEslint = async () => {
 
   const type = await packageJson.getProjectType();
 
-  if (type === "next") {
+  if (type === "react" && (await packageJson.hasPackage("next"))) {
     const is15 = await packageJson.doesSatisfies("next", ">=15");
 
     if (!is15) {
@@ -53,7 +53,7 @@ export const installEslint = async () => {
   if (eslintConfig !== undefined) {
     const eslintContent = await fs.readFile(
       path.join(root, eslintConfig),
-      "utf-8",
+      "utf8",
     );
 
     if (eslintContent.includes("export default solvro(")) {
@@ -61,21 +61,30 @@ export const installEslint = async () => {
 
       return;
     } else {
-      const isConfirmed = await polishConfirm({
-        message: `Znaleziono plik konfiguracyjny Eslint. Czy chcesz go nadpisać?`,
-      });
+      if (isNonInteractive) {
+        // In non-interactive mode, automatically overwrite existing config
+        await fs.rm(path.join(root, eslintConfig));
+      } else {
+        const isConfirmed = await polishConfirm({
+          message: `Znaleziono plik konfiguracyjny Eslint. Czy chcesz go nadpisać?`,
+        });
 
-      if (p.isCancel(isConfirmed) || !isConfirmed) {
-        p.cancel("Nadpisz plik konfiguracyjny Eslint i spróbuj ponownie.");
-        process.exit(1);
+        if (p.isCancel(isConfirmed) || !isConfirmed) {
+          p.cancel("Nadpisz plik konfiguracyjny Eslint i spróbuj ponownie.");
+          process.exit(1);
+        }
+
+        await fs.rm(path.join(root, eslintConfig));
       }
-
-      await fs.rm(path.join(root, eslintConfig));
     }
   }
 
+  const isESM = await packageJson.isESM();
+
+  const eslintFilename = isESM ? "eslint.config.js" : "eslint.config.mjs";
+
   await fs.writeFile(
-    path.join(gitRoot(), "eslint.config.js"),
+    path.join(gitRoot(), eslintFilename),
     `import { solvro } from "@solvro/config/eslint";
 
 export default solvro();

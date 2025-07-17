@@ -1,4 +1,4 @@
-import assert from "assert";
+import assert from "node:assert";
 
 import { $$ } from "../utils/$$";
 import { PackageJson } from "../utils/package-json";
@@ -13,7 +13,7 @@ export const installHusky = async () => {
 
   await packageJson.load();
 
-  assert(packageJson.json !== null);
+  assert.ok(packageJson.json !== null);
 
   packageJson.json.scripts = packageJson.json.scripts ?? {};
   packageJson.json.scripts.prepare = `husky || true`;

@@ -1,27 +1,35 @@
-import type { ConfigWithExtends } from "typescript-eslint";
+import type { Config, ConfigWithExtends } from "typescript-eslint";
 
 import { pluginAntfu, pluginImport } from "../plugins";
 
-export function imports(
-  options: { forbidDefaultExport: boolean } = { forbidDefaultExport: false },
-): ConfigWithExtends[] {
-  const config = [
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+const forbiddenUiLibraries = [
+  "@headlessui/react",
+  "@mui/material",
+  "@chakra-ui/react",
+  "@chakra-ui/core",
+  "@nextui-org/react",
+  "react-bootstrap",
+  "antd",
+];
+
+export function imports({
+  forbidDefaultExport = true,
+} = {}): ConfigWithExtends[] {
+  const config: Config = [
     pluginImport.flatConfigs.typescript,
     {
       name: "solvro/imports/rules",
       plugins: {
         antfu: pluginAntfu,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        import: pluginImport,
       },
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
       rules: {
         "antfu/import-dedupe": "error",
         "antfu/no-import-dist": "error",
         "antfu/no-import-node-modules-by-path": "error",
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        ...pluginImport.flatConfigs.recommended.rules,
+
+        ...(pluginImport.flatConfigs.recommended
+          .rules as ConfigWithExtends["rules"]),
         "import/no-dynamic-require": "warn",
         "import/no-unresolved": "off",
         "import/consistent-type-specifier-style": "warn",
@@ -33,14 +41,18 @@ export function imports(
                 name: "axios",
                 message: "Please use fetch instead",
               },
+              ...forbiddenUiLibraries.map((library) => ({
+                name: library,
+                message: `Please use ui.shadcn.com components instead.`,
+              })),
             ],
           },
         ],
       },
     },
-  ];
+  ] satisfies Config;
 
-  if (options.forbidDefaultExport) {
+  if (forbidDefaultExport) {
     config.push(
       {
         rules: { "import/no-default-export": "error" },
@@ -53,8 +65,10 @@ export function imports(
           "knip.*",
           "next.config.*",
           "commitlint.config.*",
+          "vite.config.*",
           ".releaserc.*",
           "vitest.config.*",
+          "postcss.config.*",
           "playwright.config.*",
         ],
         rules: {
