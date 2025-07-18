@@ -3,15 +3,17 @@ import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
 import pluginReactRefresh from "eslint-plugin-react-refresh";
 import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need-an-effect";
-import { isPackageExists } from "local-pkg";
+import { isPackageListedSync } from "local-pkg";
 import type { ConfigWithExtends } from "typescript-eslint";
 
 const nextJsPackages = ["next"];
 const vitePackages = ["vite"];
 
 export async function react(): Promise<ConfigWithExtends[]> {
-  const isUsingNext = nextJsPackages.some((index) => isPackageExists(index));
-  const isUsingVite = vitePackages.some((index) => isPackageExists(index));
+  const isUsingNext = nextJsPackages.some((index) =>
+    isPackageListedSync(index),
+  );
+  const isUsingVite = vitePackages.some((index) => isPackageListedSync(index));
 
   const nextjsConfig: ConfigWithExtends[] = [];
 
