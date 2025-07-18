@@ -24,6 +24,7 @@ export function unicorn(): ConfigWithExtends[] {
               props: false,
               prop: false,
               ref: false,
+              utils: false,
             },
             allowList: {
               e2e: true,
