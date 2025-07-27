@@ -3,7 +3,7 @@ import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import path from "node:path";
 
-import { gitRoot } from "../utils/git-root";
+import { gitRoot, projectRoot } from "../utils/git-root";
 import { PackageJson } from "../utils/package-json";
 import { adonisCi } from "./templates/adonis-ci";
 import { adonisMigrationsCi } from "./templates/adonis-ci-migrations";
@@ -14,10 +14,11 @@ import { reactCi } from "./templates/react-ci";
 const packageJson = new PackageJson();
 
 export const installGithubActions = async () => {
-  const root = gitRoot();
+  const gitDirectory = gitRoot();
+  const projectDirectory = projectRoot();
   await packageJson.load();
 
-  const ghWorkflowsDirectory = path.join(root, ".github/workflows");
+  const ghWorkflowsDirectory = path.join(gitDirectory, ".github/workflows");
   await fs.mkdir(ghWorkflowsDirectory, { recursive: true });
 
   const type = await packageJson.getProjectType();
@@ -25,7 +26,7 @@ export const installGithubActions = async () => {
   const withCommitlint = await packageJson.hasPackage("@commitlint/cli");
 
   if (type === "adonis") {
-    if (!existsSync(path.join(root, ".env.example"))) {
+    if (!existsSync(path.join(projectDirectory, ".env.example"))) {
       p.cancel(
         "Nie znaleziono pliku .env.example. Upewnij się, że jesteś w katalogu projektu Adonisa.",
       );
@@ -66,8 +67,11 @@ export const installGithubActions = async () => {
     );
   }
 
-  if (!existsSync(path.join(root, ".github/dependabot.yml"))) {
-    await fs.writeFile(path.join(root, ".github/dependabot.yml"), dependabot());
+  if (!existsSync(path.join(gitDirectory, ".github/dependabot.yml"))) {
+    await fs.writeFile(
+      path.join(gitDirectory, ".github/dependabot.yml"),
+      dependabot(),
+    );
   }
 
   await packageJson.addScriptIfNotExists("format:check", "prettier --check .");

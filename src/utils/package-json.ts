@@ -6,14 +6,14 @@ import path from "node:path";
 import semver from "semver";
 
 import { $$ } from "./$$";
-import { gitRoot } from "./git-root";
+import { projectRoot } from "./git-root";
 import { runIfInteractive } from "./run-if-interactive";
 
 export class PackageJson {
   public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
 
   async load() {
-    const json = await loadPackageJSON(gitRoot());
+    const json = await loadPackageJSON(projectRoot());
 
     if (json === null) {
       p.cancel(
@@ -90,7 +90,7 @@ export class PackageJson {
 
   async save() {
     await writeFile(
-      path.join(gitRoot(), "package.json"),
+      path.join(projectRoot(), "package.json"),
       JSON.stringify(this.json, null, 2),
     );
   }

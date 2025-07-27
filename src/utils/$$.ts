@@ -1,6 +1,6 @@
 import type { ExecaScriptMethod } from "execa";
 
-import { gitRoot } from "./git-root";
+import { projectRoot } from "./git-root";
 
 let cachedExeca: ExecaScriptMethod | null = null;
 
@@ -8,7 +8,7 @@ export const $$ = (async (...arguments_: Parameters<ExecaScriptMethod>) => {
   if (cachedExeca === null) {
     const { $ } = await import("execa");
     cachedExeca = $({
-      cwd: gitRoot(),
+      cwd: projectRoot(),
     });
   }
   return cachedExeca(...arguments_);
