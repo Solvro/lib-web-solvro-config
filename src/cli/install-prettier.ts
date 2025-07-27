@@ -4,7 +4,7 @@ import { existsSync } from "node:fs";
 import * as fs from "node:fs/promises";
 import path from "node:path";
 
-import { gitRoot } from "../utils/git-root";
+import { projectRoot } from "../utils/git-root";
 import { PackageJson } from "../utils/package-json";
 import { polishConfirm } from "../utils/polish-confirm";
 
@@ -26,7 +26,7 @@ const prettierConfigNames = [
 const packageJson = new PackageJson();
 
 export const installPrettier = async (isNonInteractive = false) => {
-  const root = gitRoot();
+  const root = projectRoot();
 
   await packageJson.load();
   assert.ok(packageJson.json !== null);

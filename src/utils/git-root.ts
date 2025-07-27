@@ -1,19 +1,24 @@
 import { findUpSync } from "find-up-simple";
 import { execSync } from "node:child_process";
+import path from "node:path";
+
+export const projectRoot = () => {
+  const packageJsonPath = findUpSync("package.json");
+
+  if (packageJsonPath !== undefined) {
+    return path.dirname(packageJsonPath);
+  }
+
+  return process.cwd();
+};
 
 export const gitRoot = () => {
   try {
-    const root = execSync("git rev-parse --show-toplevel").toString().trim();
-    return root;
+    const rootDirectory = execSync("git rev-parse --show-toplevel", {
+      cwd: projectRoot(),
+    });
+    return rootDirectory.toString().trim();
   } catch {
-    // Fallback: find up package-lock.json if not in a git repo
-    const packageLockPath = findUpSync("package-lock.json");
-
-    if (packageLockPath !== undefined) {
-      return packageLockPath.replace("/package-lock.json", "");
-    }
-
-    // Final fallback to current directory
-    return process.cwd();
+    return projectRoot();
   }
 };
