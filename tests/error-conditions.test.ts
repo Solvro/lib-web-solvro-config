@@ -29,7 +29,7 @@ describe("Error Conditions and Edge Cases", () => {
         expect.fail("Should have thrown an error");
       } catch (error: any) {
         expect(error.message || error.stdout || error.stderr).toContain(
-          "uncommitted changes",
+          "niezatwierdzone zmiany",
         );
       }
     });
@@ -43,7 +43,7 @@ describe("Error Conditions and Edge Cases", () => {
         "--eslint",
         "--force",
       ]);
-      expect(output).toContain("Configuration completed successfully");
+      expect(output).toContain("Konfiguracja zakończona pomyślnie");
       expect(env.fileExists(appPath, "eslint.config.js")).toBe(true);
     });
   });
@@ -59,7 +59,7 @@ describe("Error Conditions and Edge Cases", () => {
         expect.fail("Should have thrown an error");
       } catch (error: any) {
         expect(error.message || error.stdout || error.stderr).toContain(
-          "No tools specified",
+          "Nie wybrano żadnych narzędzi",
         );
       }
     });
@@ -125,7 +125,7 @@ describe("Error Conditions and Edge Cases", () => {
         "--prettier",
         "--force",
       ]);
-      expect(output).toContain("Configuration completed successfully");
+      expect(output).toContain("Konfiguracja zakończona pomyślnie");
 
       expect(env.fileExists(appPath, "eslint.config.js")).toBe(true);
       expect(env.hasPackageJsonField(appPath, "prettier")).toBe(true);
