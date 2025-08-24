@@ -8,5 +8,6 @@ export default defineConfig({
     pool: "threads",
     silent: "passed-only",
     globalSetup: ["./tests/global-setup.ts"],
+    include: ["./**/*.test.ts"],
   },
 });

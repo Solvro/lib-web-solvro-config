@@ -160,40 +160,39 @@ export class TestEnvironment {
     }
 
     return appPath;
-  } /**
-   * Create a NestJS application using the Nest CLI.
+  }
+
+  /**
+   * Create a NestJS application using the existing template from tests/nest-app.
    */
   async createNestjsApp(appName: string): Promise<string> {
     const appPath = join(this.testDir, appName);
+    const templatePath = join(this.projectRoot, "tests", "nest-app");
 
-    // Use a global cache directory that's shared across all test environments
-    const globalCacheDir = join("/tmp", "solvro-test-cache");
-    const templateDir = join(globalCacheDir, "nestjs-template");
-
-    if (existsSync(templateDir)) {
-      // Template already exists, copy it to the app path
-      console.debug(`🎯 Using cached NestJS template: ${templateDir}`);
-      cpSync(templateDir, appPath, { recursive: true });
-    } else {
-      // Create new template and cache it
-      console.debug(`🏗️  Creating new NestJS template: ${templateDir}`);
-
-      // Ensure cache directory exists
-      mkdirSync(globalCacheDir, { recursive: true });
-
-      await execWithLogging(
-        "npx",
-        ["@nestjs/cli", "new", "nestjs-template", "-p", "npm"],
-        {
-          cwd: globalCacheDir,
-          timeout: 180_000, // 3 minutes for project creation
-        },
-        "nest-cli",
+    if (!existsSync(templatePath)) {
+      throw new Error(
+        `NestJS template not found at ${templatePath}. Make sure the template exists.`,
       );
-
-      // Copy template to the app path
-      cpSync(templateDir, appPath, { recursive: true });
     }
+
+    console.debug(`🎯 Using NestJS template: ${templatePath}`);
+
+    // Copy template to the app path, excluding node_modules
+    cpSync(templatePath, appPath, {
+      recursive: true,
+      filter: (src) => !src.includes("node_modules"),
+    });
+
+    // Install dependencies
+    await execWithLogging(
+      "npm",
+      ["install"],
+      {
+        cwd: appPath,
+        timeout: 120_000, // 2 minutes for dependency installation
+      },
+      "npm-install-deps",
+    );
 
     return appPath;
   }
