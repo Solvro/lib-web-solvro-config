@@ -25,7 +25,7 @@ describe("NestJS Preset Tests", () => {
         "--eslint",
         "--force",
       ]);
-      expect(output).toContain("Configuration completed successfully");
+      expect(output).toContain("Konfiguracja zakończona pomyślnie");
 
       // Verify ESLint runs without Swagger-specific errors
       const eslintResult = await env.runESLint(appPath);
@@ -87,7 +87,7 @@ describe("NestJS Preset Tests", () => {
         "--eslint",
         "--force",
       ]);
-      expect(output).toContain("Configuration completed successfully");
+      expect(output).toContain("Konfiguracja zakończona pomyślnie");
 
       // Verify the config file was created
       expect(env.fileExists(appPath, "eslint.config.mjs")).toBe(true);

@@ -21,7 +21,7 @@ describe("Next.js Integration Tests", () => {
     await env.initGitRepo(appPath);
 
     const output = await env.runSolvroConfig(appPath, ["--all", "--force"]);
-    expect(output).toContain("Configuration completed successfully");
+    expect(output).toContain("Konfiguracja zakończona pomyślnie");
 
     // Format code first
     const prettierResult = await env.runPrettier(appPath, true);
@@ -76,7 +76,7 @@ describe("NestJS Integration Tests", () => {
     await env.initGitRepo(appPath);
 
     const output = await env.runSolvroConfig(appPath, ["--all", "--force"]);
-    expect(output).toContain("Configuration completed successfully");
+    expect(output).toContain("Konfiguracja zakończona pomyślnie");
 
     // Format code first
     const prettierResult = await env.runPrettier(appPath, true);
@@ -132,7 +132,7 @@ describe("Vite Integration Tests", () => {
     await env.initGitRepo(appPath);
 
     const output = await env.runSolvroConfig(appPath, ["--all", "--force"]);
-    expect(output).toContain("Configuration completed successfully");
+    expect(output).toContain("Konfiguracja zakończona pomyślnie");
 
     // Format code first
     const prettierResult = await env.runPrettier(appPath, true);
