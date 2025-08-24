@@ -1,5 +1,6 @@
 import * as p from "@clack/prompts";
 import { Command } from "commander";
+import { getUserAgent } from "package-manager-detector/detect";
 import c from "picocolors";
 
 import packageJsonData from "../../package.json";
@@ -46,11 +47,33 @@ async function main() {
     p.intro(c.bold(c.bgBlue("  @solvro/config  ")));
   }
 
+  const userAgent = getUserAgent();
+
+  if (userAgent !== "npm") {
+    const packageManager = userAgent ?? "unknown";
+    const warningMessage = `
+${c.red(c.bold(`⚠️  OSTRZEŻENIE: ${packageManager} nie jest obsługiwany ⚠️`))}
+
+Próbujesz uruchomić ten skrypt z ${c.yellow(packageManager)}'em, ale @solvro/config działa tylko z ${c.yellow("npm'em")}. 
+
+Support dla innych menedżerów pakietów nie jest planowany - chcemy jednolitego stacku technologicznego dla projektów w naszym kochanym kole Solvro.
+
+Użyj zamiast tego npm'a:
+${c.cyan("npx @solvro/config")}`;
+
+    if (isNonInteractive) {
+      console.error(warningMessage);
+    } else {
+      p.cancel(warningMessage);
+    }
+    process.exit(1);
+  }
+
   // Git clean check
   if (options.force !== true && !isGitClean()) {
     if (isNonInteractive) {
       console.error(
-        "Git repository has uncommitted changes. Use --force to bypass this check.",
+        "Repozytorium Git ma niezatwierdzone zmiany. Użyj --force, aby pominąć to sprawdzenie.",
       );
       process.exit(1);
     }
@@ -158,7 +181,7 @@ async function main() {
 
     if (toolsToInstall.length === 0) {
       console.error(
-        "No tools specified. Use --eslint, --prettier, --gh-action, --commitlint, or --all",
+        "Nie wybrano żadnych narzędzi. Użyj --eslint, --prettier, --gh-action, --commitlint, lub --all",
       );
       process.exit(1);
     }
@@ -227,9 +250,9 @@ async function main() {
   await packageJson.clearInstall();
 
   if (isNonInteractive) {
-    console.log("✅ Configuration completed successfully!");
+    console.log("✅ Konfiguracja zakończona pomyślnie!");
   } else {
-    p.outro("✅ Configuration completed successfully!");
+    p.outro("✅ Konfiguracja zakończona pomyślnie!");
   }
 }
 
@@ -237,6 +260,6 @@ async function main() {
 try {
   await main();
 } catch (error: unknown) {
-  console.error("An error occurred:", error);
+  console.error("Wystąpił błąd:", error);
   process.exit(1);
 }
