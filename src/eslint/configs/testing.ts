@@ -25,9 +25,14 @@ export const testing = async ({
             "playwright/prefer-native-locators": "warn",
             "playwright/prefer-locator": "warn",
             "playwright/prefer-comparison-matcher": "warn",
+            "playwright/require-top-level-describe": "error",
+            "playwright/prefer-hooks-on-top": "warn",
+            "playwright/prefer-hooks-in-order": "warn",
+            "playwright/prefer-equality-matcher": "error",
+            "playwright/no-raw-locators": "warn",
           },
         },
-      ] as const)
+      ] as const satisfies ConfigWithExtends[])
     : [];
 
   const vitestConfig = isVitest
@@ -39,9 +44,28 @@ export const testing = async ({
           },
           rules: {
             ...vitest.configs.recommended.rules,
+            "vitest/consistent-test-it": [
+              "error",
+              {
+                fn: "it",
+              },
+            ],
+            "vitest/no-focused-tests": ["warn"],
+            "vitest/no-mocks-import": ["error"],
+            "vitest/no-test-return-statement": ["error"],
+            "vitest/prefer-lowercase-title": ["error"],
+            "vitest/require-top-level-describe": ["warn"],
+            "vitest/prefer-vi-mocked": ["error"],
+            "vitest/prefer-hooks-in-order": ["warn"],
+            "vitest/prefer-hooks-on-top": ["warn"],
+            "vitest/prefer-each": ["warn"],
+            "vitest/no-conditional-tests": ["error"],
+            "vitest/prefer-comparison-matcher": ["error"],
+            "vitest/no-conditional-in-test": ["warn"],
+            "vitest/consistent-vitest-vi": ["error"],
           },
         },
-      ] as const)
+      ] as const satisfies ConfigWithExtends[])
     : [];
 
   const jestConfig = isJest
