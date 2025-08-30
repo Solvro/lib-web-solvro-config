@@ -258,7 +258,8 @@ ${c.cyan("npx @solvro/config")}`;
 
 // Run the main function
 try {
-  await main();
+  // eslint-disable-next-line unicorn/prefer-top-level-await
+  void main();
 } catch (error: unknown) {
   console.error("Wystąpił błąd:", error);
   process.exit(1);
