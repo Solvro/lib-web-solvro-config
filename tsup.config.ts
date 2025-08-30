@@ -11,7 +11,7 @@ export default defineConfig([
     clean: true,
     dts: true,
     shims: true,
-    format: "esm",
+    format: ["esm", "cjs"],
     sourcemap: true,
     outDir: "dist",
   },
