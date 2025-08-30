@@ -1,11 +1,14 @@
 import { commitLintCi } from "./commit-lint-ci";
+import { nextJsCi } from "./nextjs-ci";
 
 export const reactCi = ({
   nodeVersion,
   withCommitlint,
+  usingNextJs,
 }: {
   nodeVersion: string;
   withCommitlint: boolean;
+  usingNextJs: boolean;
 }) => `name: CI
 
 on:
@@ -27,15 +30,7 @@ jobs:
         with:
           node-version: ${nodeVersion}
           cache: 'npm'
-
-      - name: Setup build cache
-        uses: actions/cache@v4
-        with:
-          path: \${{ github.workspace }}/.next/cache
-          key: \${{ runner.os }}-nextjs-\${{ hashFiles('**/package-lock.json') }}-\${{ hashFiles('**/*.ts', '**/*.tsx') }}
-          restore-keys: |
-            \${{ runner.os }}-nextjs-\${{ hashFiles('**/package-lock.json') }}-
-
+${usingNextJs ? nextJsCi() : ""}
       - name: Install dependencies
         run: npm ci
 ${withCommitlint ? commitLintCi() : ""}

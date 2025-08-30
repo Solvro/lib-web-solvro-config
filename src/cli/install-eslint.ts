@@ -33,7 +33,7 @@ export const installEslint = async (isNonInteractive = false) => {
 
   const type = await packageJson.getProjectType();
 
-  if (type === "react" && (await packageJson.hasPackage("next"))) {
+  if (type === "react" && (await packageJson.isNextJs())) {
     const is15 = await packageJson.doesSatisfies("next", ">=15");
 
     if (!is15) {

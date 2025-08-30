@@ -48,11 +48,14 @@ export const installGithubActions = async () => {
   }
 
   if (type === "react") {
+    const usingNextJs = await packageJson.isNextJs();
+
     await fs.writeFile(
       path.join(ghWorkflowsDirectory, "ci.yml"),
       reactCi({
         nodeVersion: "22",
         withCommitlint,
+        usingNextJs,
       }),
     );
   }

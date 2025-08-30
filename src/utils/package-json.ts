@@ -29,6 +29,10 @@ export class PackageJson {
     return isPackageListed(package_);
   }
 
+  async isNextJs() {
+    return this.hasPackage("next");
+  }
+
   async doesSatisfies(package_: string, version: string) {
     await this.load();
 
