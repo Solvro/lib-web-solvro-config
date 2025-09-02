@@ -1,11 +1,14 @@
 import { commitLintCi } from "./commit-lint-ci";
+import { nextJsCi } from "./nextjs-ci";
 
 export const reactCi = ({
   nodeVersion,
   withCommitlint,
+  usingNextJs,
 }: {
   nodeVersion: string;
   withCommitlint: boolean;
+  usingNextJs: boolean;
 }) => `name: CI
 
 on:
@@ -27,7 +30,7 @@ jobs:
         with:
           node-version: ${nodeVersion}
           cache: 'npm'
-
+${usingNextJs ? nextJsCi() : ""}
       - name: Install dependencies
         run: npm ci
 ${withCommitlint ? commitLintCi() : ""}
