@@ -53,6 +53,7 @@ export const solvro = async (...overrides: ConfigWithExtends[]) => {
 
   const defaultOverrides = defaultOverridesPreset();
 
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   return tseslint.config(
     ...configs,
     tsConfig,
