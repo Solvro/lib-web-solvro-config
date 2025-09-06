@@ -1,7 +1,6 @@
 import { findUpSync } from "find-up-simple";
 import { isPackageListed } from "local-pkg";
 import path from "node:path";
-import tseslint from "typescript-eslint";
 import type { ConfigWithExtends } from "typescript-eslint";
 
 import { basePreset, defaultOverridesPreset } from "./presets/base";
@@ -53,11 +52,11 @@ export const solvro = async (...overrides: ConfigWithExtends[]) => {
 
   const defaultOverrides = defaultOverridesPreset();
 
-  return tseslint.config(
+  return [
     ...configs,
     tsConfig,
     ...projectConfigs,
     ...defaultOverrides,
     ...overrides,
-  );
+  ];
 };
