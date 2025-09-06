@@ -63,7 +63,7 @@ export function disables(): ConfigWithExtends[] {
     },
     {
       files: [GLOB_JS],
-      extends: [tseslint.configs.disableTypeChecked],
+      ...tseslint.configs.disableTypeChecked,
     },
   ];
 }
