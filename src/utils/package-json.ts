@@ -95,7 +95,7 @@ export class PackageJson {
   async save() {
     await writeFile(
       path.join(projectRoot(), "package.json"),
-      JSON.stringify(this.json, null, 2),
+      `${JSON.stringify(this.json, null, 2)}\n`,
     );
   }
 
