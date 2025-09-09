@@ -54,4 +54,5 @@ ${withCommitlint ? commitLintCi() : ""}
 
       - name: Build
         run: npm run build
-        if: always()`;
+        if: always()
+`;

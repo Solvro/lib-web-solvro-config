@@ -29,7 +29,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${nodeVersion}
-          cache: 'npm'
+          cache: "npm"
 ${usingNextJs ? nextJsCi() : ""}
       - name: Install dependencies
         run: npm ci
@@ -40,4 +40,5 @@ ${withCommitlint ? commitLintCi() : ""}
 
       - name: Build
         run: npm run build
-        if: always()`;
+        if: always()
+`;
