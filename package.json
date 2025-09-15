@@ -107,7 +107,7 @@
     "husky": "^9.1.7",
     "knip": "^5.63.0",
     "lint-staged": "^16.1.5",
-    "pkg-pr-new": "^0.0.59",
+    "pkg-pr-new": "^0.0.60",
     "prettier": "^3.6.2",
     "semantic-release": "^24.2.7",
     "tsup": "^8.5.0",
