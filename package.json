@@ -61,7 +61,7 @@
   "dependencies": {
     "@adonisjs/eslint-config": "^2.1.2",
     "@clack/prompts": "^0.11.0",
-    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/config-conventional": "^20.0.0",
     "@darraghor/eslint-plugin-nestjs-typed": "^6.7.1",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.5.0",
     "@eslint/js": "^9.34.0",
