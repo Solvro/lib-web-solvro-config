@@ -9,9 +9,9 @@ import { javascript } from "../configs/javascript";
 import { jsdoc } from "../configs/jsdoc";
 import { typescriptRelaxed } from "../configs/typescript-relaxed";
 
-export const basePreset = (): ConfigWithExtends[] => [
+export const basePreset = async (): Promise<ConfigWithExtends[]> => [
   gitignore(),
-  ...javascript(),
+  ...(await javascript()),
   ...jsdoc(),
   ...comments(),
   ...typescriptRelaxed(),

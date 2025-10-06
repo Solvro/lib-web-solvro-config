@@ -15,7 +15,7 @@ export const solvro = async (...overrides: ConfigWithExtends[]) => {
     throw new Error("You can't use both Adonis and React in the same project");
   }
 
-  const configs = basePreset();
+  const configs = await basePreset();
   const projectConfigs: ConfigWithExtends[] = [];
 
   if (isAdonis) {
