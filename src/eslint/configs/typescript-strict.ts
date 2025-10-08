@@ -135,6 +135,14 @@ export function typescriptStrict(): ConfigWithExtends[] {
         "@typescript-eslint/promise-function-async": "error",
         "@typescript-eslint/unbound-method": "error",
         "no-restricted-imports": "off",
+        // ban braces for one-line arrow functions
+        "arrow-body-style": ["error", "as-needed"],
+        // use function declarations instead of arrow functions and function expressions
+        "func-style": [
+          "error",
+          "declaration",
+          { allowArrowFunctions: true, allowTypeAnnotation: true },
+        ],
       },
     },
   ];
