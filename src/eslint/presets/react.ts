@@ -1,4 +1,4 @@
-import type { ConfigWithExtends } from "typescript-eslint";
+import type { ConfigWithExtends } from "@eslint/config-helpers";
 
 import { a11y } from "../configs/a11y";
 import { imports } from "../configs/imports";

@@ -1,10 +1,10 @@
+import type { ConfigWithExtends } from "@eslint/config-helpers";
 import pluginQuery from "@tanstack/eslint-plugin-query";
 import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
 import pluginReactRefresh from "eslint-plugin-react-refresh";
 import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need-an-effect";
 import { isPackageListedSync } from "local-pkg";
-import type { ConfigWithExtends } from "typescript-eslint";
 
 const nextJsPackages = ["next"];
 const vitePackages = ["vite"];
@@ -26,6 +26,7 @@ export async function react(): Promise<ConfigWithExtends[]> {
       {
         name: "solvro/next/setup",
         plugins: {
+          // @ts-expect-error ???
           "@next/next": nextPlugin,
         },
 

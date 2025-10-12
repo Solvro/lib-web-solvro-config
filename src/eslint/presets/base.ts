@@ -1,5 +1,5 @@
+import type { ConfigWithExtends } from "@eslint/config-helpers";
 import gitignore from "eslint-config-flat-gitignore";
-import type { ConfigWithExtends } from "typescript-eslint";
 
 import { comments } from "../configs/comments";
 import { disables } from "../configs/disables";

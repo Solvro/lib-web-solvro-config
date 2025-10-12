@@ -1,4 +1,4 @@
-import type { Config, ConfigWithExtends } from "typescript-eslint";
+import type { ConfigWithExtends } from "@eslint/config-helpers";
 
 import { pluginAntfu, pluginImport } from "../plugins";
 
@@ -15,7 +15,7 @@ const forbiddenUiLibraries = [
 export function imports({
   forbidDefaultExport = true,
 } = {}): ConfigWithExtends[] {
-  const config: Config = [
+  const config: ConfigWithExtends[] = [
     pluginImport.flatConfigs.typescript,
     {
       name: "solvro/imports/rules",
@@ -50,7 +50,7 @@ export function imports({
         ],
       },
     },
-  ] satisfies Config;
+  ];
 
   if (forbidDefaultExport) {
     config.push(

@@ -1,4 +1,4 @@
-import type { ConfigWithExtends } from "typescript-eslint";
+import type { ConfigWithExtends } from "@eslint/config-helpers";
 
 import { pluginNode } from "../plugins";
 

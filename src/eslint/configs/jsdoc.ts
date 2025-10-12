@@ -1,5 +1,5 @@
+import type { ConfigWithExtends } from "@eslint/config-helpers";
 import jsdocPlugin from "eslint-plugin-jsdoc";
-import type { ConfigWithExtends } from "typescript-eslint";
 
 export function jsdoc(): ConfigWithExtends[] {
   return [

@@ -1,6 +1,6 @@
+import type { ConfigWithExtends } from "@eslint/config-helpers";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import globals from "globals";
-import type { ConfigWithExtends } from "typescript-eslint";
 
 export function a11y(): ConfigWithExtends[] {
   return [

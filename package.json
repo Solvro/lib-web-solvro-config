@@ -64,6 +64,7 @@
     "@commitlint/config-conventional": "^20.0.0",
     "@darraghor/eslint-plugin-nestjs-typed": "^6.9.1",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.5.0",
+    "@eslint/config-helpers": "^0.4.0",
     "@eslint/js": "^9.37.0",
     "@tanstack/eslint-plugin-query": "^5.91.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",

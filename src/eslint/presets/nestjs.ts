@@ -1,6 +1,6 @@
 import eslintNestJs from "@darraghor/eslint-plugin-nestjs-typed";
+import type { ConfigWithExtends } from "@eslint/config-helpers";
 import { isPackageListed } from "local-pkg";
-import type { ConfigArray, ConfigWithExtends } from "typescript-eslint";
 
 import { imports } from "../configs/imports";
 import { node } from "../configs/node";
@@ -10,9 +10,9 @@ import { unicorn } from "../configs/unicorn";
 export const nestjsPreset = async (): Promise<ConfigWithExtends[]> => {
   const hasSwagger = await isPackageListed("@nestjs/swagger");
 
-  const nestjsConfig = hasSwagger
+  const nestjsConfig: ConfigWithExtends[] = hasSwagger
     ? ([
-        ...eslintNestJs.configs.flatRecommended,
+        ...(eslintNestJs.configs.flatRecommended as ConfigWithExtends[]),
         {
           rules: {
             "@darraghor/nestjs-typed/api-property-matches-property-optionality":
@@ -28,8 +28,8 @@ export const nestjsPreset = async (): Promise<ConfigWithExtends[]> => {
               "warn",
           },
         },
-      ] satisfies ConfigArray)
-    : eslintNestJs.configs.flatNoSwagger;
+      ] satisfies ConfigWithExtends[])
+    : (eslintNestJs.configs.flatNoSwagger as ConfigWithExtends[]);
 
   return [
     ...node(),

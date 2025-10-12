@@ -1,6 +1,6 @@
+import type { ConfigWithExtends } from "@eslint/config-helpers";
 import eslint from "@eslint/js";
 import globals from "globals";
-import type { ConfigWithExtends } from "typescript-eslint";
 
 import { pluginAntfu, pluginUnusedImports } from "../plugins";
 
