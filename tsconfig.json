@@ -8,5 +8,6 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "outDir": "./dist"
-  }
+  },
+  "exclude": ["tests/nest-app"]
 }

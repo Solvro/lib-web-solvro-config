@@ -7,8 +7,8 @@ on:
       - "main"
 
 jobs:
-  commitlint:
-    name: Commitlint
+  ci:
+    name: CI
     runs-on: ubuntu-latest
     steps:
       - name: Check out
@@ -20,30 +20,21 @@ jobs:
         uses: ./.github/composite-actions/install
 
       - name: Run commitlint check
+        if: always()
         run: npx commitlint -f ${{ github.event.pull_request.base.sha }}
 
-  eslint:
-    name: Lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out
-        uses: actions/checkout@v5
-
-      - name: Install
-        uses: ./.github/composite-actions/install
-
       - name: Run ESLint check
+        if: always()
         run: npm run lint
 
-  prettier:
-    name: Format
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out
-        uses: actions/checkout@v5
-
-      - name: Install
-        uses: ./.github/composite-actions/install
-
       - name: Run Prettier check
+        if: always()
         run: npm run format
+
+      - name: Check types
+        if: always()
+        run: npm run typecheck
+
+      - name: Check dead code
+        if: always()
+        run: npm run knip
