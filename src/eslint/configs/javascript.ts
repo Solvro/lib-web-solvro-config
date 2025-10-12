@@ -1,10 +1,18 @@
 import eslint from "@eslint/js";
 import globals from "globals";
+import { getPackageInfo } from "local-pkg";
+import semver from "semver";
 import type { ConfigWithExtends } from "typescript-eslint";
 
 import { pluginAntfu, pluginUnusedImports } from "../plugins";
 
-export function javascript(): ConfigWithExtends[] {
+export async function javascript(): Promise<ConfigWithExtends[]> {
+  // Check if ESLint version is >= 9.35.0 to enable preserve-caught-error rule
+  const eslintInfo = await getPackageInfo("eslint");
+  const supportsPreserveCaughtError =
+    eslintInfo?.version !== undefined &&
+    semver.gte(eslintInfo.version, "9.35.0");
+
   return [
     {
       languageOptions: {
@@ -221,6 +229,10 @@ export function javascript(): ConfigWithExtends[] {
         "valid-typeof": ["error", { requireStringLiterals: true }],
         "vars-on-top": "error",
         yoda: ["error", "never"],
+        // ESLint 9.35.0+ rule for preserving error cause when rethrowing
+        ...(supportsPreserveCaughtError
+          ? { "preserve-caught-error": "error" }
+          : {}),
       },
     },
   ];
