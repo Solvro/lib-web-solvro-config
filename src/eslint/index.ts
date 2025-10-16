@@ -1,4 +1,4 @@
-import type { ConfigWithExtends } from "@eslint/config-helpers";
+import type { Config, ConfigWithExtends } from "@eslint/config-helpers";
 import { defineConfig } from "eslint/config";
 import { findUpSync } from "find-up-simple";
 import { isPackageListed } from "local-pkg";
@@ -6,7 +6,9 @@ import path from "node:path";
 
 import { basePreset, defaultOverridesPreset } from "./presets/base";
 
-export const solvro = async (...overrides: ConfigWithExtends[]) => {
+export const solvro = async (
+  ...overrides: ConfigWithExtends[]
+): Promise<Config[]> => {
   const isAdonis = await isPackageListed("@adonisjs/core");
   const isReact = await isPackageListed("react");
   const isNestJs = await isPackageListed("@nestjs/core");
