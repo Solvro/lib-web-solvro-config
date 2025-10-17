@@ -91,7 +91,7 @@
     "package-manager-detector": "^1.4.0",
     "picocolors": "^1.1.1",
     "prettier-plugin-packagejson": "^2.5.19",
-    "prettier-plugin-tailwindcss": "^0.6.14",
+    "prettier-plugin-tailwindcss": "^0.7.1",
     "semver": "^7.7.3",
     "typescript-eslint": "^8.46.0"
   },
