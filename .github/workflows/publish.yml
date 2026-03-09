@@ -1,5 +1,8 @@
 name: Publish
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -10,6 +13,12 @@ jobs:
   release:
     name: Publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # to be able to publish a GitHub release
+      issues: write # to be able to comment on released issues
+      pull-requests: write # to be able to comment on released pull requests
+      id-token: write # to enable use of OIDC for trusted publishing and npm provenance
+
     steps:
       - uses: actions/checkout@v5
         with:
@@ -25,8 +34,10 @@ jobs:
       - name: Install
         uses: ./.github/composite-actions/install
 
+      - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
+        run: npm audit signatures
+
       - name: Publish
         run: npm run release
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
