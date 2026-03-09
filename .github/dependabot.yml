@@ -6,6 +6,12 @@ updates:
       interval: "daily"
     open-pull-requests-limit: 15
 
+    groups:
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
