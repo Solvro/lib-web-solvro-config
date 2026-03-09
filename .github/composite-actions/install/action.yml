@@ -10,6 +10,12 @@ runs:
         node-version-file: ".node-version"
         cache: npm
 
+    - name: Update npm
+      shell: bash
+      run: |
+        NPM_VERSION="$(node -p 'require(`./package.json`).packageManager')"
+        npm install --global "$NPM_VERSION"
+
     - name: Install dependencies
       shell: bash
       run: npm ci
