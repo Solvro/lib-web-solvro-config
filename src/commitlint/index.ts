@@ -2,7 +2,7 @@ import type { UserConfig } from "@commitlint/types";
 
 const config: UserConfig = {
   extends: ["@commitlint/config-conventional"],
-  helpUrl: "https://docs.solvro.pl/github#nazewnictwo-commit%C3%B3w",
+  helpUrl: "https://docs.solvro.pl/git-github/solvro#nazewnictwo-commit%C3%B3w",
   rules: {
     "type-enum": [
       2,
