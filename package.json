@@ -79,7 +79,7 @@
     "eslint-plugin-n": "^17.24.0",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
-    "eslint-plugin-react-refresh": "^0.4.26",
+    "eslint-plugin-react-refresh": "^0.5.2",
     "eslint-plugin-react-you-might-not-need-an-effect": "^0.9.2",
     "eslint-plugin-unicorn": "^61.0.2",
     "eslint-plugin-unused-imports": "^4.4.1",
