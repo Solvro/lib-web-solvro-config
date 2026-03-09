@@ -12,7 +12,7 @@ export const adonisPreset = (): ConfigWithExtends[] => {
   return [
     ...builtinAdonisConfig,
     ...node(),
-    ...imports(),
+    ...imports({ forbidDefaultExport: false }),
     {
       rules: {
         "@typescript-eslint/naming-convention": [
