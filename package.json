@@ -59,7 +59,7 @@
   },
   "prettier": "./dist/prettier/index.js",
   "dependencies": {
-    "@adonisjs/eslint-config": "^2.1.2",
+    "@adonisjs/eslint-config": "^3.0.0",
     "@clack/prompts": "^1.1.0",
     "@commitlint/config-conventional": "^20.4.3",
     "@darraghor/eslint-plugin-nestjs-typed": "^7.1.26",
