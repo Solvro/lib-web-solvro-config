@@ -85,7 +85,7 @@
     "eslint-plugin-unused-imports": "^4.4.1",
     "execa": "^9.6.1",
     "find-up-simple": "^1.0.1",
-    "globals": "^16.5.0",
+    "globals": "^17.4.0",
     "is-interactive": "^2.0.0",
     "local-pkg": "^1.1.2",
     "package-manager-detector": "^1.6.0",
