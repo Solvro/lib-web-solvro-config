@@ -34,8 +34,16 @@ ${usingNextJs ? nextJsCi() : ""}
       - name: Install dependencies
         run: npm ci
 ${withCommitlint ? commitLintCi() : ""}
-      - name: Format check
+      - name: Check formatting
         run: npm run format:check
+        if: always()
+
+      - name: Lint code
+        run: npm run lint
+        if: always()
+
+      - name: Check types
+        run: npm run types:check
         if: always()
 
       - name: Build

@@ -36,16 +36,16 @@ jobs:
           cp .env.example .env
           node ace generate:key
 ${withCommitlint ? commitLintCi() : ""}
-      - name: Run prettier
+      - name: Check formatting
         run: npm run format:check
         if: always()
 
-      - name: Run Lint
+      - name: Lint code
         run: npm run lint
         if: always()
 
       - name: Check types
-        run: npm run typecheck
+        run: npm run types:check
         if: always()
 
       - name: Run tests

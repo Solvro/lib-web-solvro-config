@@ -58,6 +58,10 @@ export const installGithubActions = async () => {
         usingNextJs,
       }),
     );
+
+    if (usingNextJs) {
+      await packageJson.addScriptIfNotExists("types:generate", "next typegen");
+    }
   }
 
   if (type === "nestjs") {
@@ -80,7 +84,7 @@ export const installGithubActions = async () => {
   await packageJson.addScriptIfNotExists("format:check", "prettier --check .");
   await packageJson.addScriptIfNotExists("lint", "eslint . --max-warnings=0");
   await packageJson.addScriptIfNotExists("format", "prettier --write .");
-  await packageJson.addScriptIfNotExists("typecheck", "tsc --noEmit");
+  await packageJson.addScriptIfNotExists("types:check", "tsc --noEmit");
 
   p.note("Dodano konfigurację CI i skrypty.");
 };
