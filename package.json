@@ -62,7 +62,7 @@
     "@adonisjs/eslint-config": "^2.1.2",
     "@clack/prompts": "^1.1.0",
     "@commitlint/config-conventional": "^20.4.3",
-    "@darraghor/eslint-plugin-nestjs-typed": "^6.18.0",
+    "@darraghor/eslint-plugin-nestjs-typed": "^7.1.26",
     "@eslint-community/eslint-plugin-eslint-comments": "^4.7.1",
     "@eslint/config-helpers": "^0.4.2",
     "@eslint/js": "^9.37.0",
