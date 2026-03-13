@@ -7,7 +7,7 @@ import semver from "semver";
 
 import { $$ } from "./$$";
 import { projectRoot } from "./git-root";
-import { runIfInteractive } from "./run-if-interactive";
+import { runWithSpinner } from "./run-with-spinner";
 
 export class PackageJson {
   public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
@@ -121,14 +121,13 @@ export class PackageJson {
     const isInstalled = await this.hasPackage(package_);
 
     if (!isInstalled) {
-      const spinner = p.spinner();
-      runIfInteractive(() => {
-        spinner.start(`Instalowanie ${package_}`);
-      });
-
-      await $$`npm i ${options?.dev === true ? "-D" : ""} ${package_}@latest`;
-      runIfInteractive(() => {
-        spinner.stop(`${package_} zainstalowany 😍`);
+      await runWithSpinner({
+        start: `Instalowanie ${package_}`,
+        stop: `${package_} zainstalowany 😍`,
+        error: `Instalacja pakietu ${package_} nie powiodła się 🥶`,
+        callback: async () => {
+          await $$`npm i ${options?.dev === true ? "-D" : ""} ${package_}@latest`;
+        },
       });
 
       await this.load();
@@ -144,13 +143,13 @@ export class PackageJson {
         !semver.satisfies(info.version, options.minVersion)) ||
       options?.alwaysUpdate === true
     ) {
-      const spinner = p.spinner();
-      runIfInteractive(() => {
-        spinner.start(`Aktualizowanie ${package_}`);
-      });
-      await $$`npm i ${options.dev === true ? "-D" : ""} ${package_}@latest`;
-      runIfInteractive(() => {
-        spinner.stop(`${package_} zaktualizowany 😍`);
+      await runWithSpinner({
+        start: `Aktualizowanie ${package_}`,
+        stop: `${package_} zaktualizowany 😍`,
+        error: `Aktualizacja pakietu ${package_} nie powiodła się 🥶`,
+        callback: async () => {
+          await $$`npm i ${options.dev === true ? "-D" : ""} ${package_}@latest`;
+        },
       });
 
       await this.load();

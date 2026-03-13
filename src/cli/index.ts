@@ -13,6 +13,8 @@ import { installGithubActions } from "./install-ga";
 import { installLintStaged } from "./install-lint-staged";
 import { installPrettier } from "./install-prettier";
 
+const REPO_URL = "https://github.com/Solvro/lib-web-solvro-config";
+
 // Types
 interface CliOptions {
   force?: boolean;
@@ -54,9 +56,9 @@ async function main() {
     const warningMessage = `
 ${c.red(c.bold(`⚠️  OSTRZEŻENIE: ${packageManager} nie jest obsługiwany ⚠️`))}
 
-Próbujesz uruchomić ten skrypt z ${c.yellow(packageManager)}'em, ale @solvro/config działa tylko z ${c.yellow("npm'em")}. 
+Próbujesz uruchomić ten skrypt z ${c.yellow(packageManager)}'em, ale @solvro/config obecnie działa tylko z ${c.yellow("npm")}'em.
 
-Support dla innych menedżerów pakietów nie jest planowany - chcemy jednolitego stacku technologicznego dla projektów w naszym kochanym kole Solvro.
+Support dla innych menedżerów pakietów jest planowany w nadchodzących wersjach - zagwiazdkuj i spróbuj ponownie wkrótce!
 
 Użyj zamiast tego npm'a:
 ${c.cyan("npx @solvro/config")}`;
@@ -249,18 +251,33 @@ ${c.cyan("npx @solvro/config")}`;
 
   await packageJson.clearInstall();
 
-  if (isNonInteractive) {
-    console.log("✅ Konfiguracja zakończona pomyślnie!");
-  } else {
-    p.outro("✅ Konfiguracja zakończona pomyślnie!");
+  const printSuccess = isNonInteractive ? console.info : p.outro;
+  printSuccess("✅ Konfiguracja zakończona pomyślnie!");
+}
+
+async function mainWrapper() {
+  try {
+    await main();
+  } catch (error: unknown) {
+    if (process.env.NODE_ENV === "development") {
+      console.error(
+        c.red("Unhandled error in main:"),
+        error instanceof Error ? error.message : error,
+      );
+    } else {
+      const errorMessage =
+        "Wystąpił nieoczekiwany błąd :( Proszę zgłosić go twórcom:";
+      const errorLink = `${REPO_URL}/issues/new`;
+      if (isNonInteractive) {
+        console.error(errorMessage);
+        console.error(errorLink);
+      } else {
+        p.cancel(`${errorMessage} ${errorLink}`);
+      }
+    }
+    process.exit(1);
   }
 }
 
-// Run the main function
-try {
-  // eslint-disable-next-line unicorn/prefer-top-level-await
-  void main();
-} catch (error: unknown) {
-  console.error("Wystąpił błąd:", error);
-  process.exit(1);
-}
+// eslint-disable-next-line unicorn/prefer-top-level-await
+void mainWrapper();

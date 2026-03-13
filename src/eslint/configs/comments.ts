@@ -7,7 +7,6 @@ export function comments(): ConfigWithExtends[] {
     {
       name: "solvro/eslint-comments/rules",
       plugins: {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         "eslint-comments": pluginComments,
       },
       rules: {
