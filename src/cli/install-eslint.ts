@@ -29,12 +29,16 @@ export const installEslint = async (isNonInteractive = false) => {
 
   await packageJson.load();
 
-  await packageJson.install("eslint", { dev: true, minVersion: ">=9" });
+  await packageJson.install("eslint", {
+    dev: true,
+    version: "^9",
+    minVersion: ">=9",
+  });
 
   const type = await packageJson.getProjectType();
 
   if (type === "react" && (await packageJson.isNextJs())) {
-    const is15 = await packageJson.doesSatisfies("next", ">=15");
+    const is15 = await packageJson.doesSatisfy("next", ">=15");
 
     if (!is15) {
       p.cancel(

@@ -4,6 +4,8 @@ import { getUserAgent } from "package-manager-detector/detect";
 import c from "picocolors";
 
 import packageJsonData from "../../package.json";
+import { BUG_TRACKER_URL } from "../constants";
+import { confirmProjectType } from "../utils/confirm-project-type";
 import { isGitClean } from "../utils/is-git-clean";
 import { PackageJson } from "../utils/package-json";
 import { polishConfirm } from "../utils/polish-confirm";
@@ -12,8 +14,6 @@ import { installEslint } from "./install-eslint";
 import { installGithubActions } from "./install-ga";
 import { installLintStaged } from "./install-lint-staged";
 import { installPrettier } from "./install-prettier";
-
-const REPO_URL = "https://github.com/Solvro/lib-web-solvro-config";
 
 // Types
 interface CliOptions {
@@ -94,47 +94,44 @@ ${c.cyan("npx @solvro/config")}`;
     }
   }
 
+  // Peer dependencies check
+  if (
+    (await packageJson.hasPackage("eslint")) &&
+    !(await packageJson.doesSatisfy("eslint", "<10"))
+  ) {
+    const eslint = await packageJson.getPackageInfo("eslint");
+    const errorMessage = `ESLint w wersji powyżej 9 ${c.red("nie jest jeszcze wspierany")}. Obecnie zainstalowana jest wersja ${c.yellow(eslint?.version ?? "10")}.`;
+    const errorRetry = "Proszę zainstalować wersję 9 i spróbować ponownie.";
+    if (isNonInteractive) {
+      console.error(errorMessage);
+      console.error(errorRetry);
+      process.exit(1);
+    }
+    const isConfirmed = await polishConfirm({
+      message: `${errorMessage} Zainstalować starszą wersję ${c.magenta("ESLint")}'a? (Wymagane by kontynuować)`,
+    });
+    if (p.isCancel(isConfirmed) || !isConfirmed) {
+      p.cancel(errorRetry);
+      process.exit(1);
+    }
+    await packageJson.install("eslint", { version: "^9", dev: true });
+  }
+
   // Determine project type automatically
   const projectType = await packageJson.getProjectType();
 
   // Project type confirmation (interactive mode only)
   if (!isNonInteractive) {
     if (projectType === "adonis") {
-      const isConfirmed = await polishConfirm({
-        message: `Wygląda jakbyś używał ${c.magenta("Adonis")}'a. Czy to się zgadza?`,
-      });
-
-      if (p.isCancel(isConfirmed) || !isConfirmed) {
-        p.cancel("Zgłoś błąd na GitHubie :(, a my spróbujemy pomóc.");
-        process.exit(1);
-      }
+      await confirmProjectType(c.magenta("Adonis"));
     }
 
     if (projectType === "react") {
-      const isConfirmed = await polishConfirm({
-        message: `Wygląda jakbyś używał ${c.cyan("React")}'a. Czy to się zgadza?`,
-      });
-
-      if (p.isCancel(isConfirmed)) {
-        p.cancel("😡");
-        process.exit(1);
-      }
-
-      if (!isConfirmed) {
-        p.cancel("Zgłoś błąd na GitHubie :(, a my spróbujemy pomóc.");
-        process.exit(1);
-      }
+      await confirmProjectType(c.cyan("React"));
     }
 
     if (projectType === "nestjs") {
-      const isConfirmed = await polishConfirm({
-        message: `Wygląda jakbyś używał ${c.red("NestJS")}'a. Czy to się zgadza?`,
-      });
-
-      if (p.isCancel(isConfirmed)) {
-        p.cancel("😡");
-        process.exit(1);
-      }
+      await confirmProjectType(c.red("NestJS"));
     }
 
     if (projectType === "node") {
@@ -269,12 +266,11 @@ async function mainWrapper() {
     } else {
       const errorMessage =
         "Wystąpił nieoczekiwany błąd :( Proszę zgłosić go twórcom:";
-      const errorLink = `${REPO_URL}/issues/new`;
       if (isNonInteractive) {
         console.error(errorMessage);
-        console.error(errorLink);
+        console.error(BUG_TRACKER_URL);
       } else {
-        p.cancel(`${errorMessage} ${errorLink}`);
+        p.cancel(`${errorMessage} ${BUG_TRACKER_URL}`);
       }
     }
     process.exit(1);

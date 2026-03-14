@@ -34,12 +34,16 @@ export class PackageJson {
     return this.hasPackage("next");
   }
 
-  async doesSatisfies(package_: string, version: string) {
+  async getPackageInfo(package_: string) {
+    return getPackageInfo(package_);
+  }
+
+  async doesSatisfy(package_: string, version: string) {
     await this.load();
 
     assert.ok(this.json !== null);
 
-    const packageInfo = await getPackageInfo(package_);
+    const packageInfo = await this.getPackageInfo(package_);
 
     if (packageInfo?.version === undefined) {
       return false;
@@ -118,17 +122,26 @@ export class PackageJson {
 
   async install(
     package_: string,
-    options?: { minVersion?: string; dev?: boolean; alwaysUpdate?: boolean },
+    {
+      version = "latest",
+      ...options
+    }: {
+      version?: string;
+      minVersion?: string;
+      dev?: boolean;
+      alwaysUpdate?: boolean;
+    } = {},
   ) {
     const isInstalled = await this.hasPackage(package_);
+    const info = await this.getPackageInfo(package_);
 
-    if (!isInstalled) {
+    if (!isInstalled || !(await this.doesSatisfy(package_, version))) {
       await runWithSpinner({
         start: `Instalowanie pakietu ${package_}`,
         stop: `${package_} zainstalowany 😍`,
         error: `Instalacja pakietu ${package_} nie powiodła się 🥶`,
         callback: async () => {
-          await $$`npm i ${options?.dev === true ? "-D" : ""} ${package_}@latest`;
+          await $$`npm i ${options.dev === true ? "-D" : ""} ${package_}@${version}`;
         },
       });
 
@@ -137,13 +150,11 @@ export class PackageJson {
       return;
     }
 
-    const info = await getPackageInfo(package_);
-
     if (
       (info?.version !== undefined &&
-        options?.minVersion !== undefined &&
+        options.minVersion !== undefined &&
         !semver.satisfies(info.version, options.minVersion)) ||
-      options?.alwaysUpdate === true
+      options.alwaysUpdate === true
     ) {
       await runWithSpinner({
         start: `Aktualizowanie pakietu ${package_}`,
