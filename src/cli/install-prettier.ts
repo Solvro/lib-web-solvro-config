@@ -31,7 +31,10 @@ export const installPrettier = async (isNonInteractive = false) => {
   await packageJson.load();
   assert.ok(packageJson.json !== null);
 
-  await packageJson.install("prettier", { dev: true, minVersion: ">=3" });
+  await packageJson.install("prettier", {
+    dev: true,
+    version: ">=3",
+  });
 
   const prettierConfig = prettierConfigNames.find((configName) =>
     existsSync(path.join(root, configName)),

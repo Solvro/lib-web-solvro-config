@@ -32,7 +32,6 @@ export const installEslint = async (isNonInteractive = false) => {
   await packageJson.install("eslint", {
     dev: true,
     version: "^9",
-    minVersion: ">=9",
   });
 
   const type = await packageJson.getProjectType();
