@@ -53,14 +53,14 @@ async function main() {
 
   if (userAgent !== "npm") {
     const packageManager = userAgent ?? "unknown";
-    const warningMessage = `
+    const warningMessage = `\
 ${c.red(c.bold(`⚠️  OSTRZEŻENIE: ${packageManager} nie jest obsługiwany ⚠️`))}
 
-Próbujesz uruchomić ten skrypt z ${c.yellow(packageManager)}'em, ale @solvro/config obecnie działa tylko z ${c.yellow("npm")}'em.
+Próbujesz uruchomić ten skrypt ${c.yellow(packageManager)}'em, ale @solvro/config obecnie działa tylko z ${c.green("npm")}'em.
 
-Support dla innych menedżerów pakietów jest planowany w nadchodzących wersjach - zagwiazdkuj i spróbuj ponownie wkrótce!
+${c.white(`Support dla innych menedżerów pakietów jest planowany w nadchodzących wersjach - ${c.yellow("zagwiazdkuj i spróbuj ponownie wkrótce")}!`)}
 
-Użyj zamiast tego npm'a:
+${c.white(`W międzyczasie użyj ${c.green("npm")}'a:`)}
 ${c.cyan("npx @solvro/config")}`;
 
     if (isNonInteractive) {
@@ -70,6 +70,10 @@ ${c.cyan("npx @solvro/config")}`;
     }
     process.exit(1);
   }
+
+  const packageJson = new PackageJson();
+  // Project directory check
+  await packageJson.load();
 
   // Git clean check
   if (options.force !== true && !isGitClean()) {
@@ -90,8 +94,6 @@ ${c.cyan("npx @solvro/config")}`;
     }
   }
 
-  const packageJson = new PackageJson();
-
   // Determine project type automatically
   const projectType = await packageJson.getProjectType();
 
@@ -99,7 +101,7 @@ ${c.cyan("npx @solvro/config")}`;
   if (!isNonInteractive) {
     if (projectType === "adonis") {
       const isConfirmed = await polishConfirm({
-        message: `Wygląda jakbyś używał Adonisa. Czy to się zgadza?`,
+        message: `Wygląda jakbyś używał ${c.magenta("Adonis")}'a. Czy to się zgadza?`,
       });
 
       if (p.isCancel(isConfirmed) || !isConfirmed) {
@@ -110,7 +112,7 @@ ${c.cyan("npx @solvro/config")}`;
 
     if (projectType === "react") {
       const isConfirmed = await polishConfirm({
-        message: `Wygląda jakbyś używał Reacta. Czy to się zgadza?`,
+        message: `Wygląda jakbyś używał ${c.cyan("React")}'a. Czy to się zgadza?`,
       });
 
       if (p.isCancel(isConfirmed)) {
@@ -126,7 +128,7 @@ ${c.cyan("npx @solvro/config")}`;
 
     if (projectType === "nestjs") {
       const isConfirmed = await polishConfirm({
-        message: `Wygląda jakbyś używał NestJsa. Czy to się zgadza?`,
+        message: `Wygląda jakbyś używał ${c.red("NestJS")}'a. Czy to się zgadza?`,
       });
 
       if (p.isCancel(isConfirmed)) {
@@ -137,7 +139,7 @@ ${c.cyan("npx @solvro/config")}`;
 
     if (projectType === "node") {
       p.cancel(
-        "Nie znaleziono ani Adonisa, Reacta, ani NestJsa. Musisz ręcznie konfigurować projekt.",
+        `Nie znaleziono ani ${c.magenta("Adonis")}'a, ${c.cyan("React")}'a, ani ${c.white("NestJS")}'a. Musisz ręcznie konfigurować projekt.`,
       );
       process.exit(1);
     }

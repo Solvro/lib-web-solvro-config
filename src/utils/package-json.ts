@@ -3,6 +3,7 @@ import { getPackageInfo, isPackageListed, loadPackageJSON } from "local-pkg";
 import assert from "node:assert";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
+import c from "picocolors";
 import semver from "semver";
 
 import { $$ } from "./$$";
@@ -17,7 +18,7 @@ export class PackageJson {
 
     if (json === null) {
       p.cancel(
-        "Nie znaleziono package.json. Upewnij się, że jesteś w katalogu projektu.",
+        `Nie znaleziono pliku ${c.cyan("package.json")}. Upewnij się, że jesteś w katalogu projektu.`,
       );
       process.exit(1);
     }
@@ -72,9 +73,10 @@ export class PackageJson {
     const isReact = await isPackageListed("react");
     const isNestJs = await isPackageListed("@nestjs/core");
     if (isReact && isAdonis) {
-      throw new Error(
-        "You can't use both Adonis and React in the same project",
+      p.cancel(
+        `Projekty korzystające zarówno z ${c.magenta("Adonis")}a jak i ${c.cyan("React")}a nie są wspierane.`,
       );
+      process.exit(1);
     }
 
     if (isNestJs) {
@@ -122,7 +124,7 @@ export class PackageJson {
 
     if (!isInstalled) {
       await runWithSpinner({
-        start: `Instalowanie ${package_}`,
+        start: `Instalowanie pakietu ${package_}`,
         stop: `${package_} zainstalowany 😍`,
         error: `Instalacja pakietu ${package_} nie powiodła się 🥶`,
         callback: async () => {
@@ -144,7 +146,7 @@ export class PackageJson {
       options?.alwaysUpdate === true
     ) {
       await runWithSpinner({
-        start: `Aktualizowanie ${package_}`,
+        start: `Aktualizowanie pakietu ${package_}`,
         stop: `${package_} zaktualizowany 😍`,
         error: `Aktualizacja pakietu ${package_} nie powiodła się 🥶`,
         callback: async () => {
