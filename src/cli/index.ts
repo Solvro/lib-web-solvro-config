@@ -4,6 +4,8 @@ import { getUserAgent } from "package-manager-detector/detect";
 import c from "picocolors";
 
 import packageJsonData from "../../package.json";
+import { BUG_TRACKER_URL } from "../constants";
+import { confirmProjectType } from "../utils/confirm-project-type";
 import { isGitClean } from "../utils/is-git-clean";
 import { PackageJson } from "../utils/package-json";
 import { polishConfirm } from "../utils/polish-confirm";
@@ -51,14 +53,14 @@ async function main() {
 
   if (userAgent !== "npm") {
     const packageManager = userAgent ?? "unknown";
-    const warningMessage = `
+    const warningMessage = `\
 ${c.red(c.bold(`⚠️  OSTRZEŻENIE: ${packageManager} nie jest obsługiwany ⚠️`))}
 
-Próbujesz uruchomić ten skrypt z ${c.yellow(packageManager)}'em, ale @solvro/config działa tylko z ${c.yellow("npm'em")}. 
+Próbujesz uruchomić ten skrypt ${c.yellow(packageManager)}'em, ale @solvro/config obecnie działa tylko z ${c.green("npm")}'em.
 
-Support dla innych menedżerów pakietów nie jest planowany - chcemy jednolitego stacku technologicznego dla projektów w naszym kochanym kole Solvro.
+${c.white(`Support dla innych menedżerów pakietów jest planowany w nadchodzących wersjach - ${c.yellow("zagwiazdkuj i spróbuj ponownie wkrótce")}!`)}
 
-Użyj zamiast tego npm'a:
+${c.white(`W międzyczasie użyj ${c.green("npm")}'a:`)}
 ${c.cyan("npx @solvro/config")}`;
 
     if (isNonInteractive) {
@@ -68,6 +70,10 @@ ${c.cyan("npx @solvro/config")}`;
     }
     process.exit(1);
   }
+
+  const packageJson = new PackageJson();
+  // Project directory check
+  await packageJson.load();
 
   // Git clean check
   if (options.force !== true && !isGitClean()) {
@@ -88,7 +94,32 @@ ${c.cyan("npx @solvro/config")}`;
     }
   }
 
-  const packageJson = new PackageJson();
+  // Peer dependencies check
+  if (
+    (await packageJson.hasPackage("eslint")) &&
+    !(await packageJson.doesSatisfy("eslint", "<10"))
+  ) {
+    const eslint = await packageJson.getPackageInfo("eslint");
+    const versionInfo =
+      eslint?.version == null
+        ? ""
+        : ` Obecnie zainstalowana jest wersja ${c.yellow(eslint.version)}.`;
+    const errorMessage = `ESLint w wersji powyżej 9 ${c.red("nie jest jeszcze wspierany")}.${versionInfo}`;
+    const errorRetry = "Proszę zainstalować wersję 9 i spróbować ponownie.";
+    if (isNonInteractive) {
+      console.error(errorMessage);
+      console.error(errorRetry);
+      process.exit(1);
+    }
+    const isConfirmed = await polishConfirm({
+      message: `${errorMessage} Zainstalować starszą wersję ${c.magenta("ESLint")}'a? (Wymagane by kontynuować)`,
+    });
+    if (p.isCancel(isConfirmed) || !isConfirmed) {
+      p.cancel(errorRetry);
+      process.exit(1);
+    }
+    await packageJson.install("eslint", { dev: true, version: "^9" });
+  }
 
   // Determine project type automatically
   const projectType = await packageJson.getProjectType();
@@ -96,46 +127,20 @@ ${c.cyan("npx @solvro/config")}`;
   // Project type confirmation (interactive mode only)
   if (!isNonInteractive) {
     if (projectType === "adonis") {
-      const isConfirmed = await polishConfirm({
-        message: `Wygląda jakbyś używał Adonisa. Czy to się zgadza?`,
-      });
-
-      if (p.isCancel(isConfirmed) || !isConfirmed) {
-        p.cancel("Zgłoś błąd na GitHubie :(, a my spróbujemy pomóc.");
-        process.exit(1);
-      }
+      await confirmProjectType(c.magenta("Adonis"));
     }
 
     if (projectType === "react") {
-      const isConfirmed = await polishConfirm({
-        message: `Wygląda jakbyś używał Reacta. Czy to się zgadza?`,
-      });
-
-      if (p.isCancel(isConfirmed)) {
-        p.cancel("😡");
-        process.exit(1);
-      }
-
-      if (!isConfirmed) {
-        p.cancel("Zgłoś błąd na GitHubie :(, a my spróbujemy pomóc.");
-        process.exit(1);
-      }
+      await confirmProjectType(c.cyan("React"));
     }
 
     if (projectType === "nestjs") {
-      const isConfirmed = await polishConfirm({
-        message: `Wygląda jakbyś używał NestJsa. Czy to się zgadza?`,
-      });
-
-      if (p.isCancel(isConfirmed)) {
-        p.cancel("😡");
-        process.exit(1);
-      }
+      await confirmProjectType(c.red("NestJS"));
     }
 
     if (projectType === "node") {
       p.cancel(
-        "Nie znaleziono ani Adonisa, Reacta, ani NestJsa. Musisz ręcznie konfigurować projekt.",
+        `Nie znaleziono ani ${c.magenta("Adonis")}'a, ${c.cyan("React")}'a, ani ${c.white("NestJS")}'a. Musisz ręcznie konfigurować projekt.`,
       );
       process.exit(1);
     }
@@ -249,18 +254,32 @@ ${c.cyan("npx @solvro/config")}`;
 
   await packageJson.clearInstall();
 
-  if (isNonInteractive) {
-    console.log("✅ Konfiguracja zakończona pomyślnie!");
-  } else {
-    p.outro("✅ Konfiguracja zakończona pomyślnie!");
+  const printSuccess = isNonInteractive ? console.info : p.outro;
+  printSuccess("✅ Konfiguracja zakończona pomyślnie!");
+}
+
+async function mainWrapper() {
+  try {
+    await main();
+  } catch (error: unknown) {
+    if (process.env.NODE_ENV === "development") {
+      console.error(
+        c.red("Unhandled error in main:"),
+        error instanceof Error ? error.message : error,
+      );
+    } else {
+      const errorMessage =
+        "Wystąpił nieoczekiwany błąd :( Proszę zgłosić go twórcom:";
+      if (isNonInteractive) {
+        console.error(errorMessage);
+        console.error(BUG_TRACKER_URL);
+      } else {
+        p.cancel(`${errorMessage} ${BUG_TRACKER_URL}`);
+      }
+    }
+    process.exit(1);
   }
 }
 
-// Run the main function
-try {
-  // eslint-disable-next-line unicorn/prefer-top-level-await
-  void main();
-} catch (error: unknown) {
-  console.error("Wystąpił błąd:", error);
-  process.exit(1);
-}
+// eslint-disable-next-line unicorn/prefer-top-level-await
+void mainWrapper();

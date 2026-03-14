@@ -3,11 +3,12 @@ import { getPackageInfo, isPackageListed, loadPackageJSON } from "local-pkg";
 import assert from "node:assert";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
+import c from "picocolors";
 import semver from "semver";
 
 import { $$ } from "./$$";
 import { projectRoot } from "./git-root";
-import { runIfInteractive } from "./run-if-interactive";
+import { runWithSpinner } from "./run-with-spinner";
 
 export class PackageJson {
   public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
@@ -17,7 +18,7 @@ export class PackageJson {
 
     if (json === null) {
       p.cancel(
-        "Nie znaleziono package.json. Upewnij się, że jesteś w katalogu projektu.",
+        `Nie znaleziono pliku ${c.cyan("package.json")}. Upewnij się, że jesteś w katalogu projektu.`,
       );
       process.exit(1);
     }
@@ -33,12 +34,16 @@ export class PackageJson {
     return this.hasPackage("next");
   }
 
-  async doesSatisfies(package_: string, version: string) {
+  async getPackageInfo(package_: string) {
+    return getPackageInfo(package_);
+  }
+
+  async doesSatisfy(package_: string, version: string) {
     await this.load();
 
     assert.ok(this.json !== null);
 
-    const packageInfo = await getPackageInfo(package_);
+    const packageInfo = await this.getPackageInfo(package_);
 
     if (packageInfo?.version === undefined) {
       return false;
@@ -72,9 +77,10 @@ export class PackageJson {
     const isReact = await isPackageListed("react");
     const isNestJs = await isPackageListed("@nestjs/core");
     if (isReact && isAdonis) {
-      throw new Error(
-        "You can't use both Adonis and React in the same project",
+      p.cancel(
+        `Projekty korzystające zarówno z ${c.magenta("Adonis")}a jak i ${c.cyan("React")}a nie są wspierane.`,
       );
+      process.exit(1);
     }
 
     if (isNestJs) {
@@ -116,19 +122,23 @@ export class PackageJson {
 
   async install(
     package_: string,
-    options?: { minVersion?: string; dev?: boolean; alwaysUpdate?: boolean },
+    options: {
+      version?: string;
+      dev?: boolean;
+      alwaysUpdate?: boolean;
+    } = {},
   ) {
     const isInstalled = await this.hasPackage(package_);
+    const installVersion = options.version ?? "latest";
 
     if (!isInstalled) {
-      const spinner = p.spinner();
-      runIfInteractive(() => {
-        spinner.start(`Instalowanie ${package_}`);
-      });
-
-      await $$`npm i ${options?.dev === true ? "-D" : ""} ${package_}@latest`;
-      runIfInteractive(() => {
-        spinner.stop(`${package_} zainstalowany 😍`);
+      await runWithSpinner({
+        start: `Instalowanie pakietu ${package_}`,
+        stop: `${package_} zainstalowany 😍`,
+        error: `Instalacja pakietu ${package_} nie powiodła się 🥶`,
+        callback: async () => {
+          await $$`npm i ${options.dev === true ? "-D" : ""} ${package_}@${installVersion}`;
+        },
       });
 
       await this.load();
@@ -136,21 +146,18 @@ export class PackageJson {
       return;
     }
 
-    const info = await getPackageInfo(package_);
-
     if (
-      (info?.version !== undefined &&
-        options?.minVersion !== undefined &&
-        !semver.satisfies(info.version, options.minVersion)) ||
-      options?.alwaysUpdate === true
+      options.alwaysUpdate === true ||
+      (options.version != null &&
+        !(await this.doesSatisfy(package_, options.version)))
     ) {
-      const spinner = p.spinner();
-      runIfInteractive(() => {
-        spinner.start(`Aktualizowanie ${package_}`);
-      });
-      await $$`npm i ${options.dev === true ? "-D" : ""} ${package_}@latest`;
-      runIfInteractive(() => {
-        spinner.stop(`${package_} zaktualizowany 😍`);
+      await runWithSpinner({
+        start: `Aktualizowanie pakietu ${package_}`,
+        stop: `${package_} zaktualizowany 😍`,
+        error: `Aktualizacja pakietu ${package_} nie powiodła się 🥶`,
+        callback: async () => {
+          await $$`npm i ${options.dev === true ? "-D" : ""} ${package_}@${installVersion}`;
+        },
       });
 
       await this.load();
