@@ -5,15 +5,17 @@ import { join } from "node:path";
 // Helper function to run commands with real-time output logging
 async function execWithLogging(
   command: string,
-  args: string[] = [],
+  arguments_: string[] = [],
   options: any = {},
   label?: string,
 ): Promise<{ stdout: string; stderr: string }> {
   const displayLabel = label || command;
-  console.debug(`🔧 [${displayLabel}] Running: ${command} ${args.join(" ")}`);
+  console.debug(
+    `🔧 [${displayLabel}] Running: ${command} ${arguments_.join(" ")}`,
+  );
 
   try {
-    const subprocess = execa(command, args, {
+    const subprocess = execa(command, arguments_, {
       stdio: ["inherit", "pipe", "pipe"],
       ...options,
     });
@@ -66,7 +68,7 @@ export async function setup() {
 
   // Extract package filename from npm pack output
   const lines = stdout.trim().split("\n");
-  const packageFile = lines[lines.length - 1];
+  const packageFile = lines.at(-1)!;
   const packagePath = join(projectRoot, packageFile);
 
   // Store the package file path in a global variable or environment variable

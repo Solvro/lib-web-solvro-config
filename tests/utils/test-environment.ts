@@ -9,18 +9,24 @@ import {
 } from "node:fs";
 import { dirname, join } from "node:path";
 
-// Helper function to run commands with real-time output logging
+import type { PackageManagerConfig } from "../../src/constants";
+import { PACKAGE_MANAGER_CONFIGS } from "../../src/constants";
+
+const DEFAULT_PACKAGE_MANAGER = PACKAGE_MANAGER_CONFIGS.npm;
+
 async function execWithLogging(
   command: string,
-  args: string[] = [],
+  arguments_: string[] = [],
   options: any = {},
   label?: string,
 ): Promise<{ stdout: string; stderr: string }> {
   const displayLabel = label || command;
-  console.debug(`🔧 [${displayLabel}] Running: ${command} ${args.join(" ")}`);
+  console.debug(
+    `🔧 [${displayLabel}] Running: ${command} ${arguments_.join(" ")}`,
+  );
 
   try {
-    const subprocess = execa(command, args, {
+    const subprocess = execa(command, arguments_, {
       stdio: ["inherit", "pipe", "pipe"],
       ...options,
     });
@@ -48,13 +54,12 @@ async function execWithLogging(
   }
 }
 
-// Simple wrapper for when we just need the result without streaming
 async function execSimple(
   command: string,
-  args: string[] = [],
+  arguments_: string[] = [],
   options: any = {},
 ): Promise<{ stdout: string; stderr: string }> {
-  const result = await execa(command, args, options);
+  const result = await execa(command, arguments_, options);
   return {
     stdout: result.stdout || "",
     stderr: result.stderr || "",
@@ -72,13 +77,22 @@ interface TestAppOptions {
   nextVersion?: string;
 }
 
+interface SimpleProjectOptions {
+  hasLockfile?: boolean;
+  withPackageManagerField?: boolean;
+}
+
 export class TestEnvironment {
   public readonly testDir: string;
   public readonly projectRoot: string;
   public readonly packageFile: string;
 
-  constructor(testName: string) {
-    this.testDir = join("/tmp", `solvro-test-${testName}-${Date.now()}`);
+  constructor(
+    testName: string,
+    public readonly packageManager: PackageManagerConfig = DEFAULT_PACKAGE_MANAGER,
+  ) {
+    const fullTestName = `solvro-config-test-${testName}-${packageManager.name}-${Date.now()}`;
+    this.testDir = join("/tmp", fullTestName);
     this.projectRoot = process.cwd();
 
     // Get the package file path from the global setup
@@ -89,6 +103,58 @@ export class TestEnvironment {
       );
     }
     this.packageFile = packageFile;
+  }
+
+  async createSimpleProject(
+    projectName: string,
+    options: SimpleProjectOptions = {},
+  ): Promise<string> {
+    const { hasLockfile = true, withPackageManagerField = false } = options;
+
+    const projectPath = join(this.testDir, projectName);
+    mkdirSync(projectPath, { recursive: true });
+
+    // Create basic package.json
+    const packageJson: any = {
+      name: projectName,
+      version: "1.0.0",
+      type: "module",
+      scripts: {
+        build: "echo 'build complete'",
+        lint: "echo 'lint complete'",
+        "format:check": "echo 'format check complete'",
+        "types:check": "echo 'types check complete'",
+      },
+    };
+
+    if (withPackageManagerField) {
+      packageJson.packageManager = `${this.packageManager.name}@${this.packageManager.name === "npm" ? "10.0.0" : "9.0.0"}`;
+    }
+
+    writeFileSync(
+      join(projectPath, "package.json"),
+      JSON.stringify(packageJson, null, 2),
+    );
+
+    // Create lockfile if requested
+    if (hasLockfile) {
+      const lockfilePath = join(projectPath, this.packageManager.lockfile);
+
+      if (this.packageManager.name === "npm") {
+        writeFileSync(
+          lockfilePath,
+          JSON.stringify({ lockfileVersion: 3 }, null, 2),
+        );
+      } else if (this.packageManager.name === "pnpm") {
+        writeFileSync(lockfilePath, "lockfileVersion: '6.0'\n");
+      }
+    }
+
+    return projectPath;
+  }
+
+  async createDirectory(dirPath: string): Promise<void> {
+    mkdirSync(dirPath, { recursive: true });
   }
 
   async setup(): Promise<void> {
@@ -135,7 +201,7 @@ export class TestEnvironment {
 
     const templateDir = join(
       this.testDir,
-      `create-next-app-${flags.join("-").replace(/[^a-z0-9]/gi, "_")}`,
+      `create-next-app-${this.packageManager.name}-${flags.join("-").replaceAll(/[^a-z0-9]/gi, "_")}`,
     );
 
     if (existsSync(templateDir)) {
@@ -144,15 +210,26 @@ export class TestEnvironment {
       cpSync(templateDir, appPath, { recursive: true });
     } else {
       // Create new template and cache it
-      console.debug(`🏗️  Creating new template: ${templateDir}`);
+      console.debug(
+        `🏗️  Creating new template with ${this.packageManager.name}: ${templateDir}`,
+      );
+
+      // Use the appropriate command for the package manager
+      const createCommand =
+        this.packageManager.name === "pnpm" ? "pnpm" : "npx";
+      const createArguments =
+        this.packageManager.name === "pnpm"
+          ? ["create", "next-app", templateDir, ...flags]
+          : [`create-next-app@${nextVersion}`, templateDir, ...flags];
+
       await execWithLogging(
-        "npx",
-        [`create-next-app@${nextVersion}`, templateDir, ...flags],
+        createCommand,
+        createArguments,
         {
           cwd: this.testDir,
           timeout: 120_000, // 2 minutes timeout for app creation
         },
-        "create-next-app",
+        `create-next-app-${this.packageManager.name}`,
       );
 
       // Copy template to the app path
@@ -162,9 +239,6 @@ export class TestEnvironment {
     return appPath;
   }
 
-  /**
-   * Create a NestJS application using the existing template from tests/nest-app.
-   */
   async createNestjsApp(appName: string): Promise<string> {
     const appPath = join(this.testDir, appName);
     const templatePath = join(this.projectRoot, "tests", "nest-app");
@@ -175,52 +249,63 @@ export class TestEnvironment {
       );
     }
 
-    console.debug(`🎯 Using NestJS template: ${templatePath}`);
+    console.debug(
+      `🎯 Using NestJS template with ${this.packageManager.name}: ${templatePath}`,
+    );
 
     // Copy template to the app path, excluding node_modules
     cpSync(templatePath, appPath, {
       recursive: true,
-      filter: (src) => !src.includes("node_modules"),
+      filter: (source) => !source.includes("node_modules"),
     });
 
-    // Install dependencies
+    // Install dependencies with the specified package manager
+    const [installCommand, ...installArguments] =
+      this.packageManager.installDependencies.split(" ");
     await execWithLogging(
-      "npm",
-      ["install"],
+      installCommand,
+      installArguments,
       {
         cwd: appPath,
         timeout: 120_000, // 2 minutes for dependency installation
       },
-      "npm-install-deps",
+      `${this.packageManager.name}-install-deps`,
     );
 
     return appPath;
   }
 
-  /**
-   * Create a Vite application using create-vite CLI.
-   */
   async createViteApp(appName: string, template = "react-ts"): Promise<string> {
     const appPath = join(this.testDir, appName);
+
+    // Use the appropriate create command for the package manager
+    const createCommand = this.packageManager.name === "pnpm" ? "pnpm" : "npm";
+    const createArguments =
+      this.packageManager.name === "pnpm"
+        ? ["create", "vite", appName, "--", "--template", template]
+        : ["create", "vite@latest", appName, "--", "--template", template];
+
     await execWithLogging(
-      "npm",
-      ["create", "vite@latest", appName, "--", "--template", template],
+      createCommand,
+      createArguments,
       {
         cwd: this.testDir,
         timeout: 120_000, // 2 minutes for project creation
       },
-      "create-vite",
+      `create-vite-${this.packageManager.name}`,
     );
 
-    // Install dependencies
+    // Install dependencies with the specified package manager
+    const [installCommand, ...installArguments] =
+      this.packageManager.installDependencies.split(" ");
     await execWithLogging(
-      "npm",
-      ["install"],
+      installCommand,
+      installArguments,
       {
         cwd: appPath,
         timeout: 120_000, // 2 minutes for dependency installation
       },
-      "npm-install-deps",
+      `${this.packageManager.name}-install-deps`,
     );
 
     return appPath;
@@ -235,23 +320,24 @@ export class TestEnvironment {
       "copy-package",
     );
 
-    // Install the package (needed for config files, but we'll use built CLI)
+    // Install the package using the configured package manager
     const packageName = this.packageFile.split("/").pop()!;
+    const [installCmd, ...installArguments] =
+      this.packageManager.installPackage.split(" ");
     await execWithLogging(
-      "npm",
-      ["install", `./${packageName}`],
+      installCmd,
+      [...installArguments, `./${packageName}`],
       { cwd: appPath },
-      "npm-install",
+      `install-solvro-config-${this.packageManager.name}`,
     );
   }
+
   async initGitRepo(appPath: string): Promise<void> {
     await execWithLogging("git", ["init"], { cwd: appPath }, "git-init");
 
-    // Check if git user is configured, if not configure it for this repository
     try {
       await execSimple("git", ["config", "user.email"], { cwd: appPath });
     } catch {
-      // No email configured, set it
       await execWithLogging(
         "git",
         ["config", "user.email", "test@example.com"],
@@ -263,7 +349,6 @@ export class TestEnvironment {
     try {
       await execSimple("git", ["config", "user.name"], { cwd: appPath });
     } catch {
-      // No name configured, set it
       await execWithLogging(
         "git",
         ["config", "user.name", "Test User"],
@@ -285,11 +370,14 @@ export class TestEnvironment {
     appPath: string,
     flags: string[] = ["--all", "--force"],
   ): Promise<string> {
+    // Use node directly to run the CLI to avoid package manager binary resolution issues
+    // (pnpm exec doesn't recognize @solvro/config as a binary name)
+    const cliPath = join(this.projectRoot, "dist/cli/index.js");
     const { stdout, stderr } = await execWithLogging(
-      "npx",
-      ["@solvro/config", ...flags],
+      "node",
+      [cliPath, ...flags],
       { cwd: appPath },
-      "solvro-config",
+      `solvro-config-${this.packageManager.name}`,
     );
     return stdout + stderr;
   }
@@ -313,14 +401,16 @@ export class TestEnvironment {
 
   async runESLint(
     appPath: string,
-    args: string[] = [],
+    arguments_: string[] = [],
   ): Promise<{ success: boolean; output: string }> {
     try {
+      const [command, ...baseArguments] =
+        this.packageManager.runScript.split(" ");
       const { stdout, stderr } = await execWithLogging(
-        "npm",
-        ["run", "lint", ...args],
+        command,
+        [...baseArguments, "lint", ...arguments_],
         { cwd: appPath },
-        "eslint",
+        `eslint-${this.packageManager.name}`,
       );
       return { success: true, output: stdout + stderr };
     } catch (error: any) {
@@ -337,11 +427,13 @@ export class TestEnvironment {
   ): Promise<{ success: boolean; output: string }> {
     try {
       const flag = write ? "--write" : "--check";
+      const [command, ...baseArguments] =
+        this.packageManager.localExecute.split(" ");
       const { stdout, stderr } = await execWithLogging(
-        "npx",
-        ["prettier", flag, "."],
+        command,
+        [...baseArguments, "prettier", flag, "."],
         { cwd: appPath },
-        "prettier",
+        `prettier-${this.packageManager.name}`,
       );
       return { success: true, output: stdout + stderr };
     } catch (error: any) {
@@ -363,7 +455,7 @@ export class TestEnvironment {
           cwd: appPath,
           timeout: 180_000, // 3 minutes for build
         },
-        "nextjs-build",
+        `nextjs-build-${this.packageManager.name}`,
       );
       return { success: true, output: stdout + stderr };
     } catch (error: any) {
@@ -374,21 +466,20 @@ export class TestEnvironment {
     }
   }
 
-  /**
-   * Build a NestJS application by running its build script.
-   */
   async buildNestjsApp(
     appPath: string,
   ): Promise<{ success: boolean; output: string }> {
     try {
+      const [command, ...baseArguments] =
+        this.packageManager.runScript.split(" ");
       const { stdout, stderr } = await execWithLogging(
-        "npm",
-        ["run", "build"],
+        command,
+        [...baseArguments, "build"],
         {
           cwd: appPath,
           timeout: 180_000, // 3 minutes for build
         },
-        "nestjs-build",
+        `nestjs-build-${this.packageManager.name}`,
       );
       return { success: true, output: stdout + stderr };
     } catch (error: any) {
@@ -399,21 +490,20 @@ export class TestEnvironment {
     }
   }
 
-  /**
-   * Build a Vite application by running its build script.
-   */
   async buildViteApp(
     appPath: string,
   ): Promise<{ success: boolean; output: string }> {
     try {
+      const [command, ...baseArguments] =
+        this.packageManager.runScript.split(" ");
       const { stdout, stderr } = await execWithLogging(
-        "npm",
-        ["run", "build"],
+        command,
+        [...baseArguments, "build"],
         {
           cwd: appPath,
           timeout: 180_000, // 3 minutes for build
         },
-        "vite-build",
+        `vite-build-${this.packageManager.name}`,
       );
       return { success: true, output: stdout + stderr };
     } catch (error: any) {
@@ -429,7 +519,7 @@ export class TestEnvironment {
   }
 
   readFile(appPath: string, filePath: string): string {
-    return readFileSync(join(appPath, filePath), "utf-8");
+    return readFileSync(join(appPath, filePath), "utf8");
   }
 
   hasPackageJsonField(appPath: string, field: string): boolean {
@@ -437,12 +527,26 @@ export class TestEnvironment {
     return field in packageJson;
   }
 
-  async installPackage(appPath: string, packageName: string): Promise<void> {
+  async installPackage(
+    appPath: string,
+    packageName: string,
+    isDevelopment = false,
+  ): Promise<void> {
+    const [command, ...baseArguments] =
+      this.packageManager.installPackage.split(" ");
+    const arguments_ = [...baseArguments];
+
+    if (isDevelopment) {
+      arguments_.push("-D");
+    }
+
+    arguments_.push(packageName);
+
     await execWithLogging(
-      "npm",
-      ["install", packageName],
+      command,
+      arguments_,
       { cwd: appPath },
-      "npm-install-package",
+      `${this.packageManager.name}-install-package`,
     );
   }
 
@@ -453,13 +557,26 @@ export class TestEnvironment {
     const dir = dirname(fullPath);
     mkdirSync(dir, { recursive: true });
 
-    writeFileSync(fullPath, content, "utf-8");
+    writeFileSync(fullPath, content, "utf8");
+  }
+
+  async localExecute(
+    appPath: string,
+    ...commandArguments: string[]
+  ): Promise<void> {
+    const [command, ...baseArguments] =
+      this.packageManager.localExecute.split(" ");
+    await execWithLogging(
+      command,
+      [...baseArguments, ...commandArguments],
+      { cwd: appPath },
+      `${this.packageManager.name}-exec`,
+    );
   }
 
   cleanup(): void {
     if (existsSync(this.testDir)) {
       rmSync(this.testDir, { recursive: true, force: true });
     }
-    // Package cleanup is now handled by global teardown
   }
 }
