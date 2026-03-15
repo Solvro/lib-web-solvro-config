@@ -1,7 +1,7 @@
 export type PackageManager = "npm" | "pnpm";
 
 export interface PackageManagerConfig {
-  name: string;
+  name: PackageManager;
   lockfile: string;
   installPackage: string;
   installDependencies: string;

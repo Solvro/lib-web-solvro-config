@@ -18,6 +18,7 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [20, 22, 24]
+        package-manager: [npm, pnpm]
     steps:
       - name: Check out
         uses: actions/checkout@v6
@@ -26,15 +27,27 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-          cache: npm
+          cache: "npm"
+
+      - name: Set up pnpm
+        if: matrix.package-manager == 'pnpm'
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Install create-next-app globally
+      - name: Install create-next-app globally (npm)
+        if: matrix.package-manager == 'npm'
         run: npx -y create-next-app@latest --version
+
+      - name: Install create-next-app globally (pnpm)
+        if: matrix.package-manager == 'pnpm'
+        run: pnpm dlx create-next-app@latest --version
 
       - name: Run Vitest integration tests
         run: npm test
         env:
           NODE_VERSION: ${{ matrix.node-version }}
+          PACKAGE_MANAGER: ${{ matrix.package-manager }}
