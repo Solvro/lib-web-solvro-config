@@ -24,6 +24,10 @@ export const installGithubActions = async () => {
   const type = await packageJson.getProjectType();
   const manager = packageJson.manager;
 
+  // Get pnpm version dynamically when using pnpm
+  const pnpmVersion =
+    manager.name === "pnpm" ? await packageJson.getPnpmVersion() : undefined;
+
   const withCommitlint = await packageJson.hasPackage("@commitlint/cli");
 
   if (type === "adonis") {
@@ -40,12 +44,13 @@ export const installGithubActions = async () => {
         nodeVersion: "22",
         withCommitlint,
         manager,
+        pnpmVersion,
       }),
     );
 
     await fs.writeFile(
       path.join(ghWorkflowsDirectory, "db.yml"),
-      adonisMigrationsCi({ nodeVersion: "22", manager }),
+      adonisMigrationsCi({ nodeVersion: "22", manager, pnpmVersion }),
     );
   }
 
@@ -59,6 +64,7 @@ export const installGithubActions = async () => {
         withCommitlint,
         usingNextJs,
         manager,
+        pnpmVersion,
       }),
     );
 
@@ -74,6 +80,7 @@ export const installGithubActions = async () => {
         nodeVersion: "22",
         withCommitlint,
         manager,
+        pnpmVersion,
       }),
     );
   }

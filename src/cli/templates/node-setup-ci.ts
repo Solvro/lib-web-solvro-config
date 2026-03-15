@@ -4,9 +4,11 @@ import { pnpmSetupCi } from "./pnpm-setup-ci";
 export const nodeSetupCi = ({
   nodeVersion,
   manager,
+  pnpmVersion,
 }: {
   nodeVersion: string;
   manager: PackageManagerConfig;
+  pnpmVersion?: string;
 }) => `\
       - name: Checkout
         uses: actions/checkout@v6
@@ -17,4 +19,4 @@ export const nodeSetupCi = ({
         uses: actions/setup-node@v6
         with:
           node-version: ${nodeVersion}
-          cache: "${manager.name}"${manager.name === "pnpm" ? pnpmSetupCi() : ""}`;
+          cache: "${manager.name}"${manager.name === "pnpm" ? pnpmSetupCi({ pnpmVersion }) : ""}`;

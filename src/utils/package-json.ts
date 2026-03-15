@@ -232,4 +232,31 @@ export class PackageJson {
     const [command, ...options] = this.manager.cleanInstall.split(" ");
     await $$(command, options);
   }
+
+  /**
+   * Gets the pnpm major version from package.json packageManager field or user agent.
+   * Falls back to version "10" if neither source is available.
+   * Returns only the major version for CI stability.
+   */
+  async getPnpmVersion(): Promise<string> {
+    await this.load();
+
+    if (this.json?.packageManager?.startsWith("pnpm@") === true) {
+      const version = this.json.packageManager.split("@")[1];
+      const majorVersion = version.split(".")[0];
+      if (/^\d+$/.test(majorVersion)) {
+        return majorVersion;
+      }
+    }
+
+    const userAgent = process.env.npm_config_user_agent;
+    if (userAgent != null) {
+      const match = /pnpm\/(\d+)(?:\.\d+)*/.exec(userAgent);
+      if (match?.[1] != null) {
+        return match[1];
+      }
+    }
+
+    return "10";
+  }
 }

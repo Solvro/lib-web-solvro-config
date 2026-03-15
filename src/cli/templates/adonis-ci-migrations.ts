@@ -4,9 +4,11 @@ import { nodeSetupCi } from "./node-setup-ci";
 export const adonisMigrationsCi = ({
   nodeVersion,
   manager,
+  pnpmVersion,
 }: {
   nodeVersion: string;
   manager: PackageManagerConfig;
+  pnpmVersion?: string;
 }) => `name: Migration check
 
 on:
@@ -39,7 +41,7 @@ jobs:
           - 5432:5432
 
     steps:
-${nodeSetupCi({ nodeVersion, manager })}
+${nodeSetupCi({ nodeVersion, manager, pnpmVersion })}
 
       - name: Install dependencies
         run: ${manager.cleanInstall}
