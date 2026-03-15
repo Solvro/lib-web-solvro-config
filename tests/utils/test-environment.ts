@@ -1,3 +1,4 @@
+import { assertExhaustive } from "@solvro/utils/misc";
 import { execa } from "execa";
 import {
   cpSync,
@@ -140,13 +141,18 @@ export class TestEnvironment {
     if (hasLockfile) {
       const lockfilePath = join(projectPath, this.packageManager.lockfile);
 
-      if (this.packageManager.name === "npm") {
-        writeFileSync(
-          lockfilePath,
-          JSON.stringify({ lockfileVersion: 3 }, null, 2),
-        );
-      } else if (this.packageManager.name === "pnpm") {
-        writeFileSync(lockfilePath, "lockfileVersion: '6.0'\n");
+      switch (this.packageManager.name) {
+        case "npm":
+          writeFileSync(
+            lockfilePath,
+            JSON.stringify({ lockfileVersion: 3 }, null, 2),
+          );
+          break;
+        case "pnpm":
+          writeFileSync(lockfilePath, "lockfileVersion: '6.0'\n");
+          break;
+        default:
+          assertExhaustive(this.packageManager.name);
       }
     }
 
@@ -370,15 +376,28 @@ export class TestEnvironment {
     appPath: string,
     flags: string[] = ["--all", "--force"],
   ): Promise<string> {
-    // Use node directly to run the CLI to avoid package manager binary resolution issues
-    // (pnpm exec doesn't recognize @solvro/config as a binary name)
-    const cliPath = join(this.projectRoot, "dist/cli/index.js");
-    const { stdout, stderr } = await execWithLogging(
-      "node",
-      [cliPath, ...flags],
+    let result;
+    const executionOptions = [
       { cwd: appPath },
       `solvro-config-${this.packageManager.name}`,
-    );
+    ];
+    if (this.packageManager.name === "pnpm") {
+      await execSimple("pnpm", ["link"], { cwd: this.projectRoot });
+      result = await execWithLogging(
+        "pnpm",
+        // linking the @solvro/config package creates a global link to the binary called 'config' (from the package name)
+        ["exec", "config", ...flags],
+        ...executionOptions,
+      );
+    } else {
+      const [command, ...options] = this.packageManager.localExecute.split(" ");
+      result = await execWithLogging(
+        command,
+        [...options, this.projectRoot, ...flags],
+        ...executionOptions,
+      );
+    }
+    const { stdout, stderr } = result;
     return stdout + stderr;
   }
 
