@@ -1,4 +1,13 @@
-export const adonisMigrationsCi = () => `name: Migration check
+import type { PackageManagerConfig } from "../../constants";
+import { nodeSetupCi } from "./node-setup-ci";
+
+export const adonisMigrationsCi = ({
+  nodeVersion,
+  manager,
+}: {
+  nodeVersion: string;
+  manager: PackageManagerConfig;
+}) => `name: Migration check
 
 on:
   pull_request:
@@ -29,12 +38,11 @@ jobs:
         ports:
           - 5432:5432
 
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v4
+    steps:\
+${nodeSetupCi({ nodeVersion, manager })}
 
       - name: Install dependencies
-        run: npm ci
+        run: ${manager.cleanInstall}
 
       - name: Set up AdonisJS environment
         run: |
