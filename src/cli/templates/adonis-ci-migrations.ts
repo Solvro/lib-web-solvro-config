@@ -38,7 +38,7 @@ jobs:
         ports:
           - 5432:5432
 
-    steps:\
+    steps:
 ${nodeSetupCi({ nodeVersion, manager })}
 
       - name: Install dependencies
