@@ -8,11 +8,13 @@ export const reactCi = ({
   withCommitlint,
   manager,
   usingNextJs,
+  pnpmVersion,
 }: {
   nodeVersion: string;
   withCommitlint: boolean;
   manager: PackageManagerConfig;
   usingNextJs: boolean;
+  pnpmVersion?: string;
 }) => `name: CI
 
 on:
@@ -24,7 +26,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-${nodeSetupCi({ nodeVersion, manager })}
+${nodeSetupCi({ nodeVersion, manager, pnpmVersion })}
 ${usingNextJs ? nextJsCi({ manager }) : ""}
       - name: Install dependencies
         run: ${manager.cleanInstall}

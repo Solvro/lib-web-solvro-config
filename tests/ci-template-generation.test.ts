@@ -83,8 +83,9 @@ describe("CI Template Generation Tests", () => {
 
       if (manager.name === "pnpm") {
         expect(result).toContain("Setup pnpm");
-        // Check that npm commands are not used (but "pnpm" contains "npm" as substring, so we check for specific npm patterns)
-        expect(result).not.toMatch(/\bnpm\s+(ci|install|run)\b/);
+        expect(result).toContain("pnpm install");
+        expect(result).toContain("pnpm run");
+        expect(result).not.toMatch(/\bnpm\s+(ci|install|run)\b/); // word boundary check for npm commands
       } else {
         expect(result).not.toContain("pnpm");
       }

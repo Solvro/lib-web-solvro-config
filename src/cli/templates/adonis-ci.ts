@@ -6,10 +6,12 @@ export const adonisCi = ({
   nodeVersion,
   withCommitlint,
   manager,
+  pnpmVersion,
 }: {
   nodeVersion: string;
   withCommitlint: boolean;
   manager: PackageManagerConfig;
+  pnpmVersion?: string;
 }) => `name: CI
 
 on:
@@ -21,7 +23,7 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-${nodeSetupCi({ nodeVersion, manager })}
+${nodeSetupCi({ nodeVersion, manager, pnpmVersion })}
 
       - name: Install dependencies
         run: ${manager.cleanInstall}
