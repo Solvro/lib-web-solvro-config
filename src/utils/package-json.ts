@@ -239,10 +239,9 @@ export class PackageJson {
    * Returns only the major version for CI stability.
    */
   async getPnpmVersion(): Promise<string> {
-    await this.load(); // Ensure package.json is loaded
+    await this.load();
 
-    // 1. Primary: Extract major version from packageManager field
-    if (this.json?.packageManager?.startsWith("pnpm@")) {
+    if (this.json?.packageManager?.startsWith("pnpm@") === true) {
       const version = this.json.packageManager.split("@")[1];
       const majorVersion = version.split(".")[0];
       if (/^\d+$/.test(majorVersion)) {
@@ -250,25 +249,14 @@ export class PackageJson {
       }
     }
 
-    // 2. Secondary: Extract major version from user agent
     const userAgent = process.env.npm_config_user_agent;
-    if (userAgent) {
-      const match = userAgent.match(/pnpm\/(\d+)(?:\.\d+)*/);
-      if (match?.[1]) {
-        // Optional development logging
-        if (process.env.NODE_ENV === "development") {
-          console.warn(
-            `pnpm version fallback: using ${match[1]} from user agent`,
-          );
-        }
+    if (userAgent != null) {
+      const match = /pnpm\/(\d+)(?:\.\d+)*/.exec(userAgent);
+      if (match?.[1] != null) {
         return match[1];
       }
     }
 
-    // 3. Tertiary: Default fallback
-    if (process.env.NODE_ENV === "development") {
-      console.warn("pnpm version fallback: defaulting to version 10");
-    }
     return "10";
   }
 }
