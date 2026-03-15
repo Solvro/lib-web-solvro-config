@@ -220,17 +220,18 @@ export class TestEnvironment {
         `🏗️  Creating new template with ${this.packageManager.name}: ${templateDir}`,
       );
 
-      // Use the appropriate command for the package manager
-      const createCommand =
-        this.packageManager.name === "pnpm" ? "pnpm" : "npx";
-      const createArguments =
-        this.packageManager.name === "pnpm"
-          ? ["create", "next-app", templateDir, ...flags]
-          : [`create-next-app@${nextVersion}`, templateDir, ...flags];
+      // only npm uses '--' for separating argument lists
+      const createArguments = this.packageManager.name === "npm" ? ["--"] : [];
 
       await execWithLogging(
-        createCommand,
-        createArguments,
+        this.packageManager.name,
+        [
+          "create",
+          `next-app@${nextVersion}`,
+          templateDir,
+          ...createArguments,
+          ...flags,
+        ],
         {
           cwd: this.testDir,
           timeout: 120_000, // 2 minutes timeout for app creation
@@ -284,16 +285,12 @@ export class TestEnvironment {
   async createViteApp(appName: string, template = "react-ts"): Promise<string> {
     const appPath = join(this.testDir, appName);
 
-    // Use the appropriate create command for the package manager
-    const createCommand = this.packageManager.name === "pnpm" ? "pnpm" : "npm";
-    const createArguments =
-      this.packageManager.name === "pnpm"
-        ? ["create", "vite", appName, "--", "--template", template]
-        : ["create", "vite@latest", appName, "--", "--template", template];
+    // only npm uses '--' for separating argument lists
+    const createArguments = this.packageManager.name === "npm" ? ["--"] : [];
 
     await execWithLogging(
-      createCommand,
-      createArguments,
+      this.packageManager.name,
+      ["create", "vite@9", appName, ...createArguments, "--template", template],
       {
         cwd: this.testDir,
         timeout: 120_000, // 2 minutes for project creation
@@ -301,12 +298,11 @@ export class TestEnvironment {
       `create-vite-${this.packageManager.name}`,
     );
 
-    // Install dependencies with the specified package manager
-    const [installCommand, ...installArguments] =
+    const [command, ...baseArguments] =
       this.packageManager.installDependencies.split(" ");
     await execWithLogging(
-      installCommand,
-      installArguments,
+      command,
+      baseArguments,
       {
         cwd: appPath,
         timeout: 120_000, // 2 minutes for dependency installation
@@ -318,7 +314,6 @@ export class TestEnvironment {
   }
 
   async installSolvroConfig(appPath: string): Promise<void> {
-    // Copy package to app directory
     await execWithLogging(
       "cp",
       [this.packageFile, "."],
@@ -326,7 +321,6 @@ export class TestEnvironment {
       "copy-package",
     );
 
-    // Install the package using the configured package manager
     const packageName = this.packageFile.split("/").pop()!;
     const [installCmd, ...installArguments] =
       this.packageManager.installPackage.split(" ");
@@ -372,6 +366,7 @@ export class TestEnvironment {
     );
   }
 
+  /** Runs the local `@solvro/config` binary with the appropriate package manager. */
   async runSolvroConfig(
     appPath: string,
     flags: string[] = ["--all", "--force"],
@@ -401,6 +396,11 @@ export class TestEnvironment {
     return stdout + stderr;
   }
 
+  /**
+   * Runs the local `@solvro/config` binary directly using Node.
+   * Only works with default Commander options, i.e. `--version` and `--help`,
+   * as the main executable verifies the user agent is supported.
+   */
   async runSolvroConfigDirect(
     flags: string[] = ["--help"],
   ): Promise<{ success: boolean; output: string }> {
@@ -466,10 +466,12 @@ export class TestEnvironment {
   async buildNextjsApp(
     appPath: string,
   ): Promise<{ success: boolean; output: string }> {
+    const [command, ...baseArguments] =
+      this.packageManager.runScript.split(" ");
     try {
       const { stdout, stderr } = await execWithLogging(
-        "npm",
-        ["run", "build"],
+        command,
+        [...baseArguments, "build"],
         {
           cwd: appPath,
           timeout: 180_000, // 3 minutes for build
