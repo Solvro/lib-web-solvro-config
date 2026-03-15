@@ -50,9 +50,9 @@ Aby użyć configu dodaj to pole w `package.json`:
 }
 ```
 
-## Eslint
+## ESLint
 
-Wymagany jest `eslint` w wersji `9` lub nowszej oraz package.json powinien mieć pole
+Wymagany jest `eslint` w wersji `9` oraz package.json powinien mieć pole
 
 ```json
 {
@@ -103,3 +103,15 @@ Testy obejmują:
 - ✅ Weryfikację formatowania kodu
 - ✅ Build aplikacji Next.js
 - ✅ Testowanie warunków błędów
+
+## Prawa autorskie
+
+Copyright © 2024-2026 KN Solvro
+
+Licencja: [MPL v2.0](./LICENSE.md)
+
+Pierwotny twórca: [Bartosz Gotowski](https://github.com/Rei-x)
+
+Utrzymuje: [Konrad Guzek](https://github.com/kguzek)
+
+Stworzone na podsatwie projektu [antfu/eslint-config](https://github.com/antfu/eslint-config), którego licencja dostępna jest w pliku [LICENSE2.md](./LICENSE2.md)
