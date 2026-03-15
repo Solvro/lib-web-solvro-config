@@ -1,9 +1,11 @@
-export const nextJsCi = () => `
+import type { PackageManagerConfig } from "../../constants";
+
+export const nextJsCi = ({ manager }: { manager: PackageManagerConfig }) => `
       - name: Setup build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: \${{ github.workspace }}/.next/cache
-          key: \${{ runner.os }}-nextjs-\${{ hashFiles('**/package-lock.json') }}-\${{ hashFiles('**/*.ts', '**/*.tsx') }}
+          key: \${{ runner.os }}-nextjs-\${{ hashFiles('**/${manager.lockfile}') }}-\${{ hashFiles('**/*.ts', '**/*.tsx') }}
           restore-keys: |
-            \${{ runner.os }}-nextjs-\${{ hashFiles('**/package-lock.json') }}-            
+            \${{ runner.os }}-nextjs-\${{ hashFiles('**/${manager.lockfile}') }}-
 `;

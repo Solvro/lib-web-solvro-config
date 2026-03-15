@@ -15,7 +15,10 @@ export const installLintStaged = async () => {
 
   await packageJson.install("lint-staged", { dev: true });
 
-  await writeFile(".husky/pre-commit", "npx lint-staged\n");
+  await writeFile(
+    ".husky/pre-commit",
+    `${packageJson.manager.localExecute} lint-staged\n`,
+  );
 
   packageJson.json["lint-staged"] = {
     "*": "prettier -w --ignore-unknown",

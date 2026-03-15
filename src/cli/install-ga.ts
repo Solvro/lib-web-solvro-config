@@ -22,6 +22,7 @@ export const installGithubActions = async () => {
   await fs.mkdir(ghWorkflowsDirectory, { recursive: true });
 
   const type = await packageJson.getProjectType();
+  const manager = packageJson.manager;
 
   const withCommitlint = await packageJson.hasPackage("@commitlint/cli");
 
@@ -38,12 +39,13 @@ export const installGithubActions = async () => {
       adonisCi({
         nodeVersion: "22",
         withCommitlint,
+        manager,
       }),
     );
 
     await fs.writeFile(
       path.join(ghWorkflowsDirectory, "db.yml"),
-      adonisMigrationsCi(),
+      adonisMigrationsCi({ nodeVersion: "22", manager }),
     );
   }
 
@@ -56,6 +58,7 @@ export const installGithubActions = async () => {
         nodeVersion: "22",
         withCommitlint,
         usingNextJs,
+        manager,
       }),
     );
 
@@ -70,6 +73,7 @@ export const installGithubActions = async () => {
       nestjsCi({
         nodeVersion: "22",
         withCommitlint,
+        manager,
       }),
     );
   }

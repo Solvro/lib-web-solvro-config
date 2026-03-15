@@ -1,11 +1,15 @@
+import type { PackageManagerConfig } from "../../constants";
 import { commitLintCi } from "./commit-lint-ci";
+import { nodeSetupCi } from "./node-setup-ci";
 
 export const nestjsCi = ({
   nodeVersion,
   withCommitlint,
+  manager,
 }: {
   nodeVersion: string;
   withCommitlint: boolean;
+  manager: PackageManagerConfig;
 }) => `name: CI
 
 on:
@@ -17,41 +21,32 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${nodeVersion}
-          cache: "npm"
+${nodeSetupCi({ nodeVersion, manager })}
 
       - name: Install dependencies
-        run: npm ci
-${withCommitlint ? commitLintCi() : ""}
+        run: ${manager.cleanInstall}
+${withCommitlint ? commitLintCi({ manager }) : ""}
       - name: Check formatting
-        run: npm run format:check
+        run: ${manager.runScript} format:check
         if: always()
 
       - name: Lint code
-        run: npm run lint
+        run: ${manager.runScript} lint
         if: always()
 
       - name: Check types
-        run: npm run types:check
+        run: ${manager.runScript} types:check
         if: always()
 
       - name: Run tests
-        run: npm test
+        run: ${manager.name} test
         if: always()
 
       - name: Run e2e tests
-        run: npm run test:e2e
+        run: ${manager.runScript} test:e2e
         if: always()
 
       - name: Build
-        run: npm run build
+        run: ${manager.runScript} build
         if: always()
 `;
