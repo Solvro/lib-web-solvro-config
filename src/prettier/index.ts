@@ -1,4 +1,8 @@
+import { createRequire } from "node:module";
 import type { Options } from "prettier";
+
+// needed for plugin resolution in non-flat dependency layouts (e.g. pnpm)
+const require = createRequire(import.meta.url);
 
 /**
  * Some of Prettier's defaults can be overridden by an EditorConfig file. We
@@ -35,9 +39,9 @@ export default {
   importOrderSortSpecifiers: true,
   importOrderParserPlugins: ["typescript", "jsx", "decorators-legacy"],
   plugins: [
-    "prettier-plugin-packagejson",
-    "@trivago/prettier-plugin-sort-imports",
-    "prettier-plugin-tailwindcss",
+    require.resolve("prettier-plugin-packagejson"),
+    require.resolve("@trivago/prettier-plugin-sort-imports"),
+    require.resolve("prettier-plugin-tailwindcss"),
   ],
   singleQuote: false,
 } as const satisfies Options;
