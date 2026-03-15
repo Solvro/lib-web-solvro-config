@@ -1,6 +1,8 @@
 import assert from "node:assert";
 import { writeFile } from "node:fs/promises";
+import path from "node:path";
 
+import { projectRoot } from "../utils/git-root";
 import { PackageJson } from "../utils/package-json";
 import { installHusky } from "./install-husky";
 
@@ -16,7 +18,7 @@ export const installLintStaged = async () => {
   await packageJson.install("lint-staged", { dev: true });
 
   await writeFile(
-    ".husky/pre-commit",
+    path.join(projectRoot(), ".husky/pre-commit"),
     `${packageJson.manager.localExecute} lint-staged\n`,
   );
 

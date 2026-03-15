@@ -43,8 +43,9 @@ export class PackageJson {
         process.exit(1);
       }
     }
+    const lockfilePath = path.join(projectRoot(), this.manager.lockfile);
     try {
-      await stat(this.manager.lockfile);
+      await stat(lockfilePath);
     } catch {
       warnMissingLockfile({ manager: this.manager });
       process.exit(1);
