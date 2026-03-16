@@ -9,6 +9,7 @@ export interface PackageManagerConfig {
   downloadExecute: string;
   localExecute: string;
   runScript: string;
+  create: string;
 }
 
 export const PACKAGE_MANAGER_CONFIGS = {
@@ -21,6 +22,7 @@ export const PACKAGE_MANAGER_CONFIGS = {
     downloadExecute: "npx",
     localExecute: "npx",
     runScript: "npm run",
+    create: "npm create",
   },
   pnpm: {
     name: "pnpm",
@@ -31,6 +33,7 @@ export const PACKAGE_MANAGER_CONFIGS = {
     downloadExecute: "pnpm dlx",
     localExecute: "pnpm exec",
     runScript: "pnpm run",
+    create: "pnpm create",
   },
 } satisfies Record<PackageManager, PackageManagerConfig>;
 
