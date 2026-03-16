@@ -199,7 +199,7 @@ export class TestEnvironment {
       await execWithLogging(
         command,
         commandArguments,
-        { cwd: appPath, timeout: 10_000 },
+        { cwd: appPath, timeout: 120_000 },
         "recreate-node-modules",
       );
     }
@@ -330,28 +330,14 @@ export class TestEnvironment {
     appPath: string,
     flags: string[] = ["--all", "--force"],
   ): Promise<string> {
-    let result;
-    const executionOptions = [
+    const [command, ...baseArguments] =
+      this.packageManager.localExecute.split(" ");
+    const { stdout, stderr } = await execWithLogging(
+      command,
+      [...baseArguments, "config", ...flags],
       { cwd: appPath },
       `solvro-config-${this.packageManager.name}`,
-    ];
-    if (this.packageManager.name === "pnpm") {
-      await execSimple("pnpm", ["link"], { cwd: this.projectRoot });
-      result = await execWithLogging(
-        "pnpm",
-        // linking the @solvro/config package creates a global link to the binary called 'config' (from the package name)
-        ["exec", "config", ...flags],
-        ...executionOptions,
-      );
-    } else {
-      const [command, ...options] = this.packageManager.localExecute.split(" ");
-      result = await execWithLogging(
-        command,
-        [...options, this.projectRoot, ...flags],
-        ...executionOptions,
-      );
-    }
-    const { stdout, stderr } = result;
+    );
     return stdout + stderr;
   }
 

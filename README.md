@@ -114,4 +114,4 @@ Pierwotny twórca: [Bartosz Gotowski](https://github.com/Rei-x)
 
 Utrzymuje: [Konrad Guzek](https://github.com/kguzek)
 
-Stworzone na podsatwie projektu [antfu/eslint-config](https://github.com/antfu/eslint-config), którego licencja dostępna jest w pliku [LICENSE2.md](./LICENSE2.md)
+Stworzone na podstawie projektu [antfu/eslint-config](https://github.com/antfu/eslint-config), którego licencja dostępna jest w pliku [LICENSE2.md](./LICENSE2.md)
