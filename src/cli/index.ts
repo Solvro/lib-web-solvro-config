@@ -232,8 +232,7 @@ async function main() {
 
   await packageJson.clearInstall();
   if (toolsToInstall.includes("prettier")) {
-    // TODO: fix prettier plugins unavailable with pnpm
-    // await packageJson.localExecute('prettier', '--write', 'package.json')
+    await packageJson.localExecute("prettier", "--write", "package.json");
   }
 
   const printSuccess = isNonInteractive ? console.info : p.outro;
