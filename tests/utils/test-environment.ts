@@ -59,7 +59,7 @@ export class TestEnvironment {
       baseCommand,
       [...commandOptions, ...args],
       { cwd: this.testDir, timeout: 120_000, ...executionOptions },
-      `${this.packageManager.name}-${label}`,
+      label,
     );
   }
 
@@ -73,7 +73,7 @@ export class TestEnvironment {
       command: "installPackage",
       args: [...flags, packageName],
       cwd: appPath,
-      label: `install-package-${packageName}`,
+      label: `install-package-${path.basename(packageName)}`,
     });
   }
 
