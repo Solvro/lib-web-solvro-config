@@ -17,7 +17,7 @@ export const installCommitLint = async () => {
 
   await writeFile(
     path.join(root, ".husky/commit-msg"),
-    'npx commitlint --edit "$1"\n',
+    `${packageJson.manager.localExecute} commitlint --edit "$1"\n`,
   );
 
   await writeFile(path.join(root, ".commitlintrc.js"), commitlint());

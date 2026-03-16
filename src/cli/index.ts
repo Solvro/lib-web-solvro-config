@@ -1,10 +1,10 @@
 import * as p from "@clack/prompts";
 import { Command } from "commander";
-import { getUserAgent } from "package-manager-detector/detect";
 import c from "picocolors";
 
 import packageJsonData from "../../package.json";
 import { BUG_TRACKER_URL } from "../constants";
+import { checkIsNonInteractive } from "../utils/check-is-non-interactive";
 import { confirmProjectType } from "../utils/confirm-project-type";
 import { isGitClean } from "../utils/is-git-clean";
 import { PackageJson } from "../utils/package-json";
@@ -41,39 +41,17 @@ program
 program.parse();
 const options: CliOptions = program.opts();
 
-// Check if running in non-interactive mode (any CLI flags provided)
-const isNonInteractive = process.argv.length > 2;
+const isNonInteractive = checkIsNonInteractive();
 
 async function main() {
   if (!isNonInteractive) {
     p.intro(c.bold(c.bgBlue("  @solvro/config  ")));
   }
 
-  const userAgent = getUserAgent();
-
-  if (userAgent !== "npm") {
-    const packageManager = userAgent ?? "unknown";
-    const warningMessage = `\
-${c.red(c.bold(`⚠️  OSTRZEŻENIE: ${packageManager} nie jest obsługiwany ⚠️`))}
-
-Próbujesz uruchomić ten skrypt ${c.yellow(packageManager)}'em, ale @solvro/config obecnie działa tylko z ${c.green("npm")}'em.
-
-${c.white(`Support dla innych menedżerów pakietów jest planowany w nadchodzących wersjach - ${c.yellow("zagwiazdkuj i spróbuj ponownie wkrótce")}!`)}
-
-${c.white(`W międzyczasie użyj ${c.green("npm")}'a:`)}
-${c.cyan("npx @solvro/config")}`;
-
-    if (isNonInteractive) {
-      console.error(warningMessage);
-    } else {
-      p.cancel(warningMessage);
-    }
-    process.exit(1);
-  }
-
   const packageJson = new PackageJson();
-  // Project directory check
-  await packageJson.load();
+  packageJson.verifyPackageManager();
+  await packageJson.load(); // Project directory check
+  await packageJson.validateUserAgentConsistency();
 
   // Git clean check
   if (options.force !== true && !isGitClean()) {
@@ -140,7 +118,7 @@ ${c.cyan("npx @solvro/config")}`;
 
     if (projectType === "node") {
       p.cancel(
-        `Nie znaleziono ani ${c.magenta("Adonis")}'a, ${c.cyan("React")}'a, ani ${c.white("NestJS")}'a. Musisz ręcznie konfigurować projekt.`,
+        `Nie znaleziono ani ${c.magenta("Adonis")}-a, ${c.cyan("React")}-a, ani ${c.white("NestJS")}-a. Musisz ręcznie konfigurować projekt.`,
       );
       process.exit(1);
     }
@@ -151,7 +129,7 @@ ${c.cyan("npx @solvro/config")}`;
     } else {
       if (!(await packageJson.isESM())) {
         const isConfirmed = await polishConfirm({
-          message: `Twój projekt nie używa ESM (brak type: "module" w package.json). Czy chcesz to dodać? (Wymagane by kontynuować)`,
+          message: `Twój projekt nie używa ESM (brak "type": "module" w package.json). Czy chcesz to dodać? (Wymagane by kontynuować)`,
         });
 
         if (p.isCancel(isConfirmed) || !isConfirmed) {
@@ -209,7 +187,7 @@ ${c.cyan("npx @solvro/config")}`;
         {
           value: "gh-action",
           label: c.bold("GitHub Actions"),
-          hint: "automatyczne testy na Githubie",
+          hint: "automatyczne testy na GitHubie",
         },
         {
           value: "commitlint",
@@ -253,6 +231,9 @@ ${c.cyan("npx @solvro/config")}`;
   }
 
   await packageJson.clearInstall();
+  if (toolsToInstall.includes("prettier")) {
+    await packageJson.localExecute("prettier", "--write", "package.json");
+  }
 
   const printSuccess = isNonInteractive ? console.info : p.outro;
   printSuccess("✅ Konfiguracja zakończona pomyślnie!");

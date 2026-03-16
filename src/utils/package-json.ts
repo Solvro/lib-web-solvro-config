@@ -1,17 +1,65 @@
 import * as p from "@clack/prompts";
 import { getPackageInfo, isPackageListed, loadPackageJSON } from "local-pkg";
 import assert from "node:assert";
-import { writeFile } from "node:fs/promises";
+import { stat, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { getUserAgent } from "package-manager-detector/detect";
 import c from "picocolors";
 import semver from "semver";
 
+import type { PackageManager, PackageManagerConfig } from "../constants";
+import { PACKAGE_MANAGER_CONFIGS } from "../constants";
 import { $$ } from "./$$";
 import { projectRoot } from "./git-root";
+import { isSupportedPackageManager } from "./is-supported-package-manager";
 import { runWithSpinner } from "./run-with-spinner";
+import { warnInconsistentUserAgent } from "./warn-inconsistent-user-agent";
+import { warnMissingLockfile } from "./warn-missing-lockfile";
+import { warnUnsupportedPackageManager } from "./warn-unsupported-package-manager";
 
 export class PackageJson {
   public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
+  private _manager: PackageManagerConfig | null = null;
+
+  /** Checks if the process is run from a supported package manager */
+  public verifyPackageManager(): PackageManager {
+    const userAgent = getUserAgent();
+    if (!isSupportedPackageManager(userAgent)) {
+      warnUnsupportedPackageManager({ userAgent });
+      process.exit(1);
+    }
+    return userAgent;
+  }
+
+  /** Checks if the user agent is consistent with the project's package manager */
+  public async validateUserAgentConsistency() {
+    if (this.json?.packageManager != null) {
+      const [detectedPackageManager] = this.json.packageManager.split("@");
+      if (detectedPackageManager !== this.manager.name) {
+        warnInconsistentUserAgent({
+          userAgent: this.manager,
+          detectedPackageManager,
+        });
+        process.exit(1);
+      }
+    }
+    const lockfilePath = path.join(projectRoot(), this.manager.lockfile);
+    try {
+      await stat(lockfilePath);
+    } catch {
+      warnMissingLockfile({ manager: this.manager });
+      process.exit(1);
+    }
+  }
+
+  // use a cached getter to avoid premature exits on importing a file with a toplevel construction
+  public get manager(): PackageManagerConfig {
+    if (this._manager == null) {
+      const userAgent = this.verifyPackageManager();
+      this._manager = PACKAGE_MANAGER_CONFIGS[userAgent];
+    }
+    return this._manager;
+  }
 
   async load() {
     const json = await loadPackageJSON(projectRoot());
@@ -130,14 +178,21 @@ export class PackageJson {
   ) {
     const isInstalled = await this.hasPackage(package_);
     const installVersion = options.version ?? "latest";
-
+    const [installCommand, ...commandOptions] =
+      this.manager.installPackage.split(" ");
+    if (options.dev === true) {
+      commandOptions.push("-D");
+    }
     if (!isInstalled) {
       await runWithSpinner({
         start: `Instalowanie pakietu ${package_}`,
         stop: `${package_} zainstalowany 😍`,
         error: `Instalacja pakietu ${package_} nie powiodła się 🥶`,
         callback: async () => {
-          await $$`npm i ${options.dev === true ? "-D" : ""} ${package_}@${installVersion}`;
+          await $$(installCommand, [
+            ...commandOptions,
+            `${package_}@${installVersion}`,
+          ]);
         },
       });
 
@@ -156,7 +211,10 @@ export class PackageJson {
         stop: `${package_} zaktualizowany 😍`,
         error: `Aktualizacja pakietu ${package_} nie powiodła się 🥶`,
         callback: async () => {
-          await $$`npm i ${options.dev === true ? "-D" : ""} ${package_}@${installVersion}`;
+          await $$(installCommand, [
+            ...commandOptions,
+            `${package_}@${installVersion}`,
+          ]);
         },
       });
 
@@ -164,7 +222,41 @@ export class PackageJson {
     }
   }
 
+  async localExecute(...commandArguments: string[]) {
+    const [command, ...commandOptions] = this.manager.localExecute.split(" ");
+    const options = [...commandOptions, ...commandArguments];
+    await $$(command, options);
+  }
+
   async clearInstall() {
-    await $$`npm ci`;
+    const [command, ...options] = this.manager.cleanInstall.split(" ");
+    await $$(command, options);
+  }
+
+  /**
+   * Gets the pnpm major version from package.json packageManager field or user agent.
+   * Falls back to version "10" if neither source is available.
+   * Returns only the major version for CI stability.
+   */
+  async getPnpmVersion(): Promise<string> {
+    await this.load();
+
+    if (this.json?.packageManager?.startsWith("pnpm@") === true) {
+      const version = this.json.packageManager.split("@")[1];
+      const majorVersion = version.split(".")[0];
+      if (/^\d+$/.test(majorVersion)) {
+        return majorVersion;
+      }
+    }
+
+    const userAgent = process.env.npm_config_user_agent;
+    if (userAgent != null) {
+      const match = /pnpm\/(\d+)(?:\.\d+)*/.exec(userAgent);
+      if (match?.[1] != null) {
+        return match[1];
+      }
+    }
+
+    return "10";
   }
 }

@@ -1,20 +1,24 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
+import { getCurrentPackageManager } from "./utils/package-manager";
 import { TestEnvironment } from "./utils/test-environment";
 
 describe("Next.js Integration Tests", () => {
-  let env: TestEnvironment;
+  let testEnv: TestEnvironment;
+  const packageManager = getCurrentPackageManager();
 
-  beforeAll(async () => {
-    env = new TestEnvironment("nextjs-integration");
+  beforeEach(async () => {
+    testEnv = new TestEnvironment("nextjs-integration", packageManager);
+  });
+
+  afterEach(() => {
+    testEnv?.cleanup();
+  });
+
+  test(`should create a Next.js app and install @solvro/config with ${packageManager.name}`, async () => {
+    const env = testEnv;
     await env.setup();
-  });
 
-  afterAll(() => {
-    env?.cleanup();
-  });
-
-  it("should create a Next.js app and install @solvro/config", async () => {
     const appPath = await env.createNextjsApp("test-app");
 
     await env.installSolvroConfig(appPath);
@@ -23,25 +27,17 @@ describe("Next.js Integration Tests", () => {
     const output = await env.runSolvroConfig(appPath, ["--all", "--force"]);
     expect(output).toContain("Konfiguracja zakończona pomyślnie");
 
-    // Format code first
     const prettierResult = await env.runPrettier(appPath, true);
     expect(prettierResult.success).toBe(true);
 
-    // Then run ESLint
     const eslintResult = await env.runESLint(appPath);
     expect(eslintResult.success).toBe(true);
 
-    // Verify ESLint config
     expect(env.fileExists(appPath, "eslint.config.js")).toBe(true);
-
-    // Verify Prettier config
     expect(env.hasPackageJsonField(appPath, "prettier")).toBe(true);
-
-    // Verify the app was created
     expect(env.fileExists(appPath, "package.json")).toBe(true);
     expect(env.fileExists(appPath, "next.config.ts")).toBe(true);
 
-    // Verify @solvro/config is installed
     const packageJson = env.readFile(appPath, "package.json");
     expect(packageJson).toContain("@solvro/config");
 
@@ -58,18 +54,21 @@ describe("Next.js Integration Tests", () => {
 });
 
 describe("NestJS Integration Tests", () => {
-  let env: TestEnvironment;
+  let testEnv: TestEnvironment;
+  const packageManager = getCurrentPackageManager();
 
-  beforeAll(async () => {
-    env = new TestEnvironment("nestjs-integration");
+  beforeEach(async () => {
+    testEnv = new TestEnvironment("nestjs-integration", packageManager);
+  });
+
+  afterEach(() => {
+    testEnv?.cleanup();
+  });
+
+  test(`should create a NestJS app and install @solvro/config with ${packageManager.name}`, async () => {
+    const env = testEnv;
     await env.setup();
-  });
 
-  afterAll(() => {
-    env?.cleanup();
-  });
-
-  it("should create a NestJS app and install @solvro/config", async () => {
     const appPath = await env.createNestjsApp("test-app");
 
     await env.installSolvroConfig(appPath);
@@ -78,29 +77,20 @@ describe("NestJS Integration Tests", () => {
     const output = await env.runSolvroConfig(appPath, ["--all", "--force"]);
     expect(output).toContain("Konfiguracja zakończona pomyślnie");
 
-    // Format code first
     const prettierResult = await env.runPrettier(appPath, true);
     expect(prettierResult.success).toBe(true);
 
-    // Then run ESLint
     const eslintResult = await env.runESLint(appPath);
     expect(eslintResult.success).toBe(true);
 
-    // Verify ESLint config
     expect(env.fileExists(appPath, "eslint.config.mjs")).toBe(true);
-
-    // Verify Prettier config
     expect(env.hasPackageJsonField(appPath, "prettier")).toBe(true);
-
-    // Verify the app was created
     expect(env.fileExists(appPath, "package.json")).toBe(true);
     expect(env.fileExists(appPath, "tsconfig.json")).toBe(true);
 
-    // Verify @solvro/config is installed
     const packageJson = env.readFile(appPath, "package.json");
     expect(packageJson).toContain("@solvro/config");
 
-    // Build the app
     const buildResult = await env.buildNestjsApp(appPath);
     expect(buildResult.success).toBe(true);
     expect(env.fileExists(appPath, "dist/main.js")).toBe(true);
@@ -114,18 +104,21 @@ describe("NestJS Integration Tests", () => {
 });
 
 describe("Vite Integration Tests", () => {
-  let env: TestEnvironment;
+  let testEnv: TestEnvironment;
+  const packageManager = getCurrentPackageManager();
 
-  beforeAll(async () => {
-    env = new TestEnvironment("vite-integration");
+  beforeEach(async () => {
+    testEnv = new TestEnvironment("vite-integration", packageManager);
+  });
+
+  afterEach(() => {
+    testEnv?.cleanup();
+  });
+
+  test(`should create a Vite React app and install @solvro/config with ${packageManager.name}`, async () => {
+    const env = testEnv;
     await env.setup();
-  });
 
-  afterAll(() => {
-    env?.cleanup();
-  });
-
-  it("should create a Vite React app and install @solvro/config", async () => {
     const appPath = await env.createViteApp("test-app-react", "react-ts");
 
     await env.installSolvroConfig(appPath);
@@ -134,29 +127,19 @@ describe("Vite Integration Tests", () => {
     const output = await env.runSolvroConfig(appPath, ["--all", "--force"]);
     expect(output).toContain("Konfiguracja zakończona pomyślnie");
 
-    // Format code first
     const prettierResult = await env.runPrettier(appPath, true);
     expect(prettierResult.success).toBe(true);
 
-    // Then run ESLint
     const eslintResult = await env.runESLint(appPath);
-
-    // Vite default template don't play well with eslint config
     expect(eslintResult.output).toContain("Filename is not in kebab case");
 
-    // Verify ESLint config
     expect(env.fileExists(appPath, "eslint.config.js")).toBe(true);
-
-    // Verify Prettier config
     expect(env.hasPackageJsonField(appPath, "prettier")).toBe(true);
-
-    // Verify the app was created
     expect(env.fileExists(appPath, "package.json")).toBe(true);
     expect(env.fileExists(appPath, "vite.config.ts")).toBe(true);
     expect(env.fileExists(appPath, "index.html")).toBe(true);
     expect(env.fileExists(appPath, "src/App.tsx")).toBe(true);
 
-    // Verify @solvro/config is installed
     const packageJson = env.readFile(appPath, "package.json");
     expect(packageJson).toContain("@solvro/config");
 

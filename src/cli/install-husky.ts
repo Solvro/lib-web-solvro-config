@@ -1,6 +1,5 @@
 import assert from "node:assert";
 
-import { $$ } from "../utils/$$";
 import { PackageJson } from "../utils/package-json";
 
 const packageJson = new PackageJson();
@@ -8,7 +7,7 @@ const packageJson = new PackageJson();
 export const installHusky = async () => {
   if (!(await packageJson.hasPackage("husky"))) {
     await packageJson.install("husky", { dev: true });
-    await $$`npx husky init`;
+    await packageJson.localExecute("husky", "init");
   }
 
   await packageJson.load();
