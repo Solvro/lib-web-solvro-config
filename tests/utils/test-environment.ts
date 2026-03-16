@@ -1,5 +1,4 @@
 import { assertExhaustive } from "@solvro/utils/misc";
-import { execa } from "execa";
 import {
   cpSync,
   existsSync,
@@ -8,64 +7,14 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { dirname, join } from "node:path";
+import path from "node:path";
 
 import type { PackageManagerConfig } from "../../src/constants";
 import { PACKAGE_MANAGER_CONFIGS } from "../../src/constants";
+import { execSimple } from "./exec-simple";
+import { execWithLogging } from "./exec-with-logging";
 
 const DEFAULT_PACKAGE_MANAGER = PACKAGE_MANAGER_CONFIGS.npm;
-
-async function execWithLogging(
-  command: string,
-  arguments_: string[] = [],
-  options: any = {},
-  label?: string,
-): Promise<{ stdout: string; stderr: string }> {
-  const displayLabel = label || command;
-  console.debug(
-    `🔧 [${displayLabel}] Running: ${command} ${arguments_.join(" ")}`,
-  );
-
-  try {
-    const subprocess = execa(command, arguments_, {
-      stdio: ["inherit", "pipe", "pipe"],
-      ...options,
-    });
-
-    // Stream stdout in real-time
-    subprocess.stdout?.on("data", (data) => {
-      console.debug(`📤 [${displayLabel}] ${data.toString().trim()}`);
-    });
-
-    // Stream stderr in real-time
-    subprocess.stderr?.on("data", (data) => {
-      console.debug(`⚠️  [${displayLabel}] ${data.toString().trim()}`);
-    });
-
-    const result = await subprocess;
-    console.debug(`✅ [${displayLabel}] Command completed successfully`);
-
-    return {
-      stdout: result.stdout || "",
-      stderr: result.stderr || "",
-    };
-  } catch (error: any) {
-    console.debug(`❌ [${displayLabel}] Command failed with error:`);
-    throw error;
-  }
-}
-
-async function execSimple(
-  command: string,
-  arguments_: string[] = [],
-  options: any = {},
-): Promise<{ stdout: string; stderr: string }> {
-  const result = await execa(command, arguments_, options);
-  return {
-    stdout: result.stdout || "",
-    stderr: result.stderr || "",
-  };
-}
 
 interface TestAppOptions {
   name?: string;
@@ -93,7 +42,7 @@ export class TestEnvironment {
     public readonly packageManager: PackageManagerConfig = DEFAULT_PACKAGE_MANAGER,
   ) {
     const fullTestName = `solvro-config-test-${testName}-${packageManager.name}-${Date.now()}`;
-    this.testDir = join("/tmp", fullTestName);
+    this.testDir = path.join("/tmp", fullTestName);
     this.projectRoot = process.cwd();
 
     // Get the package file path from the global setup
@@ -112,7 +61,7 @@ export class TestEnvironment {
   ): Promise<string> {
     const { hasLockfile = true, withPackageManagerField = false } = options;
 
-    const projectPath = join(this.testDir, projectName);
+    const projectPath = path.join(this.testDir, projectName);
     mkdirSync(projectPath, { recursive: true });
 
     // Create basic package.json
@@ -133,13 +82,13 @@ export class TestEnvironment {
     }
 
     writeFileSync(
-      join(projectPath, "package.json"),
+      path.join(projectPath, "package.json"),
       JSON.stringify(packageJson, null, 2),
     );
 
     // Create lockfile if requested
     if (hasLockfile) {
-      const lockfilePath = join(projectPath, this.packageManager.lockfile);
+      const lockfilePath = path.join(projectPath, this.packageManager.lockfile);
 
       switch (this.packageManager.name) {
         case "npm":
@@ -159,21 +108,15 @@ export class TestEnvironment {
     return projectPath;
   }
 
-  async createDirectory(dirPath: string): Promise<void> {
-    mkdirSync(dirPath, { recursive: true });
-  }
-
   async setup(): Promise<void> {
     console.debug("🏗️  Setting up test environment...");
 
-    // Verify the package file exists (built by global setup)
     if (!existsSync(this.packageFile)) {
       throw new Error(
         `Package file not found at ${this.packageFile}. Make sure global setup completed successfully.`,
       );
     }
 
-    // Create test directory
     mkdirSync(this.testDir, { recursive: true });
     console.debug(`📁 Test directory created: ${this.testDir}`);
   }
@@ -192,7 +135,7 @@ export class TestEnvironment {
       nextVersion = "latest",
     } = options;
 
-    const appPath = join(this.testDir, appName);
+    const appPath = path.join(this.testDir, appName);
 
     const flags = [
       typescript ? "--typescript" : "--no-typescript",
@@ -205,17 +148,20 @@ export class TestEnvironment {
       "--yes",
     ];
 
-    const templateDir = join(
+    const templateDir = path.join(
       this.testDir,
-      `create-next-app-${this.packageManager.name}-${flags.join("-").replaceAll(/[^a-z0-9]/gi, "_")}`,
+      `create-next-app-${this.packageManager.name}-${flags
+        .join("_")
+        .replaceAll(/[^a-z0-9-]/gi, "_")
+        .replaceAll("--", "")}`,
     );
 
+    // pnpm uses symlinks for dependencies which will not work when copying node_modules
+    const shouldRecreateNodeModules = this.packageManager.name === "pnpm";
+
     if (existsSync(templateDir)) {
-      // Template already exists, copy it to the app path
       console.debug(`🎯 Using cached template: ${templateDir}`);
-      cpSync(templateDir, appPath, { recursive: true });
     } else {
-      // Create new template and cache it
       console.debug(
         `🏗️  Creating new template with ${this.packageManager.name}: ${templateDir}`,
       );
@@ -238,17 +184,32 @@ export class TestEnvironment {
         },
         `create-next-app-${this.packageManager.name}`,
       );
+      if (shouldRecreateNodeModules) {
+        rmSync(path.join(templateDir, "node_modules"), {
+          recursive: true,
+          force: true,
+        });
+      }
+    }
+    cpSync(templateDir, appPath, { recursive: true });
 
-      // Copy template to the app path
-      cpSync(templateDir, appPath, { recursive: true });
+    if (shouldRecreateNodeModules) {
+      const [command, ...commandArguments] =
+        this.packageManager.installDependencies.split(" ");
+      await execWithLogging(
+        command,
+        commandArguments,
+        { cwd: appPath, timeout: 10_000 },
+        "recreate-node-modules",
+      );
     }
 
     return appPath;
   }
 
   async createNestjsApp(appName: string): Promise<string> {
-    const appPath = join(this.testDir, appName);
-    const templatePath = join(this.projectRoot, "tests", "nest-app");
+    const appPath = path.join(this.testDir, appName);
+    const templatePath = path.join(this.projectRoot, "tests", "nest-app");
 
     if (!existsSync(templatePath)) {
       throw new Error(
@@ -260,13 +221,11 @@ export class TestEnvironment {
       `🎯 Using NestJS template with ${this.packageManager.name}: ${templatePath}`,
     );
 
-    // Copy template to the app path, excluding node_modules
     cpSync(templatePath, appPath, {
       recursive: true,
       filter: (source) => !source.includes("node_modules"),
     });
 
-    // Install dependencies with the specified package manager
     const [installCommand, ...installArguments] =
       this.packageManager.installDependencies.split(" ");
     await execWithLogging(
@@ -283,7 +242,7 @@ export class TestEnvironment {
   }
 
   async createViteApp(appName: string, template = "react-ts"): Promise<string> {
-    const appPath = join(this.testDir, appName);
+    const appPath = path.join(this.testDir, appName);
 
     // only npm uses '--' for separating argument lists
     const createArguments = this.packageManager.name === "npm" ? ["--"] : [];
@@ -322,11 +281,11 @@ export class TestEnvironment {
     );
 
     const packageName = this.packageFile.split("/").pop()!;
-    const [installCmd, ...installArguments] =
+    const [command, ...baseArguments] =
       this.packageManager.installPackage.split(" ");
     await execWithLogging(
-      installCmd,
-      [...installArguments, `./${packageName}`],
+      command,
+      [...baseArguments, `./${packageName}`],
       { cwd: appPath },
       `install-solvro-config-${this.packageManager.name}`,
     );
@@ -405,7 +364,7 @@ export class TestEnvironment {
     flags: string[] = ["--help"],
   ): Promise<{ success: boolean; output: string }> {
     try {
-      const cliPath = join(this.projectRoot, "dist/cli/index.js");
+      const cliPath = path.join(this.projectRoot, "dist/cli/index.js");
       const { stdout, stderr } = await execSimple("node", [cliPath, ...flags], {
         cwd: this.testDir,
       });
@@ -536,11 +495,11 @@ export class TestEnvironment {
   }
 
   fileExists(appPath: string, filePath: string): boolean {
-    return existsSync(join(appPath, filePath));
+    return existsSync(path.join(appPath, filePath));
   }
 
   readFile(appPath: string, filePath: string): string {
-    return readFileSync(join(appPath, filePath), "utf8");
+    return readFileSync(path.join(appPath, filePath), "utf8");
   }
 
   hasPackageJsonField(appPath: string, field: string): boolean {
@@ -572,10 +531,9 @@ export class TestEnvironment {
   }
 
   writeFile(appPath: string, filePath: string, content: string): void {
-    const fullPath = join(appPath, filePath);
+    const fullPath = path.join(appPath, filePath);
 
-    // Ensure directory exists
-    const dir = dirname(fullPath);
+    const dir = path.dirname(fullPath);
     mkdirSync(dir, { recursive: true });
 
     writeFileSync(fullPath, content, "utf8");
