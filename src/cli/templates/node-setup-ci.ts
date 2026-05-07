@@ -14,9 +14,9 @@ export const nodeSetupCi = ({
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
-
+      ${manager.name === "pnpm" ? `${pnpmSetupCi({ pnpmVersion })}\n` : ""}
       - name: Setup node
         uses: actions/setup-node@v6
         with:
           node-version: ${nodeVersion}
-          cache: "${manager.name}"${manager.name === "pnpm" ? pnpmSetupCi({ pnpmVersion }) : ""}`;
+          cache: "${manager.name}"`;
