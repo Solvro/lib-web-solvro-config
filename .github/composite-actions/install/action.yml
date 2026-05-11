@@ -7,7 +7,7 @@ runs:
     - name: Set up Node
       uses: actions/setup-node@v4
       with:
-        node-version-file: ".node-version"
+        node-version-file: "package.json"
         cache: npm
 
     - name: Update npm

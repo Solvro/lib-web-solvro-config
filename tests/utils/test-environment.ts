@@ -267,12 +267,19 @@ export class TestEnvironment {
   }
 
   async createViteApp(appName: string, template = "react-ts"): Promise<string> {
-    return await this.create({
+    const appPath = await this.create({
       appName,
       creator: "vite@9",
       flags: ["--no-interactive", "--template", template],
       ensureInstall: true,
     });
+    await this.execute({
+      command: "installPackage",
+      args: ["-D", "eslint@9", "@eslint/js@9"],
+      label: "downgrade-eslint-version",
+      cwd: appPath,
+    });
+    return appPath;
   }
 
   async installSolvroConfig(appPath: string): Promise<void> {
