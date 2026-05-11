@@ -275,7 +275,7 @@ export class TestEnvironment {
     });
     await this.execute({
       command: "installPackage",
-      args: ["eslint@9"],
+      args: ["-D", "eslint@9", "@eslint/js@9"],
       label: "downgrade-eslint-version",
       cwd: appPath,
     });
