@@ -1,1 +1,5 @@
+# request maintainer review for most files
 * @Solvro/web-solvro-config-maintainer
+
+# don't require review for lockfile updates (allow dependabot PRs without review)
+package-lock.json
