@@ -98,7 +98,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^21.0.0",
-    "@commitlint/types": "^20.5.0",
+    "@commitlint/types": "^21.0.0",
     "@eslint/config-inspector": "^2.0.1",
     "@next/eslint-plugin-next": "^16.2.5",
     "@semantic-release/git": "^10.0.1",
