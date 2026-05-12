@@ -404,6 +404,81 @@ export class TestEnvironment {
     }
   }
 
+  async runPrettierCheckIfInstalled(
+    appPath: string,
+    paths: string[] = ["."],
+  ): Promise<{ success: boolean; output: string; skipped: boolean }> {
+    const packageJson = JSON.parse(this.readFile(appPath, "package.json")) as {
+      dependencies?: Record<string, string>;
+      devDependencies?: Record<string, string>;
+    };
+    const hasPrettier =
+      packageJson.dependencies?.prettier != null ||
+      packageJson.devDependencies?.prettier != null;
+
+    if (!hasPrettier) {
+      return {
+        success: true,
+        output: "Skipped prettier check: prettier is not installed.",
+        skipped: true,
+      };
+    }
+
+    if (paths.length === 0) {
+      return {
+        success: true,
+        output: "Skipped prettier check: no files selected.",
+        skipped: true,
+      };
+    }
+
+    try {
+      const { stdout, stderr } = await this.execute({
+        command: "localExecute",
+        args: ["prettier", "--check", ...paths],
+        cwd: appPath,
+        label: "prettier-check",
+      });
+      return { success: true, output: stdout + stderr, skipped: false };
+    } catch (error: any) {
+      return {
+        success: false,
+        output: (error.stdout || "") + (error.stderr || ""),
+        skipped: false,
+      };
+    }
+  }
+
+  async commitWithMessage(
+    appPath: string,
+    message: string,
+  ): Promise<{ success: boolean; output: string }> {
+    try {
+      const { stdout: addStdout, stderr: addStderr } = await execWithLogging(
+        "git",
+        ["add", "."],
+        { cwd: appPath },
+        "git-add-for-commit",
+      );
+      const { stdout: commitStdout, stderr: commitStderr } =
+        await execWithLogging(
+          "git",
+          ["commit", "-m", message],
+          { cwd: appPath },
+          "git-commit-with-message",
+        );
+      return {
+        success: true,
+        output: addStdout + addStderr + commitStdout + commitStderr,
+      };
+    } catch (error: any) {
+      return {
+        success: false,
+        output: (error.stdout || "") + (error.stderr || ""),
+      };
+    }
+  }
+
   async buildNextjsApp(
     appPath: string,
   ): Promise<{ success: boolean; output: string }> {
