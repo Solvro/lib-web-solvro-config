@@ -75,15 +75,16 @@ async function main() {
   // Peer dependencies check
   if (
     (await packageJson.hasPackage("eslint")) &&
-    !(await packageJson.doesSatisfy("eslint", "<10"))
+    !(await packageJson.doesSatisfy("eslint", "<11"))
   ) {
     const eslint = await packageJson.getPackageInfo("eslint");
     const versionInfo =
       eslint?.version == null
         ? ""
         : ` Obecnie zainstalowana jest wersja ${c.yellow(eslint.version)}.`;
-    const errorMessage = `ESLint w wersji powyżej 9 ${c.red("nie jest jeszcze wspierany")}.${versionInfo}`;
-    const errorRetry = "Proszę zainstalować wersję 9 i spróbować ponownie.";
+    const errorMessage = `ESLint w wersji powyżej 10 ${c.red("nie jest jeszcze wspierany")}.${versionInfo}`;
+    const errorRetry =
+      "Proszę zainstalować wersję 10 lub niższej i spróbować ponownie.";
     if (isNonInteractive) {
       console.error(errorMessage);
       console.error(errorRetry);
@@ -96,7 +97,7 @@ async function main() {
       p.cancel(errorRetry);
       process.exit(1);
     }
-    await packageJson.install("eslint", { dev: true, version: "^9" });
+    await packageJson.install("eslint", { dev: true, version: "^10" });
   }
 
   // Determine project type automatically
