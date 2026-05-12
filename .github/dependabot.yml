@@ -19,6 +19,10 @@ updates:
         patterns:
           - "typescript-eslint"
           - "@typescript-eslint/*"
+      commitlint:
+        patterns:
+          - "commitlint"
+          - "@commitlint/*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
