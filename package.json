@@ -99,7 +99,7 @@
   "devDependencies": {
     "@commitlint/cli": "^21.0.0",
     "@commitlint/types": "^21.0.0",
-    "@eslint/config-inspector": "^2.0.1",
+    "@eslint/config-inspector": "^3.0.1",
     "@next/eslint-plugin-next": "^16.2.5",
     "@semantic-release/git": "^10.0.1",
     "@types/node": "^25.6.0",
