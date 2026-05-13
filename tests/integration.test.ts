@@ -12,6 +12,14 @@ const expectGeneratedConfigToBeFormatted = async ({
   appPath: string;
   expectedGeneratedFiles: string[];
 }) => {
+  const missingFiles = expectedGeneratedFiles.filter(
+    (filePath) => !env.fileExists(appPath, filePath),
+  );
+  expect(
+    missingFiles,
+    `Missing generated files:\n${missingFiles.join("\n")}`,
+  ).toEqual([]);
+
   const generatedFilesThatExist = expectedGeneratedFiles.filter((filePath) =>
     env.fileExists(appPath, filePath),
   );

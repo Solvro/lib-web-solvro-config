@@ -428,9 +428,11 @@ export class TestEnvironment {
       ? "localExecute"
       : "downloadExecute";
 
-    const prettierArgs = hasPrettier
-      ? ["prettier", "--check", ...paths]
-      : ["prettier", "--check", ...paths];
+    const prettierArgs = ["prettier", "--check", ...paths];
+
+    if (!hasPrettier && this.packageManager.name === "npm") {
+      prettierArgs.unshift("--yes");
+    }
 
     try {
       const { stdout, stderr } = await this.execute({
