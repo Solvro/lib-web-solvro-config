@@ -416,14 +416,6 @@ export class TestEnvironment {
       packageJson.dependencies?.prettier != null ||
       packageJson.devDependencies?.prettier != null;
 
-    if (!hasPrettier) {
-      return {
-        success: true,
-        output: "Skipped prettier check: prettier is not installed.",
-        skipped: true,
-      };
-    }
-
     if (paths.length === 0) {
       return {
         success: true,
@@ -432,12 +424,20 @@ export class TestEnvironment {
       };
     }
 
+    const prettierCommand: keyof PackageManagerConfig = hasPrettier
+      ? "localExecute"
+      : "downloadExecute";
+
+    const prettierArgs = hasPrettier
+      ? ["prettier", "--check", ...paths]
+      : ["prettier", "--check", ...paths];
+
     try {
       const { stdout, stderr } = await this.execute({
-        command: "localExecute",
-        args: ["prettier", "--check", ...paths],
+        command: prettierCommand,
+        args: prettierArgs,
         cwd: appPath,
-        label: "prettier-check",
+        label: hasPrettier ? "prettier-check" : "prettier-check-dlx",
       });
       return { success: true, output: stdout + stderr, skipped: false };
     } catch (error: any) {

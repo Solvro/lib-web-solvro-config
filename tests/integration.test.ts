@@ -19,6 +19,7 @@ const expectGeneratedConfigToBeFormatted = async ({
     appPath,
     generatedFilesThatExist,
   );
+  expect(prettierCheckResult.skipped, prettierCheckResult.output).toBe(false);
   expect(prettierCheckResult.success, prettierCheckResult.output).toBe(true);
 };
 
@@ -38,6 +39,30 @@ const expectCommitlintHookToAllowMessage = async ({
   );
   const commitResult = await env.commitWithMessage(appPath, message);
   expect(commitResult.success, commitResult.output).toBe(true);
+};
+
+const expectCommitlintHookToRejectMessage = async ({
+  env,
+  appPath,
+  message,
+}: {
+  env: TestEnvironment;
+  appPath: string;
+  message: string;
+}) => {
+  env.writeFile(
+    appPath,
+    "commitlint-hook-test-invalid.txt",
+    `commitlint hook invalid test ${Date.now()}\n`,
+  );
+  const commitResult = await env.commitWithMessage(appPath, message);
+  expect(commitResult.success, commitResult.output).toBe(false);
+  expect(
+    /subject-empty|type-empty|commit-msg script failed/i.test(
+      commitResult.output,
+    ),
+    commitResult.output,
+  ).toBe(true);
 };
 
 describe("Next.js Integration Tests", () => {
@@ -265,7 +290,6 @@ describe("Commitlint Integration Tests", () => {
     };
     packageJson.scripts = packageJson.scripts ?? {};
     packageJson.scripts.test = packageJson.scripts.test ?? "true";
-    (packageJson as { type?: string }).type = "module";
     env.writeFile(
       appPath,
       "package.json",
@@ -276,6 +300,12 @@ describe("Commitlint Integration Tests", () => {
       env,
       appPath,
       message: "chore: test commit",
+    });
+
+    await expectCommitlintHookToRejectMessage({
+      env,
+      appPath,
+      message: "invalid commit message",
     });
   });
 });

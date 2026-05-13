@@ -13,7 +13,7 @@ const packageJson = new PackageJson();
 export const installCommitLint = async () => {
   await installHusky();
 
-  await packageJson.install("@commitlint/cli", { version: "20", dev: true });
+  await packageJson.install("@commitlint/cli", { version: "^20", dev: true });
 
   await writeFile(
     path.join(root, ".husky/commit-msg"),
