@@ -4,4 +4,5 @@ export const pnpmSetupCi = ({
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: ${pnpmVersion}\n`;
+          version: ${pnpmVersion}
+`;
