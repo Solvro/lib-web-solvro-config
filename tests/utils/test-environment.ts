@@ -404,7 +404,7 @@ export class TestEnvironment {
     }
   }
 
-  async runPrettierCheckIfInstalled(
+  async runPrettierCheckWithFallback(
     appPath: string,
     paths: string[] = ["."],
   ): Promise<{ success: boolean; output: string; skipped: boolean }> {

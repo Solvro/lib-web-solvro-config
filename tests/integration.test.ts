@@ -23,7 +23,7 @@ const expectGeneratedConfigToBeFormatted = async ({
   const generatedFilesThatExist = expectedGeneratedFiles.filter((filePath) =>
     env.fileExists(appPath, filePath),
   );
-  const prettierCheckResult = await env.runPrettierCheckIfInstalled(
+  const prettierCheckResult = await env.runPrettierCheckWithFallback(
     appPath,
     generatedFilesThatExist,
   );
