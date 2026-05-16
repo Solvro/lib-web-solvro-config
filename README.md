@@ -11,7 +11,9 @@ Wszystkie konfiguracje są zawarte w jednej paczce `@solvro/config`. Aby zainsta
 
 ```sh
 npx @solvro/config
-# lub
+```
+lub
+```sh
 pnpm dlx @solvro/config
 ```
 
