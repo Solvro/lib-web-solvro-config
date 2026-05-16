@@ -11,6 +11,8 @@ Wszystkie konfiguracje są zawarte w jednej paczce `@solvro/config`. Aby zainsta
 
 ```sh
 npx @solvro/config
+# lub
+pnpm dlx @solvro/config
 ```
 
 I przeklikaj się przez kreatora, polecam klikać cały czas enter, to dostaniesz zalecane konfiguracje. Można uruchamiać pare razy :3
@@ -22,12 +24,18 @@ Jeśli pracujesz w środowisku bez interaktywnej powłoki (np. CI/CD), możesz u
 ```sh
 # Zainstaluj wszystkie narzędzia
 npx @solvro/config --all
+# lub
+pnpm dlx @solvro/config --all
 
 # Zainstaluj wybrane narzędzia
 npx @solvro/config --eslint --prettier --commitlint
+# lub
+pnpm dlx @solvro/config --eslint --prettier --commitlint
 
 # Wymuś instalację bez sprawdzania Git
 npx @solvro/config --force --all
+# lub
+pnpm dlx @solvro/config --force --all
 ```
 
 #### Dostępne flagi
@@ -42,7 +50,7 @@ npx @solvro/config --force --all
 
 ## Prettier
 
-Aby użyć configu dodaj to pole w `package.json`:
+Aby użyć configu dodaj to pole w `package.json`:
 
 ```json
 {
