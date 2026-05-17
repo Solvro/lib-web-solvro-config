@@ -12,6 +12,7 @@ export const solvro = async (
   const isAdonis = await isPackageListed("@adonisjs/core");
   const isReact = await isPackageListed("react");
   const isNestJs = await isPackageListed("@nestjs/core");
+  const isZod = await isPackageListed("zod");
 
   if (isReact && isAdonis) {
     throw new Error("You can't use both Adonis and React in the same project");
@@ -52,6 +53,11 @@ export const solvro = async (
       },
     },
   };
+
+  if (isZod) {
+    const { zod } = await import("./configs/zod.js");
+    projectConfigs.push(...zod());
+  }
 
   const defaultOverrides = defaultOverridesPreset();
 
