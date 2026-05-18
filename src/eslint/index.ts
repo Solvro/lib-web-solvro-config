@@ -1,7 +1,7 @@
 import type { Config, ConfigWithExtends } from "@eslint/config-helpers";
 import { defineConfig } from "eslint/config";
 import { findUpSync } from "find-up-simple";
-import { isPackageListed } from "local-pkg";
+import { getPackageInfo, isPackageListed } from "local-pkg";
 import path from "node:path";
 
 import { basePreset, defaultOverridesPreset } from "./presets/base";
@@ -55,8 +55,19 @@ export const solvro = async (
   };
 
   if (isZod) {
-    const { zod } = await import("./configs/zod.js");
-    projectConfigs.push(...zod());
+    const zodInfo = await getPackageInfo("zod");
+    const zodMajor =
+      zodInfo?.version == null
+        ? 3
+        : Number.parseInt(zodInfo.version.split(".")[0] ?? "3", 10);
+
+    if (zodMajor >= 4) {
+      const { zodV4 } = await import("./configs/zod-v4.js");
+      projectConfigs.push(...zodV4());
+    } else {
+      const { zodV3 } = await import("./configs/zod-v3.js");
+      projectConfigs.push(...zodV3());
+    }
   }
 
   const defaultOverrides = defaultOverridesPreset();
