@@ -1,6 +1,7 @@
 import type { ConfigWithExtends } from "@eslint/config-helpers";
 
 import { pluginZod } from "../plugins";
+import { zodV3 } from "./zod-v3";
 
 export function zodV4(): ConfigWithExtends[] {
   return [
@@ -11,28 +12,7 @@ export function zodV4(): ConfigWithExtends[] {
       },
 
       rules: {
-        // Style & consistency
-        "zod/array-style": ["error", { style: "function" }],
-        "zod/consistent-import": ["error", { syntax: "namespace" }],
-        "zod/consistent-schema-var-name": ["error", { after: "Schema" }],
-        "zod/consistent-schema-output-type-style": [
-          "error",
-          { style: "infer" },
-        ],
-
-        // Disallow unsafe patterns
-        "zod/no-any-schema": "error",
-        "zod/no-empty-custom-schema": "error",
-        "zod/no-optional-and-default-together": "error",
-        "zod/no-throw-in-refine": "error",
-        "zod/no-transform-in-record-key": "error",
-
-        // Preferred patterns
-        "zod/prefer-enum-over-literal-union": "error",
-        "zod/prefer-strict-object": "error",
-        "zod/prefer-string-schema-with-trim": "error",
-        "zod/prefer-trim-before-string-length-checks": "error",
-        "zod/require-error-message": "error",
+        ...zodV3()[0].rules,
 
         // Zod v4 specific rules
         "zod/no-native-enum": "error",
