@@ -29,7 +29,7 @@ export function zodV3(): ConfigWithExtends[] {
         // Preferred patterns
         "zod/prefer-enum-over-literal-union": "error",
         "zod/prefer-strict-object": "error",
-        "zod/prefer-string-schema-with-trim": "error",
+        "zod/prefer-string-schema-with-trim": "warn",
         "zod/prefer-trim-before-string-length-checks": "error",
         "zod/require-error-message": "error",
 
