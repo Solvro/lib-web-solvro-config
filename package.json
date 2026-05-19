@@ -84,7 +84,7 @@
     "eslint-plugin-react-you-might-not-need-an-effect": "^0.10.1",
     "eslint-plugin-unicorn": "^64.0.0",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "eslint-plugin-zod": "^4.4.0",
+    "eslint-plugin-zod": "^4.5.1",
     "execa": "^9.6.1",
     "find-up-simple": "^1.0.1",
     "globals": "^17.6.0",
