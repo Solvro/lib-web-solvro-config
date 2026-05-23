@@ -31,7 +31,6 @@ export function zodV3(): ConfigWithExtends[] {
         "zod/prefer-strict-object": "error",
         "zod/prefer-string-schema-with-trim": "warn",
         "zod/prefer-trim-before-string-length-checks": "error",
-        "zod/require-error-message": "error",
 
         // Rules below are Zod v4 specific — disabled for v3 projects
         "zod/no-native-enum": "off",
@@ -49,6 +48,7 @@ export function zodV3(): ConfigWithExtends[] {
         "zod/prefer-meta": "off",
         "zod/prefer-meta-last": "off",
         "zod/prefer-top-level-string-formats": "off",
+        "zod/require-error-message": "off",
       },
     },
   ];

@@ -1,8 +1,9 @@
 import type { Config, ConfigWithExtends } from "@eslint/config-helpers";
 import { defineConfig } from "eslint/config";
 import { findUpSync } from "find-up-simple";
-import { isPackageListed } from "local-pkg";
+import { getPackageInfo, isPackageListed } from "local-pkg";
 import path from "node:path";
+import semver from "semver";
 
 import { basePreset, defaultOverridesPreset } from "./presets/base";
 
@@ -55,7 +56,9 @@ export const solvro = async (
   };
 
   if (isZod) {
-    const isV4 = await isPackageListed("zod", ">=4");
+    const zodInfo = await getPackageInfo("zod");
+    const zodVersion = zodInfo?.version;
+    const isV4 = zodVersion != null && semver.satisfies(zodVersion, ">=4.0.0");
 
     if (isV4) {
       const { zodV4 } = await import("./configs/zod-v4.js");

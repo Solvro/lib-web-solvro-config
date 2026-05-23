@@ -29,6 +29,7 @@ export function zodV4(): ConfigWithExtends[] {
         "zod/prefer-meta": "error",
         "zod/prefer-meta-last": "error",
         "zod/prefer-top-level-string-formats": "error",
+        "zod/require-error-message": "error",
 
         // Deprecated rule — off in both v3 and v4
         "zod/no-string-schema-with-uuid": "off",
