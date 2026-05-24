@@ -7,6 +7,7 @@ import { gitRoot, projectRoot } from "../utils/git-root";
 import { PackageJson } from "../utils/package-json";
 import { adonisCi } from "./templates/adonis-ci";
 import { adonisMigrationsCi } from "./templates/adonis-ci-migrations";
+import { checkDirtyLockfileCi } from "./templates/check-dirty-lockfile-ci";
 import { dependabot } from "./templates/dependabot";
 import { nestjsCi } from "./templates/nestjs-ci";
 import { reactCi } from "./templates/react-ci";
@@ -102,6 +103,11 @@ export const installGithubActions = async () => {
       dependabot(),
     );
   }
+
+  await fs.writeFile(
+    path.join(ghWorkflowsDirectory, "check-dirty-lockfile.yml"),
+    checkDirtyLockfileCi({ nodeVersion: "22", manager, pnpmVersion }),
+  );
 
   await packageJson.addScriptIfNotExists("format", "prettier --write .");
   await packageJson.addScriptIfNotExists("format:check", "prettier --check .");

@@ -1,6 +1,7 @@
 import { describe, expect, it, test } from "vitest";
 
 import { adonisCi } from "../src/cli/templates/adonis-ci";
+import { checkDirtyLockfileCi } from "../src/cli/templates/check-dirty-lockfile-ci";
 import { commitLintCi } from "../src/cli/templates/commit-lint-ci";
 import { nestjsCi } from "../src/cli/templates/nestjs-ci";
 import { nextJsCi } from "../src/cli/templates/nextjs-ci";
@@ -180,6 +181,33 @@ describe("CI Template Generation Tests", () => {
       expect(result).toContain("github.event.pull_request.base.sha");
       expect(result).toContain("github.event.pull_request.head.sha");
     });
+  });
+
+  describe("Dirty Lockfile CI Template", () => {
+    test.each(SUPPORTED_PACKAGE_MANAGERS.filter(isSupportedPackageManager))(
+      "should generate correct lockfile check for %s",
+      (packageManager) => {
+        const manager = PACKAGE_MANAGER_CONFIGS[packageManager];
+        const result = checkDirtyLockfileCi({ nodeVersion: "22", manager });
+
+        expect(result).toContain(`name: Ensure clean ${manager.lockfile}`);
+        expect(result).toContain("uses: actions/checkout@v6");
+        expect(result).toContain("uses: actions/setup-node@v6");
+        expect(result).toContain("node-version: 22");
+        expect(result).toContain(`cache: "${manager.name}"`);
+        expect(result).toContain(`"**/${manager.lockfile}"`);
+        expect(result).toContain(manager.installDependenciesNoFrozenLockfile);
+        expect(result).toContain(`git diff --exit-code ${manager.lockfile}`);
+        expect(result).not.toContain("composite-actions/install");
+
+        const otherLockfiles = Object.values(PACKAGE_MANAGER_CONFIGS)
+          .filter((config) => config.name !== manager.name)
+          .map((config) => config.lockfile);
+        for (const otherLockfile of otherLockfiles) {
+          expect(result).not.toContain(otherLockfile);
+        }
+      },
+    );
   });
 
   describe("Next.js CI Template", () => {
