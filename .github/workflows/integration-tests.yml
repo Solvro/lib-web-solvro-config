@@ -8,7 +8,8 @@ on:
   merge_group:
   push:
     branches:
-      - "main"
+      - main
+      - beta
   workflow_dispatch:
 
 jobs:
