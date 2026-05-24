@@ -201,6 +201,7 @@ export function javascript(): ConfigWithExtends[] {
         "prefer-rest-params": "error",
         "prefer-spread": "error",
         "prefer-template": "error",
+        "preserve-caught-error": ["error", { requireCatchParameter: true }],
         "symbol-description": "error",
         "unicode-bom": ["error", "never"],
         "unused-imports/no-unused-imports": "error",
