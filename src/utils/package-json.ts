@@ -259,7 +259,14 @@ export class PackageJson {
 
   async clearInstall() {
     const [command, ...options] = this.manager.cleanInstall.split(" ");
-    await $$(command, options);
+    await runWithSpinner({
+      start: "Instalowanie pakietów na świeżo",
+      stop: "Wszystkie pakiety zainstalowane 😍",
+      error: "Instalacja pakietów na świeżo nie powiodła się 🥶",
+      callback: async () => {
+        await $$(command, options);
+      },
+    });
   }
 
   /**

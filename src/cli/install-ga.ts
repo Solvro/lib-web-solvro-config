@@ -90,7 +90,7 @@ export const installGithubActions = async () => {
       'prettier --write "src/**/*.ts" "test/**/*.ts"',
     );
     if (!formatScriptUpdated) {
-      p.log.warn(
+      p.log.warning(
         "Aktualizacja skryptu format została pominięta, ponieważ został on zmieniony lub nie istnieje. Ręcznie zaktualizuj skrypt format w package.json, aby formatował wszystkie pliki projektu, a nie tylko te w katalogach src i test.",
       );
     }
@@ -108,5 +108,5 @@ export const installGithubActions = async () => {
   await packageJson.addScriptIfNotExists("lint", "eslint . --max-warnings=0");
   await packageJson.addScriptIfNotExists("types:check", "tsc --noEmit");
 
-  p.note("Dodano konfigurację CI i skrypty.");
+  p.log.step("Dodano konfigurację CI i skrypty.");
 };

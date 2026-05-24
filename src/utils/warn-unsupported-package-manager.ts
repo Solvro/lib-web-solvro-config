@@ -6,7 +6,7 @@ import {
   PACKAGE_MANAGER_CONFIGS,
   SUPPORTED_PACKAGE_MANAGERS,
 } from "../constants/package-managers";
-import { checkIsNonInteractive } from "./check-is-non-interactive";
+import { formatLink } from "./format-log";
 
 export const warnUnsupportedPackageManager = ({
   userAgent,
@@ -22,7 +22,7 @@ Próbujesz uruchomić ten skrypt ${c.yellow(packageManager)}-em, ale @solvro/con
 ${SUPPORTED_PACKAGE_MANAGERS.map((manager) => c.white(`- ${c.cyan(manager)}`)).join("\n")}
 
 ${c.white(`Chcesz, aby dodano wsparcie dla ${c.yellow(packageManager)}-a? Daj nam znać!`)}
-${c.white(c.underline(BUG_TRACKER_URL))}
+${formatLink(BUG_TRACKER_URL)}
 
 ${c.white(`W międzyczasie użyj innego menedżera:`)}
 
@@ -30,9 +30,5 @@ ${Object.values(PACKAGE_MANAGER_CONFIGS)
   .map((config) => c.cyan(`${config.downloadExecute} @solvro/config`))
   .join(c.white("\nlub\n"))}`;
 
-  if (checkIsNonInteractive()) {
-    console.error(warningMessage);
-  } else {
-    p.cancel(warningMessage);
-  }
+  p.cancel(warningMessage);
 };

@@ -9,6 +9,8 @@ import { confirmProjectType } from "../utils/confirm-project-type";
 import { isGitClean } from "../utils/is-git-clean";
 import { PackageJson } from "../utils/package-json";
 import { polishConfirm } from "../utils/polish-confirm";
+import { printIntro } from "../utils/print-intro";
+import { printOutro } from "../utils/print-outro";
 import { installCommitLint } from "./install-commitlint";
 import { installEslint } from "./install-eslint";
 import { installGithubActions } from "./install-ga";
@@ -44,9 +46,7 @@ const options: CliOptions = program.opts();
 const isNonInteractive = checkIsNonInteractive();
 
 async function main() {
-  if (!isNonInteractive) {
-    p.intro(c.bold(c.bgBlue("  @solvro/config  ")));
-  }
+  printIntro();
 
   const packageJson = new PackageJson();
   packageJson.verifyPackageManager();
@@ -56,9 +56,8 @@ async function main() {
   // Git clean check
   if (options.force !== true && !isGitClean()) {
     if (isNonInteractive) {
-      console.error(
-        "Repozytorium Git ma niezatwierdzone zmiany. Użyj --force, aby pominąć to sprawdzenie.",
-      );
+      p.log.error("Repozytorium Git ma niezatwierdzone zmiany.");
+      p.cancel("Użyj --force, aby pominąć to sprawdzenie.");
       process.exit(1);
     }
 
@@ -82,11 +81,11 @@ async function main() {
       eslint?.version == null
         ? ""
         : ` Obecnie zainstalowana jest wersja ${c.yellow(eslint.version)}.`;
-    const errorMessage = `ESLint w wersji powyżej 9 ${c.red("nie jest jeszcze wspierany")}.${versionInfo}`;
+    const errorMessage = `ESLint w wersji powyżej 9 nie jest jeszcze wspierany.${versionInfo}`;
     const errorRetry = "Proszę zainstalować wersję 9 i spróbować ponownie.";
     if (isNonInteractive) {
-      console.error(errorMessage);
-      console.error(errorRetry);
+      p.log.error(errorMessage);
+      p.cancel(errorRetry);
       process.exit(1);
     }
     const isConfirmed = await polishConfirm({
@@ -163,8 +162,9 @@ async function main() {
     }
 
     if (toolsToInstall.length === 0) {
-      console.error(
-        "Nie wybrano żadnych narzędzi. Użyj --eslint, --prettier, --gh-action, --commitlint, lub --all",
+      p.log.error("Nie wybrano żadnych narzędzi.");
+      p.cancel(
+        "Użyj --eslint, --prettier, --gh-action, --commitlint, lub --all",
       );
       process.exit(1);
     }
@@ -235,8 +235,7 @@ async function main() {
     await packageJson.localExecute("prettier", "--write", "package.json");
   }
 
-  const printSuccess = isNonInteractive ? console.info : p.outro;
-  printSuccess("✅ Konfiguracja zakończona pomyślnie!");
+  printOutro();
 }
 
 async function mainWrapper() {
@@ -244,19 +243,11 @@ async function mainWrapper() {
     await main();
   } catch (error: unknown) {
     if (process.env.NODE_ENV === "development") {
-      console.error(
-        c.red("Unhandled error in main:"),
-        error instanceof Error ? error.message : error,
-      );
+      p.cancel("Unhandled error in main:");
+      console.error(error instanceof Error ? error.message : error);
     } else {
-      const errorMessage =
-        "Wystąpił nieoczekiwany błąd :( Proszę zgłosić go twórcom:";
-      if (isNonInteractive) {
-        console.error(errorMessage);
-        console.error(BUG_TRACKER_URL);
-      } else {
-        p.cancel(`${errorMessage} ${BUG_TRACKER_URL}`);
-      }
+      p.log.error("Wystąpił nieoczekiwany błąd :(");
+      p.cancel(`Proszę zgłosić go twórcom: ${BUG_TRACKER_URL}`);
     }
     process.exit(1);
   }
