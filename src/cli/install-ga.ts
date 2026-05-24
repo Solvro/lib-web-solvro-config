@@ -83,6 +83,17 @@ export const installGithubActions = async () => {
         pnpmVersion,
       }),
     );
+    // https://github.com/Solvro/lib-web-solvro-config/issues/431
+    const formatScriptUpdated = await packageJson.updateScriptIfExists(
+      "format",
+      "prettier --write .",
+      'prettier --write \\"src/**/*.ts\\" \\"test/**/*.ts\\"',
+    );
+    if (!formatScriptUpdated) {
+      p.log.warn(
+        "Aktualizacja skryptu format została pominięta, ponieważ został on zmieniony lub nie istnieje. Ręcznie zaktualizuj skrypt format w package.json, aby formatował wszystkie pliki projektu, a nie tylko te w katalogach src i test.",
+      );
+    }
   }
 
   if (!existsSync(path.join(gitDirectory, ".github/dependabot.yml"))) {
@@ -92,9 +103,9 @@ export const installGithubActions = async () => {
     );
   }
 
+  await packageJson.addScriptIfNotExists("format", "prettier --write .");
   await packageJson.addScriptIfNotExists("format:check", "prettier --check .");
   await packageJson.addScriptIfNotExists("lint", "eslint . --max-warnings=0");
-  await packageJson.addScriptIfNotExists("format", "prettier --write .");
   await packageJson.addScriptIfNotExists("types:check", "tsc --noEmit");
 
   p.note("Dodano konfigurację CI i skrypty.");

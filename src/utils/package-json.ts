@@ -153,6 +153,17 @@ export class PackageJson {
     );
   }
 
+  private async writeScript(name: string, script: string) {
+    await this.load();
+
+    assert.ok(this.json !== null);
+
+    this.json.scripts = this.json.scripts ?? {};
+    this.json.scripts[name] = script;
+
+    await this.save();
+  }
+
   async addScriptIfNotExists(name: string, script: string) {
     await this.load();
 
@@ -162,10 +173,28 @@ export class PackageJson {
       return;
     }
 
-    this.json.scripts = this.json.scripts ?? {};
-    this.json.scripts[name] = script;
+    await this.writeScript(name, script);
+  }
 
-    await this.save();
+  /** Replaces the existing script if it matches the expected value exactly. Prevents overwriting custom scripts that may have diverged from the original.
+   *
+   * @returns `true` if the script was updated, `false` if it was not updated because the existing script did not exist or it did not match the expected value.
+   */
+  async updateScriptIfExists(
+    name: string,
+    script: string,
+    expectedScript: string,
+  ): Promise<boolean> {
+    await this.load();
+
+    assert.ok(this.json !== null);
+
+    if (this.json.scripts?.[name] !== expectedScript) {
+      return false;
+    }
+
+    await this.writeScript(name, script);
+    return true;
   }
 
   async install(
