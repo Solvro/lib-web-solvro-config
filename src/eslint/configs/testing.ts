@@ -13,6 +13,13 @@ export const testing = async ({
 }): Promise<ConfigWithExtends[]> => {
   const isVitest = await isPackageListed("vitest");
   const isJest = await isPackageListed("jest");
+
+  if (isVitest && isJest) {
+    throw new Error(
+      "Both Vitest and Jest are installed: please uninstall one of them.",
+    );
+  }
+
   const isPlaywright = await isPackageListed("@playwright/test");
 
   const playwrightConfig = isPlaywright
@@ -81,12 +88,6 @@ export const testing = async ({
         },
       ] as const)
     : [];
-
-  if (isVitest && isJest) {
-    throw new Error(
-      "Both Vitest and Jest are installed - please uninstall one of them.",
-    );
-  }
 
   return [...playwrightConfig, ...vitestConfig, ...jestConfig];
 };
