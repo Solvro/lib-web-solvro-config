@@ -70,6 +70,8 @@ export const testing = async ({
             "vitest/prefer-comparison-matcher": ["error"],
             "vitest/no-conditional-in-test": ["warn"],
             "vitest/consistent-vitest-vi": ["error"],
+            "@typescript-eslint/unbound-method": "off",
+            "vitest/unbound-method": ["error"],
           },
         },
       ] as const satisfies ConfigWithExtends[])
