@@ -6,7 +6,7 @@ import {
   PACKAGE_MANAGER_CONFIGS,
   SUPPORTED_PACKAGE_MANAGERS,
 } from "../constants/package-managers";
-import { formatLink } from "./format-log";
+import { formatLink } from "./format-link";
 
 export const warnUnsupportedPackageManager = ({
   userAgent,
