@@ -5,7 +5,6 @@ export interface PackageManagerConfig {
   lockfile: string;
   installPackage: string;
   installDependencies: string;
-  installDependenciesNoFrozenLockfile: string;
   cleanInstall: string;
   downloadExecute: string;
   localExecute: string;
@@ -19,7 +18,6 @@ export const PACKAGE_MANAGER_CONFIGS = {
     lockfile: "package-lock.json",
     installPackage: "npm install",
     installDependencies: "npm install",
-    installDependenciesNoFrozenLockfile: "npm install",
     cleanInstall: "npm ci",
     downloadExecute: "npx",
     localExecute: "npx",
@@ -30,8 +28,7 @@ export const PACKAGE_MANAGER_CONFIGS = {
     name: "pnpm",
     lockfile: "pnpm-lock.yaml",
     installPackage: "pnpm add",
-    installDependencies: "pnpm install",
-    installDependenciesNoFrozenLockfile: "pnpm install --no-frozen-lockfile",
+    installDependencies: "pnpm install --no-frozen-lockfile",
     cleanInstall: "pnpm install --frozen-lockfile",
     downloadExecute: "pnpm dlx",
     localExecute: "pnpm exec",

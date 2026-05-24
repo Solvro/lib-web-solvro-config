@@ -30,14 +30,14 @@ jobs:
 ${nodeSetupCi({ nodeVersion, manager, pnpmVersion })}
 
       - name: Install dependencies
-        run: ${manager.installDependenciesNoFrozenLockfile}
+        run: ${manager.installDependencies}
 
       - name: Check for ${manager.lockfile} changes
         run: |
           if git diff --exit-code ${manager.lockfile} >/dev/null; then
             echo "${manager.lockfile} is clean :)"
           else
-            echo "${manager.lockfile} changed after running ${manager.installDependenciesNoFrozenLockfile}. Please commit the updated lockfile." >&2
+            echo "${manager.lockfile} changed after running ${manager.installDependencies}. Please commit the updated lockfile." >&2
             git diff --exit-code ${manager.lockfile}
           fi
 `;

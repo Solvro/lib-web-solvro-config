@@ -196,7 +196,7 @@ describe("CI Template Generation Tests", () => {
         expect(result).toContain("node-version: 22");
         expect(result).toContain(`cache: "${manager.name}"`);
         expect(result).toContain(`"**/${manager.lockfile}"`);
-        expect(result).toContain(manager.installDependenciesNoFrozenLockfile);
+        expect(result).toContain(manager.installDependencies);
         expect(result).toContain(`git diff --exit-code ${manager.lockfile}`);
         expect(result).not.toContain("composite-actions/install");
 
