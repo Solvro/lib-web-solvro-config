@@ -21,4 +21,4 @@ jobs:
       - name: Install
         uses: ./.github/composite-actions/install
 
-      - run: npx pkg-pr-new publish
+      - run: npm exec pkg-pr-new publish -- --commentWithDev --packageManager=npm,pnpm
