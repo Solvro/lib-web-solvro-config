@@ -34,7 +34,9 @@
       "require": "./dist/commitlint/index.cjs"
     }
   },
-  "bin": "./bin/index.js",
+  "bin": {
+    "config": "bin/index.js"
+  },
   "files": [
     "dist"
   ],
