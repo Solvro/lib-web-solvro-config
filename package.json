@@ -107,6 +107,7 @@
     "@commitlint/cli": "^21.1.0",
     "@commitlint/types": "^21.1.0",
     "@eslint/config-inspector": "^3.0.4",
+    "@nelsonlaidev/eslint-plugin": "^0.2.4",
     "@next/eslint-plugin-next": "^16.2.9",
     "@semantic-release/git": "^10.0.1",
     "@types/node": "^26.0.1",
