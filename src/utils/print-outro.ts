@@ -2,7 +2,7 @@ import * as p from "@clack/prompts";
 import c from "picocolors";
 
 import { REPO_URL } from "../constants";
-import { formatLink } from "./format-log";
+import { formatLink } from "./format-link";
 
 const PROJECT_DOCS_URL =
   "https://docs.solvro.pl/projects/creating#konfiguracja-repozytorium";

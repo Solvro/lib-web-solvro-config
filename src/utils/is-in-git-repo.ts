@@ -1,11 +1,14 @@
 import { execSync } from "node:child_process";
 import type { ExecSyncOptions } from "node:child_process";
 
-export function isGitClean(options?: ExecSyncOptions): boolean {
+export const isInGitRepo = (options: ExecSyncOptions) => {
   try {
-    execSync("git diff-index --quiet HEAD --", { stdio: "ignore", ...options });
+    execSync("git rev-parse --is-inside-work-tree ", {
+      stdio: "ignore",
+      ...options,
+    });
     return true;
   } catch {
     return false;
   }
-}
+};

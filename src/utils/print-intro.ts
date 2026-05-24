@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import c from "picocolors";
 
 import { isGitClean } from "./is-git-clean";
+import { isInGitRepo } from "./is-in-git-repo";
 
 export const printIntro = () => {
   const packageJsonUrl = new URL("../../package.json", import.meta.url);
@@ -10,7 +11,8 @@ export const printIntro = () => {
     version?: string;
   };
   const packageRoot = new URL("../", packageJsonUrl);
-  const clean = isGitClean({ cwd: packageRoot, stdio: "ignore" });
+  const execOptions = { cwd: packageRoot };
+  const clean = !isInGitRepo(execOptions) || isGitClean(execOptions);
   const version =
     packageJson.version == null || packageJson.version.trim() === ""
       ? c.red("(unknown version)")
