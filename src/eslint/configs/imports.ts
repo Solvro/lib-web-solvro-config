@@ -67,6 +67,7 @@ export function imports({
           "commitlint.config.*",
           "vite.config.*",
           ".releaserc.*",
+          "release.config.*",
           "vitest.config.*",
           "postcss.config.*",
           "playwright.config.*",
