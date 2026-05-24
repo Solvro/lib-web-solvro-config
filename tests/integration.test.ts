@@ -195,6 +195,27 @@ describe("NestJS Integration Tests", () => {
 
     expect(packageJson).toContain('"prettier": "@solvro/config/prettier"');
   });
+
+  test(`should update the default NestJS format script without warnings with ${packageManager.name}`, async () => {
+    const env = testEnv;
+    await env.setup();
+
+    const appPath = await env.createNestjsApp("format-script-test-app");
+
+    await env.installSolvroConfig(appPath);
+    await env.initGitRepo(appPath);
+
+    const output = await env.runSolvroConfig(appPath, ["--all", "--force"]);
+    expect(output).toContain("Konfiguracja zakończona pomyślnie");
+    expect(output).not.toContain(
+      "Aktualizacja skryptu format została pominięta",
+    );
+
+    const packageJson = JSON.parse(env.readFile(appPath, "package.json")) as {
+      scripts: Record<string, string>;
+    };
+    expect(packageJson.scripts.format).toBe("prettier --write .");
+  });
 });
 
 describe("Vite Integration Tests", () => {
