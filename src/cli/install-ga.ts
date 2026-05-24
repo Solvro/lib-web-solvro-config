@@ -87,7 +87,7 @@ export const installGithubActions = async () => {
     const formatScriptUpdated = await packageJson.updateScriptIfExists(
       "format",
       "prettier --write .",
-      'prettier --write \\"src/**/*.ts\\" \\"test/**/*.ts\\"',
+      'prettier --write "src/**/*.ts" "test/**/*.ts"',
     );
     if (!formatScriptUpdated) {
       p.log.warn(
