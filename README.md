@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/Solvro/lib-web-solvro-config/workflows/CI/badge.svg)](https://github.com/Solvro/lib-web-solvro-config/actions/workflows/ci.yml)
 [![Integration Tests](https://github.com/Solvro/lib-web-solvro-config/workflows/Integration%20Tests/badge.svg)](https://github.com/Solvro/lib-web-solvro-config/actions/workflows/integration-tests.yml)
+[![pkg.pr.new](/badge/Solvro/lib-web-solvro-config)](/~/Solvro/lib-web-solvro-config)
 
 ## Instalacja
 
