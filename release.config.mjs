@@ -1,10 +1,12 @@
+/**
+ * @type {import('semantic-release').GlobalConfig}
+ */
 export default {
   branches: [
     "main",
     {
-      name: "next",
-      prerelease: "beta",
-      channel: "next",
+      name: "beta",
+      prerelease: true,
     },
   ],
   plugins: [
@@ -16,7 +18,7 @@ export default {
       "@semantic-release/git",
       {
         // eslint-disable-next-line no-template-curly-in-string -- required by `semantic-release`.
-        message: "release: ${nextRelease.version}",
+        message: "chore(release): ${nextRelease.version} [skip ci]",
       },
     ],
   ],
