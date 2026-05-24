@@ -41,7 +41,7 @@ export const installEslint = async (isNonInteractive = false) => {
 
     if (!is15) {
       p.cancel(
-        "Next.js musi być w conajmniej wersji 15. Zaktualizuj Next.js i spróbuj ponownie.\nWięcej informacji tutaj: https://nextjs.org/docs/app/building-your-application/upgrading/version-15",
+        "Next.js musi być w co najmniej wersji 15. Zaktualizuj Next.js i spróbuj ponownie.\nWięcej informacji tutaj: https://nextjs.org/docs/app/building-your-application/upgrading/version-15",
       );
       process.exit(1);
     }
@@ -60,7 +60,7 @@ export const installEslint = async (isNonInteractive = false) => {
     );
 
     if (eslintContent.includes("export default solvro(")) {
-      p.note("Eslint jest już skonfigurowany. Pomijam.");
+      p.log.warning("ESLint jest już skonfigurowany. Pomijam.");
 
       return;
     } else {
@@ -69,11 +69,11 @@ export const installEslint = async (isNonInteractive = false) => {
         await fs.rm(path.join(root, eslintConfig));
       } else {
         const isConfirmed = await polishConfirm({
-          message: `Znaleziono plik konfiguracyjny Eslint. Czy chcesz go nadpisać?`,
+          message: `Znaleziono plik konfiguracyjny ESLint. Czy chcesz go nadpisać?`,
         });
 
         if (p.isCancel(isConfirmed) || !isConfirmed) {
-          p.cancel("Nadpisz plik konfiguracyjny Eslint i spróbuj ponownie.");
+          p.cancel("Nadpisz plik konfiguracyjny ESLint i spróbuj ponownie.");
           process.exit(1);
         }
 
@@ -94,5 +94,5 @@ export default solvro();
 `,
   );
 
-  p.note("Plik konfiguracyjny Eslint został utworzony.");
+  p.log.step("Plik konfiguracyjny ESLint został utworzony.");
 };

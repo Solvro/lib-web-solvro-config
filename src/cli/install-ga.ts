@@ -101,7 +101,7 @@ export const installGithubActions = async () => {
       'prettier --write "src/**/*.ts" "test/**/*.ts"',
     );
     if (!formatScriptUpdated) {
-      p.log.warn(
+      p.log.warning(
         "Aktualizacja skryptu format została pominięta, ponieważ został on zmieniony lub nie istnieje. Ręcznie zaktualizuj skrypt format w package.json, aby formatował wszystkie pliki projektu, a nie tylko te w katalogach src i test.",
       );
     }
