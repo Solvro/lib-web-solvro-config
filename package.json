@@ -70,7 +70,7 @@
     "@tanstack/eslint-plugin-query": "^5.100.9",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^8.58.2",
-    "commander": "^14.0.3",
+    "commander": "^15.0.0",
     "eslint-config-flat-gitignore": "^2.3.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-antfu": "^3.2.2",
