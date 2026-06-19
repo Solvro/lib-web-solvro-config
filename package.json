@@ -102,7 +102,7 @@
     "@eslint/config-inspector": "^3.0.1",
     "@next/eslint-plugin-next": "^16.2.5",
     "@semantic-release/git": "^10.0.1",
-    "@types/node": "^25.6.0",
+    "@types/node": "^26.0.0",
     "@types/semver": "^7.7.1",
     "@typescript-eslint/utils": "^8.58.2",
     "@typescript/native-preview": "^7.0.0-dev.20260507.1",
