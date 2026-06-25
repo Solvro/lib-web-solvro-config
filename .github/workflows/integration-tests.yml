@@ -13,14 +13,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  vitest-integration:
-    name: Vitest Integration Tests
+  vitest:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         node-version: [20, 22, 24]
         package-manager: [npm, pnpm]
+
     steps:
       - name: Check out
         uses: actions/checkout@v7
