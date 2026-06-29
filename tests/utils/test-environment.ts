@@ -15,19 +15,16 @@ import type { PackageManagerConfig } from "../../src/constants";
 import { PACKAGE_MANAGER_CONFIGS } from "../../src/constants";
 import { execSimple } from "./exec-simple";
 import { execWithLogging } from "./exec-with-logging";
-
-const DEFAULT_PACKAGE_MANAGER = PACKAGE_MANAGER_CONFIGS.npm;
+import { getCurrentPackageManager } from "./package-manager";
 
 export class TestEnvironment {
+  public readonly packageManager = getCurrentPackageManager();
   public readonly testDir: string;
   public readonly projectRoot: string;
   public readonly packageFile: string;
 
-  constructor(
-    testName: string,
-    public readonly packageManager: PackageManagerConfig = DEFAULT_PACKAGE_MANAGER,
-  ) {
-    const fullTestName = `solvro-config-test-${testName}-${packageManager.name}-${Date.now()}`;
+  constructor(testName: string) {
+    const fullTestName = `solvro-config-test-${testName}-${this.packageManager.name}-${Date.now()}`;
     this.testDir = path.join("/tmp", fullTestName);
     this.projectRoot = process.cwd();
 
