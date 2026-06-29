@@ -160,7 +160,6 @@ export class TestController {
 
       // Run ESLint on the default template - it should fail with Swagger rules
       const eslintResult = await env.runESLint(appPath, [
-        "--",
         "--max-warnings",
         "0",
       ]);

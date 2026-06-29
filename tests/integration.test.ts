@@ -78,7 +78,7 @@ describe("Next.js Integration Tests", () => {
   const packageManager = getCurrentPackageManager();
 
   beforeEach(async () => {
-    testEnv = new TestEnvironment("nextjs-integration", packageManager);
+    testEnv = new TestEnvironment("nextjs-integration");
   });
 
   afterEach(() => {
@@ -140,7 +140,7 @@ describe("NestJS Integration Tests", () => {
   const packageManager = getCurrentPackageManager();
 
   beforeEach(async () => {
-    testEnv = new TestEnvironment("nestjs-integration", packageManager);
+    testEnv = new TestEnvironment("nestjs-integration");
   });
 
   afterEach(() => {
@@ -223,7 +223,7 @@ describe("Vite Integration Tests", () => {
   const packageManager = getCurrentPackageManager();
 
   beforeEach(async () => {
-    testEnv = new TestEnvironment("vite-integration", packageManager);
+    testEnv = new TestEnvironment("vite-integration");
   });
 
   afterEach(() => {
@@ -287,7 +287,7 @@ describe("Commitlint Integration Tests", () => {
   const packageManager = getCurrentPackageManager();
 
   beforeEach(async () => {
-    testEnv = new TestEnvironment("commitlint-integration", packageManager);
+    testEnv = new TestEnvironment("commitlint-integration");
   });
 
   afterEach(() => {

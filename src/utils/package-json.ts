@@ -176,6 +176,11 @@ export class PackageJson {
     await this.writeScript(name, script);
   }
 
+  /** Always writes the script, overwriting any existing script with the same name. */
+  async addScript(name: string, script: string) {
+    await this.writeScript(name, script);
+  }
+
   /** Replaces the existing script if it matches the expected value exactly. Prevents overwriting custom scripts that may have diverged from the original.
    *
    * @returns `true` if the script was updated, `false` if it was not updated because the existing script did not exist or it did not match the expected value.

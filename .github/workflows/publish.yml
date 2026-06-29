@@ -1,4 +1,4 @@
-name: Publish
+name: Publish Package
 
 permissions:
   contents: read
@@ -11,7 +11,6 @@ on:
 
 jobs:
   release:
-    name: Publish
     runs-on: ubuntu-latest
     permissions:
       contents: write # to be able to publish a GitHub release
