@@ -1,7 +1,13 @@
-export { default as pluginComments } from "@eslint-community/eslint-plugin-eslint-comments";
 export { default as pluginAntfu } from "eslint-plugin-antfu";
+export { default as pluginComments } from "@eslint-community/eslint-plugin-eslint-comments";
 export { default as pluginImport } from "eslint-plugin-import";
+export { default as pluginNelsonLai } from "@nelsonlaidev/eslint-plugin";
 export { default as pluginNode } from "eslint-plugin-n";
+export { default as pluginQuery } from "@tanstack/eslint-plugin-query";
+export { default as pluginReact } from "eslint-plugin-react";
+export { default as pluginReactEffects } from "eslint-plugin-react-you-might-not-need-an-effect";
+export { default as pluginReactHooks } from "eslint-plugin-react-hooks";
+export { default as pluginReactRefresh } from "eslint-plugin-react-refresh";
 export { default as pluginRegexp } from "eslint-plugin-regexp";
 export { default as pluginUnicorn } from "eslint-plugin-unicorn";
 export { default as pluginUnusedImports } from "eslint-plugin-unused-imports";

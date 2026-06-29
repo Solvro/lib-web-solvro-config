@@ -1,10 +1,14 @@
-import type { ConfigWithExtends } from "@eslint/config-helpers";
-import pluginQuery from "@tanstack/eslint-plugin-query";
-import pluginReact from "eslint-plugin-react";
-import pluginReactHooks from "eslint-plugin-react-hooks";
-import pluginReactRefresh from "eslint-plugin-react-refresh";
-import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need-an-effect";
+import type { ConfigWithExtends, Plugin } from "@eslint/config-helpers";
 import { isPackageListedSync } from "local-pkg";
+
+import {
+  pluginNelsonLai,
+  pluginQuery,
+  pluginReact,
+  pluginReactEffects,
+  pluginReactHooks,
+  pluginReactRefresh,
+} from "../plugins";
 
 const nextJsPackages = ["next"];
 const vitePackages = ["vite"];
@@ -56,8 +60,8 @@ export async function react(): Promise<ConfigWithExtends[]> {
       name: "solvro/react/setup",
       plugins: {
         react: pluginReact,
-
         "react-hooks": pluginReactHooks,
+        "@nelsonlaidev": pluginNelsonLai as unknown as Plugin,
       },
     },
     ...nextjsConfig,
@@ -101,10 +105,15 @@ export async function react(): Promise<ConfigWithExtends[]> {
           },
         ],
         "react/no-array-index-key": "warn",
+        // https://github.com/nelsonlaidev/config/tree/main/packages/eslint-plugin
+        "@nelsonlaidev/lucide-icon-suffix": "error",
+        "@nelsonlaidev/shadcn-cn-wrap-variants": "error",
+        "@nelsonlaidev/shadcn-cva-variants-suffix": "error",
+        "@nelsonlaidev/shadcn-prefer-spinner": "error",
       },
     },
     ...pluginQuery.configs["flat/recommended"],
-    reactYouMightNotNeedAnEffect.configs.recommended,
+    pluginReactEffects.configs.recommended,
     {
       name: "solvro/react/disables",
       files: ["**/components/ui/*.{jsx,tsx}"],
