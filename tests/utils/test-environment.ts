@@ -17,6 +17,12 @@ import { execSimple } from "./exec-simple";
 import { execWithLogging } from "./exec-with-logging";
 import { getCurrentPackageManager } from "./package-manager";
 
+type PackageManagerCommand = {
+  [Key in keyof PackageManagerConfig]: PackageManagerConfig[Key] extends string
+    ? Key
+    : never;
+}[keyof PackageManagerConfig];
+
 export class TestEnvironment {
   public readonly packageManager = getCurrentPackageManager();
   public readonly testDir: string;
@@ -44,7 +50,7 @@ export class TestEnvironment {
     label,
     ...executionOptions
   }: {
-    command: keyof PackageManagerConfig;
+    command: PackageManagerCommand;
     args?: string[];
     label: string;
     cwd?: string;
@@ -364,10 +370,15 @@ export class TestEnvironment {
     appPath: string,
     arguments_: string[] = [],
   ): Promise<{ success: boolean; output: string }> {
+    const scriptArguments = [
+      ...this.packageManager.runScriptArgumentSeparator,
+      ...arguments_,
+    ];
+
     try {
       const { stdout, stderr } = await this.execute({
         command: "runScript",
-        args: ["lint", ...arguments_],
+        args: ["lint", ...scriptArguments],
         cwd: appPath,
         label: "eslint",
       });
