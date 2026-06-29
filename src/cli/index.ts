@@ -11,6 +11,7 @@ import { PackageJson } from "../utils/package-json";
 import { polishConfirm } from "../utils/polish-confirm";
 import { printIntro } from "../utils/print-intro";
 import { printOutro } from "../utils/print-outro";
+import { getSolvroConfigInstallTag } from "./get-solvro-config-install-tag";
 import { installCommitLint } from "./install-commitlint";
 import { installEslint } from "./install-eslint";
 import { installGithubActions } from "./install-ga";
@@ -209,6 +210,7 @@ async function main() {
   // Install the base package
   await packageJson.install("@solvro/config", {
     dev: true,
+    version: getSolvroConfigInstallTag(packageJsonData.version),
     alwaysUpdate: !isNonInteractive,
   });
 
