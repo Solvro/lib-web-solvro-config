@@ -94,7 +94,7 @@
     "prettier-plugin-packagejson": "^3.0.2",
     "prettier-plugin-tailwindcss": "^0.8.0",
     "semver": "^7.8.5",
-    "typescript-eslint": "~8.58.2"
+    "typescript-eslint": "~8.62.1"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.1.0",
