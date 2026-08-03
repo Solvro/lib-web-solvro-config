@@ -29,11 +29,12 @@ interface CliOptions {
 }
 
 // CLI setup
+const { version, versionParseError } = getPackageVersion();
 const program = new Command();
 program
   .name("@solvro/config")
   .description("Solvro's engineering style guide setup")
-  .version(getPackageVersion() ?? "")
+  .version(version ?? "")
   .option("-f, --force", "Skip git clean check", false)
   .option("--eslint", "Install ESLint configuration", false)
   .option("--prettier", "Install Prettier configuration", false)
@@ -47,7 +48,10 @@ const options: CliOptions = program.opts();
 const isNonInteractive = checkIsNonInteractive();
 
 async function main() {
-  printIntro();
+  printIntro(version ?? "");
+  if (versionParseError != null) {
+    p.log.warning(versionParseError);
+  }
 
   const packageJson = new PackageJson();
   packageJson.verifyPackageManager();
@@ -210,7 +214,7 @@ async function main() {
   // Install the base package
   await packageJson.install("@solvro/config", {
     dev: true,
-    version: getSolvroConfigInstallTag(getPackageVersion() ?? ""),
+    version: getSolvroConfigInstallTag(version ?? ""),
     alwaysUpdate: !isNonInteractive,
   });
 
