@@ -33,7 +33,7 @@ jobs:
 
       - name: Set up pnpm
         if: matrix.package-manager == 'pnpm'
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@v6.0.9
         with:
           version: 10
 
