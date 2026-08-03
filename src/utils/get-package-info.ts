@@ -34,7 +34,13 @@ export const getPackageVersion = ():
       versionParseError: `Plik ${c.yellow("package.json")} nie zawiera pola ${c.green("version")}. Nie można określić wersji pakietu.`,
     };
   }
-  const trimmed = String(packageJson.version).trim();
+  if (typeof packageJson.version !== "string") {
+    return {
+      version: null,
+      versionParseError: `Pole ${c.green("version")} w pliku ${c.yellow("package.json")} nie jest typu ${c.cyan("string")}. Nie można określić wersji pakietu.`,
+    };
+  }
+  const trimmed = packageJson.version.trim();
   if (trimmed === "") {
     return {
       version: null,

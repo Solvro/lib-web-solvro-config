@@ -8,7 +8,7 @@ import { isGitClean } from "./is-git-clean";
 export const printIntro = (packageVersion: string) => {
   const execOptions = { cwd: getPackageRoot() };
   const version =
-    packageVersion == ""
+    packageVersion === ""
       ? c.red("(nieznana wersja)")
       : c.green(c.bold(`v${packageVersion}`));
   const branchName = getGitBranch(execOptions);
