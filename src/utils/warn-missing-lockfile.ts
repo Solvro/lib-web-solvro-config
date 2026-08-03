@@ -2,7 +2,6 @@ import * as p from "@clack/prompts";
 import c from "picocolors";
 
 import type { PackageManagerConfig } from "../constants";
-import { checkIsNonInteractive } from "./check-is-non-interactive";
 
 export const warnMissingLockfile = ({
   manager,
@@ -20,9 +19,5 @@ ${c.white("Jeśli to się zgadza, zainstaluj najpierw zależności projektu i sp
 ${c.cyan(manager.installDependencies)}
 ${c.cyan(`${manager.downloadExecute} @solvro/config@latest`)}`;
 
-  if (checkIsNonInteractive()) {
-    console.error(warningMessage);
-  } else {
-    p.cancel(warningMessage);
-  }
+  p.cancel(warningMessage);
 };

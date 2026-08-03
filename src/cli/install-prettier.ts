@@ -44,7 +44,7 @@ export const installPrettier = async (isNonInteractive = false) => {
 
   if (prettierConfig !== undefined || packageJson.json.prettier !== undefined) {
     if (packageJson.json.prettier === solvroPrettierPath) {
-      p.note("Konfiguracja Prettiera jest już ustawiona. Pomijam.");
+      p.log.warning("Konfiguracja Prettiera jest już ustawiona. Pomijam.");
       return;
     }
 
@@ -73,5 +73,5 @@ export const installPrettier = async (isNonInteractive = false) => {
 
   await packageJson.save();
 
-  p.note("Konfiguracja Prettiera została dodana.");
+  p.log.step("Konfiguracja Prettiera została dodana.");
 };

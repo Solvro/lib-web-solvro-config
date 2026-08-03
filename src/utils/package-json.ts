@@ -238,6 +238,7 @@ export class PackageJson {
     if (
       options.alwaysUpdate === true ||
       (options.version != null &&
+        semver.validRange(options.version) != null &&
         !(await this.doesSatisfy(package_, options.version)))
     ) {
       await runWithSpinner({

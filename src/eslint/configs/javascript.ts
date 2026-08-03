@@ -2,7 +2,7 @@ import type { ConfigWithExtends } from "@eslint/config-helpers";
 import eslint from "@eslint/js";
 import globals from "globals";
 
-import { pluginAntfu, pluginUnusedImports } from "../plugins";
+import { pluginAntfu, pluginRegexp, pluginUnusedImports } from "../plugins";
 
 export function javascript(): ConfigWithExtends[] {
   return [
@@ -35,10 +35,12 @@ export function javascript(): ConfigWithExtends[] {
       name: "solvro/javascript/rules",
       plugins: {
         antfu: pluginAntfu,
+        regexp: pluginRegexp,
         "unused-imports": pluginUnusedImports,
       },
       rules: {
         ...eslint.configs.recommended.rules,
+        ...pluginRegexp.configs["flat/recommended"].rules,
         "accessor-pairs": [
           "error",
           { enforceForClassMembers: true, setWithoutGet: true },
@@ -201,6 +203,7 @@ export function javascript(): ConfigWithExtends[] {
         "prefer-rest-params": "error",
         "prefer-spread": "error",
         "prefer-template": "error",
+        "preserve-caught-error": ["error", { requireCatchParameter: true }],
         "symbol-description": "error",
         "unicode-bom": ["error", "never"],
         "unused-imports/no-unused-imports": "error",

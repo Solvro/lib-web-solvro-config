@@ -6,7 +6,6 @@ import {
   PACKAGE_MANAGER_CONFIGS,
   SUPPORTED_PACKAGE_MANAGERS,
 } from "../constants";
-import { checkIsNonInteractive } from "./check-is-non-interactive";
 import { isSupportedPackageManager } from "./is-supported-package-manager";
 
 const hintInstallWithDetected = (manager: PackageManagerConfig) => `
@@ -38,9 +37,5 @@ ${
     : warnUnsupported(detectedPackageManager)
 }`;
 
-  if (checkIsNonInteractive()) {
-    console.error(warningMessage);
-  } else {
-    p.cancel(warningMessage);
-  }
+  p.cancel(warningMessage);
 };
