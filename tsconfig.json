@@ -11,5 +11,5 @@
     "skipLibCheck": true,
     "outDir": "./dist"
   },
-  "exclude": ["tests/nest-app"]
+  "exclude": ["node_modules", "dist", "tests/nest-app"]
 }

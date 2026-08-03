@@ -1,21 +1,16 @@
 import * as p from "@clack/prompts";
-import { readFileSync } from "node:fs";
 import c from "picocolors";
 
 import { getGitBranch } from "./get-git-branch";
+import { getPackageRoot } from "./get-package-info";
 import { isGitClean } from "./is-git-clean";
 
-export const printIntro = () => {
-  const packageJsonUrl = new URL("../../package.json", import.meta.url);
-  const packageJson = JSON.parse(readFileSync(packageJsonUrl, "utf8")) as {
-    version?: string;
-  };
-  const packageRoot = new URL("./", packageJsonUrl);
-  const execOptions = { cwd: packageRoot };
+export const printIntro = (packageVersion: string) => {
+  const execOptions = { cwd: getPackageRoot() };
   const version =
-    packageJson.version == null || packageJson.version.trim() === ""
-      ? c.red("(unknown version)")
-      : c.green(c.bold(`v${packageJson.version}`));
+    packageVersion === ""
+      ? c.red("(nieznana wersja)")
+      : c.green(c.bold(`v${packageVersion}`));
   const branchName = getGitBranch(execOptions);
   const dirtyStatus =
     branchName == null
