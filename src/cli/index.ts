@@ -2,10 +2,10 @@ import * as p from "@clack/prompts";
 import { Command } from "commander";
 import c from "picocolors";
 
-import packageJsonData from "../../package.json";
 import { BUG_TRACKER_URL } from "../constants";
 import { checkIsNonInteractive } from "../utils/check-is-non-interactive";
 import { confirmProjectType } from "../utils/confirm-project-type";
+import { getPackageVersion } from "../utils/get-package-info";
 import { isGitClean } from "../utils/is-git-clean";
 import { PackageJson } from "../utils/package-json";
 import { polishConfirm } from "../utils/polish-confirm";
@@ -33,7 +33,7 @@ const program = new Command();
 program
   .name("@solvro/config")
   .description("Solvro's engineering style guide setup")
-  .version(packageJsonData.version)
+  .version(getPackageVersion() ?? "")
   .option("-f, --force", "Skip git clean check", false)
   .option("--eslint", "Install ESLint configuration", false)
   .option("--prettier", "Install Prettier configuration", false)
@@ -210,7 +210,7 @@ async function main() {
   // Install the base package
   await packageJson.install("@solvro/config", {
     dev: true,
-    version: getSolvroConfigInstallTag(packageJsonData.version),
+    version: getSolvroConfigInstallTag(getPackageVersion() ?? ""),
     alwaysUpdate: !isNonInteractive,
   });
 
