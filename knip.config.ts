@@ -8,6 +8,8 @@ const config = {
     "@typescript-eslint/utils",
     // this is actually used in .github/workflows/preview.yml - maybe knip doesn't see `npm exec` as usage?
     "pkg-pr-new",
+    // used in CI release workflow
+    "conventional-changelog-conventionalcommits",
   ],
 } satisfies KnipConfig;
 
