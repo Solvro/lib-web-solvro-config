@@ -49,7 +49,7 @@
     "knip": "knip",
     "lint": "eslint .",
     "prepare": "husky || true",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "release": "semantic-release",
     "test": "vitest run",
     "test:ui": "vitest --ui",
