@@ -138,8 +138,8 @@
     "npm": "^11.11.1"
   },
   "volta": {
-    "node": "22.22.1",
-    "npm": "11.11.1"
+    "node": "24.19.0",
+    "npm": "11.19.0"
   },
   "publishConfig": {
     "access": "public"
