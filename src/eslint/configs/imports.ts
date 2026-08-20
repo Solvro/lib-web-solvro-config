@@ -1,6 +1,16 @@
 import type { ConfigWithExtends } from "@eslint/config-helpers";
+import { createRequire } from "node:module";
 
 import { pluginAntfu, pluginImport } from "../plugins";
+
+/**
+Resolved to an absolute path so that the resolver is found even when this
+package is installed as a dependency and the resolver is not hoisted to the
+consumer's root `node_modules`.
+*/
+const typescriptResolver = createRequire(import.meta.url).resolve(
+  "eslint-import-resolver-typescript",
+);
 
 const forbiddenUiLibraries = [
   "@headlessui/react",
@@ -16,7 +26,34 @@ export function imports({
   forbidDefaultExport = true,
 } = {}): ConfigWithExtends[] {
   const config: ConfigWithExtends[] = [
-    pluginImport.flatConfigs.typescript,
+    {
+      name: "solvro/imports/setup",
+      plugins: {
+        "import-x": pluginImport,
+      },
+      settings: {
+        "import-x/extensions": [
+          ".js",
+          ".jsx",
+          ".mjs",
+          ".cjs",
+          ".ts",
+          ".tsx",
+          ".mts",
+          ".cts",
+        ],
+        "import-x/external-module-folders": [
+          "node_modules",
+          "node_modules/@types",
+        ],
+        "import-x/parsers": {
+          "@typescript-eslint/parser": [".ts", ".tsx", ".mts", ".cts"],
+        },
+        "import-x/resolver": {
+          [typescriptResolver]: { alwaysTryTypes: true },
+        },
+      },
+    },
     {
       name: "solvro/imports/rules",
       plugins: {
@@ -30,9 +67,11 @@ export function imports({
 
         ...(pluginImport.flatConfigs.recommended
           .rules as ConfigWithExtends["rules"]),
-        "import/no-dynamic-require": "warn",
-        "import/no-unresolved": "off",
-        "import/consistent-type-specifier-style": "warn",
+        // TypeScript already validates named exports at compile time
+        "import-x/named": "off",
+        "import-x/no-dynamic-require": "warn",
+        "import-x/no-unresolved": "off",
+        "import-x/consistent-type-specifier-style": "warn",
         "@typescript-eslint/no-restricted-imports": [
           "error",
           {
@@ -55,7 +94,7 @@ export function imports({
   if (forbidDefaultExport) {
     config.push(
       {
-        rules: { "import/no-default-export": "error" },
+        rules: { "import-x/no-default-export": "error" },
       },
       {
         files: [
@@ -73,7 +112,7 @@ export function imports({
           "playwright.config.*",
         ],
         rules: {
-          "import/no-default-export": "off",
+          "import-x/no-default-export": "off",
         },
       },
     );

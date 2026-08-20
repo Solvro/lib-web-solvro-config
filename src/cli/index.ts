@@ -3,7 +3,7 @@ import { Command } from "commander";
 import c from "picocolors";
 
 import { BUG_TRACKER_URL } from "../constants";
-import { checkIsNonInteractive } from "../utils/check-is-non-interactive";
+import { isNonInteractive } from "../utils/check-is-non-interactive";
 import { confirmProjectType } from "../utils/confirm-project-type";
 import { getPackageVersion } from "../utils/get-package-info";
 import { isGitClean } from "../utils/is-git-clean";
@@ -45,8 +45,6 @@ program
 program.parse();
 const options: CliOptions = program.opts();
 
-const isNonInteractive = checkIsNonInteractive();
-
 async function main() {
   printIntro(version ?? "");
   if (versionParseError != null) {
@@ -60,17 +58,17 @@ async function main() {
 
   // Git clean check
   if (options.force !== true && !isGitClean()) {
-    if (isNonInteractive) {
+    if (isNonInteractive()) {
       p.log.error("Repozytorium Git ma niezatwierdzone zmiany.");
       p.cancel("Użyj --force, aby pominąć to sprawdzenie.");
       process.exit(1);
     }
 
-    const isConfirmed = await polishConfirm({
+    const confirmed = await polishConfirm({
       message: `Masz niezapisane zmiany w Git. Czy chcesz kontynuować?`,
     });
 
-    if (p.isCancel(isConfirmed) || !isConfirmed) {
+    if (confirmed !== true || p.isCancel(confirmed)) {
       p.cancel("Zapisz zmiany w Git i spróbuj ponownie.");
       process.exit(1);
     }
@@ -79,64 +77,66 @@ async function main() {
   // Peer dependencies check
   if (
     (await packageJson.hasPackage("eslint")) &&
-    !(await packageJson.doesSatisfy("eslint", "<10"))
+    !(await packageJson.doesSatisfy("eslint", "<11"))
   ) {
     const eslint = await packageJson.getPackageInfo("eslint");
     const versionInfo =
       eslint?.version == null
         ? ""
         : ` Obecnie zainstalowana jest wersja ${c.yellow(eslint.version)}.`;
-    const errorMessage = `ESLint w wersji powyżej 9 nie jest jeszcze wspierany.${versionInfo}`;
-    const errorRetry = "Proszę zainstalować wersję 9 i spróbować ponownie.";
-    if (isNonInteractive) {
+    const errorMessage = `ESLint w wersji powyżej 10 nie jest jeszcze wspierany.${versionInfo}`;
+    const errorRetry = "Proszę zainstalować wersję 10 i spróbować ponownie.";
+    if (isNonInteractive()) {
       p.log.error(errorMessage);
       p.cancel(errorRetry);
       process.exit(1);
     }
-    const isConfirmed = await polishConfirm({
+    const confirmed = await polishConfirm({
       message: `${errorMessage} Zainstalować starszą wersję ${c.magenta("ESLint")}'a? (Wymagane by kontynuować)`,
     });
-    if (p.isCancel(isConfirmed) || !isConfirmed) {
+    if (confirmed !== true || p.isCancel(confirmed)) {
       p.cancel(errorRetry);
       process.exit(1);
     }
-    await packageJson.install("eslint", { dev: true, version: "^9" });
+    await packageJson.install("eslint", { dev: true, version: "^10" });
   }
 
   // Determine project type automatically
   const projectType = await packageJson.getProjectType();
 
   // Project type confirmation (interactive mode only)
-  if (!isNonInteractive) {
-    if (projectType === "adonis") {
-      await confirmProjectType(c.magenta("Adonis"));
-    }
-
-    if (projectType === "react") {
-      await confirmProjectType(c.cyan("React"));
-    }
-
-    if (projectType === "nestjs") {
-      await confirmProjectType(c.red("NestJS"));
-    }
-
-    if (projectType === "node") {
-      p.cancel(
-        `Nie znaleziono ani ${c.magenta("Adonis")}-a, ${c.cyan("React")}-a, ani ${c.white("NestJS")}-a. Musisz ręcznie konfigurować projekt.`,
-      );
-      process.exit(1);
+  if (!isNonInteractive()) {
+    switch (projectType) {
+      case "adonis": {
+        await confirmProjectType(c.magenta("Adonis"));
+        break;
+      }
+      case "react": {
+        await confirmProjectType(c.cyan("React"));
+        break;
+      }
+      case "nestjs": {
+        await confirmProjectType(c.red("NestJS"));
+        break;
+      }
+      case "node": {
+        p.cancel(
+          `Nie znaleziono ani ${c.magenta("Adonis")}-a, ${c.cyan("React")}-a, ani ${c.white("NestJS")}-a. Musisz ręcznie konfigurować projekt.`,
+        );
+        process.exit(1);
+      }
     }
   }
   if (projectType === "adonis" || projectType === "react") {
-    if (isNonInteractive) {
+    if (isNonInteractive()) {
       await packageJson.ensureESM();
     } else {
       if (!(await packageJson.isESM())) {
-        const isConfirmed = await polishConfirm({
+        const confirmed = await polishConfirm({
           message: `Twój projekt nie używa ESM (brak "type": "module" w package.json). Czy chcesz to dodać? (Wymagane by kontynuować)`,
         });
 
-        if (p.isCancel(isConfirmed) || !isConfirmed) {
+        if (confirmed !== true || p.isCancel(confirmed)) {
           p.cancel("Zmień projekt na ESM i spróbuj ponownie.");
           process.exit(1);
         }
@@ -151,7 +151,7 @@ async function main() {
 
   if (options.all === true) {
     toolsToInstall = ["eslint", "prettier", "gh-action", "commitlint"];
-  } else if (isNonInteractive) {
+  } else if (isNonInteractive()) {
     // In non-interactive mode, only install explicitly requested tools
     if (options.eslint === true) {
       toolsToInstall.push("eslint");
@@ -215,16 +215,16 @@ async function main() {
   await packageJson.install("@solvro/config", {
     dev: true,
     version: getSolvroConfigInstallTag(version ?? ""),
-    alwaysUpdate: !isNonInteractive,
+    alwaysUpdate: !isNonInteractive(),
   });
 
   // Install selected tools
   if (toolsToInstall.includes("eslint")) {
-    await installEslint(isNonInteractive);
+    await installEslint(isNonInteractive());
   }
 
   if (toolsToInstall.includes("prettier")) {
-    await installPrettier(isNonInteractive);
+    await installPrettier(isNonInteractive());
     await installLintStaged();
   }
 
@@ -259,5 +259,4 @@ async function mainWrapper() {
   }
 }
 
-// eslint-disable-next-line unicorn/prefer-top-level-await
 void mainWrapper();

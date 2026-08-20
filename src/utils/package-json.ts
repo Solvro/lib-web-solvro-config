@@ -18,10 +18,23 @@ import { warnMissingLockfile } from "./warn-missing-lockfile";
 import { warnUnsupportedPackageManager } from "./warn-unsupported-package-manager";
 
 export class PackageJson {
-  public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
   private _manager: PackageManagerConfig | null = null;
+  public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
 
-  /** Checks if the process is run from a supported package manager */
+  private async writeScript(name: string, script: string) {
+    await this.load();
+
+    assert.ok(this.json !== null);
+
+    this.json.scripts ??= {};
+    this.json.scripts[name] = script;
+
+    await this.save();
+  }
+
+  /**
+  Checks if the process is run from a supported package manager
+  */
   public verifyPackageManager(): PackageManager {
     const userAgent = getUserAgent();
     if (!isSupportedPackageManager(userAgent)) {
@@ -31,10 +44,12 @@ export class PackageJson {
     return userAgent;
   }
 
-  /** Checks if the user agent is consistent with the project's package manager */
+  /**
+  Checks if the user agent is consistent with the project's package manager
+  */
   public async validateUserAgentConsistency() {
     if (this.json?.packageManager != null) {
-      const [detectedPackageManager] = this.json.packageManager.split("@");
+      const [detectedPackageManager] = this.json.packageManager.split("@", 1);
       if (detectedPackageManager !== this.manager.name) {
         warnInconsistentUserAgent({
           userAgent: this.manager,
@@ -153,17 +168,6 @@ export class PackageJson {
     );
   }
 
-  private async writeScript(name: string, script: string) {
-    await this.load();
-
-    assert.ok(this.json !== null);
-
-    this.json.scripts = this.json.scripts ?? {};
-    this.json.scripts[name] = script;
-
-    await this.save();
-  }
-
   async addScriptIfNotExists(name: string, script: string) {
     await this.load();
 
@@ -176,7 +180,9 @@ export class PackageJson {
     await this.writeScript(name, script);
   }
 
-  /** Always writes the script, overwriting any existing script with the same name. */
+  /**
+  Always writes the script, overwriting any existing script with the same name.
+  */
   async addScript(name: string, script: string) {
     await this.writeScript(name, script);
   }
@@ -284,8 +290,8 @@ export class PackageJson {
     await this.load();
 
     if (this.json?.packageManager?.startsWith("pnpm@") === true) {
-      const version = this.json.packageManager.split("@")[1];
-      const majorVersion = version.split(".")[0];
+      const version = this.json.packageManager.split("@", 2)[1];
+      const majorVersion = version.split(".", 1)[0];
       if (/^\d+$/.test(majorVersion)) {
         return majorVersion;
       }

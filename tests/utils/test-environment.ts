@@ -276,18 +276,16 @@ export class TestEnvironment {
       flags: ["--no-interactive", "--template", template],
       ensureInstall: true,
     });
-    await this.execute({
-      command: "installPackage",
-      args: ["-D", "eslint@9", "@eslint/js@9"],
-      label: "downgrade-eslint-version",
-      cwd: appPath,
-    });
     return appPath;
   }
 
   async installSolvroConfig(appPath: string): Promise<void> {
     const packageName = this.packageFile.split("/").at(-1)!;
     copyFileSync(this.packageFile, path.join(appPath, packageName));
+    // @solvro/config declares eslint >=10.4 as a peer dependency, so a
+    // compatible ESLint version must be installed first (this also rewrites
+    // the app's own "eslint" spec in package.json).
+    await this.installPackage(appPath, "eslint@^10", true);
     await this.installPackage(appPath, `./${packageName}`, true);
   }
 

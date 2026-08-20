@@ -15,7 +15,7 @@ export function unicorn(): ConfigWithExtends[] {
         "unicorn/no-null": "off",
         "unicorn/no-useless-switch-case": "off",
         "unicorn/prefer-global-this": "off",
-        "unicorn/prevent-abbreviations": [
+        "unicorn/name-replacements": [
           "error",
           {
             replacements: {
@@ -29,7 +29,7 @@ export function unicorn(): ConfigWithExtends[] {
             allowList: {
               e2e: true,
             },
-            ignore: [String.raw`e2e`],
+            ignore: ["e2e"],
           },
         ],
       },
