@@ -48,7 +48,7 @@ jobs:
         if: always()
         run: npm run knip
 
-  vitest:
+  test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
