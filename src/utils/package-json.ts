@@ -5,7 +5,7 @@ import { stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { getUserAgent } from "package-manager-detector/detect";
 import c from "picocolors";
-import semver from "semver";
+import * as semver from "semver";
 
 import type { PackageManager, PackageManagerConfig } from "../constants";
 import { PACKAGE_MANAGER_CONFIGS } from "../constants";
