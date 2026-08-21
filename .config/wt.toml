@@ -1,0 +1,9 @@
+[post-start]
+copy = "wt step copy-ignored"
+
+[[pre-start]]
+install = "npm ci"
+
+[[pre-start]]
+prepare = "npm run prepare"
+build = "npm run build"
