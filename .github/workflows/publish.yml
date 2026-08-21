@@ -1,4 +1,4 @@
-name: Publish Package
+name: CD
 
 permissions:
   contents: read

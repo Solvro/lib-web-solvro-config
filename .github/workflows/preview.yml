@@ -1,4 +1,4 @@
-name: Publish Package Preview
+name: CD
 
 permissions:
   contents: read
@@ -11,7 +11,7 @@ on:
       - "!**"
 
 jobs:
-  build:
+  preview:
     runs-on: ubuntu-latest
 
     steps:
