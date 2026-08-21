@@ -5,8 +5,8 @@ import * as fs from "node:fs/promises";
 import path from "node:path";
 
 import { projectRoot } from "../utils/git-root";
+import { hasUserConfirmed } from "../utils/has-user-confirmed";
 import { PackageJson } from "../utils/package-json";
-import { polishConfirm } from "../utils/polish-confirm";
 
 const prettierConfigNames = [
   ".prettierrc.js",
@@ -58,11 +58,11 @@ export const installPrettier = async (isNonInteractive = false) => {
         }
       }
     } else {
-      const confirmed = await polishConfirm({
+      const isConfirmed = await hasUserConfirmed({
         message: `Znaleziono konfigurację Prettiera. Czy chcesz ją nadpisać?`,
       });
 
-      if (confirmed !== true || p.isCancel(confirmed)) {
+      if (!isConfirmed) {
         p.cancel("Usuń konfiguracje Prettiera i spróbuj ponownie.");
         process.exit(1);
       }

@@ -4,8 +4,8 @@ import * as fs from "node:fs/promises";
 import path from "node:path";
 
 import { projectRoot } from "../utils/git-root";
+import { hasUserConfirmed } from "../utils/has-user-confirmed";
 import { PackageJson } from "../utils/package-json";
-import { polishConfirm } from "../utils/polish-confirm";
 
 const eslintConfigNames = [
   ".eslintrc.js",
@@ -68,11 +68,11 @@ export const installEslint = async (isNonInteractive = false) => {
       // In non-interactive mode, automatically overwrite existing config
       await fs.rm(path.join(root, eslintConfig));
     } else {
-      const confirmed = await polishConfirm({
+      const isConfirmed = await hasUserConfirmed({
         message: `Znaleziono plik konfiguracyjny ESLint. Czy chcesz go nadpisać?`,
       });
 
-      if (confirmed !== true || p.isCancel(confirmed)) {
+      if (!isConfirmed) {
         p.cancel("Nadpisz plik konfiguracyjny ESLint i spróbuj ponownie.");
         process.exit(1);
       }
