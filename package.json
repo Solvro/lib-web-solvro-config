@@ -140,12 +140,12 @@
   },
   "peerDependencies": {
     "@next/eslint-plugin-next": ">=12.3.0",
-    "eslint": ">=10.4.0 <11.0.0"
+    "eslint": "^10.4.0"
   },
   "packageManager": "npm@11.14.0",
   "engines": {
     "node": ">=22.12.0",
-    "npm": "^11.11.1 || ^12.0.2"
+    "npm": "^11.11.1 || >=12.0.2"
   },
   "volta": {
     "node": "24.19.0",
