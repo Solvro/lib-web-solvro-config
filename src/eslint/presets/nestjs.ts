@@ -29,7 +29,7 @@ export const nestjsPreset = async (): Promise<ConfigWithExtends[]> => {
           },
         },
       ] satisfies ConfigWithExtends[])
-    : (eslintNestJs.configs.flatNoSwagger as ConfigWithExtends[]);
+    : eslintNestJs.configs.flatNoSwagger;
 
   return [
     ...node(),

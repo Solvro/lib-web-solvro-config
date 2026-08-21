@@ -2,7 +2,9 @@ import * as p from "@clack/prompts";
 
 import { runIfInteractive } from "./run-if-interactive";
 
-/** Executes a callback using a clack spinner, printing the provided messages, with error handling. */
+/**
+Executes a callback using a clack spinner, printing the provided messages, with error handling.
+*/
 export const runWithSpinner = async (options: {
   start: string;
   stop: string;

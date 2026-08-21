@@ -4,10 +4,19 @@ import pluginReact from "eslint-plugin-react";
 import pluginReactHooks from "eslint-plugin-react-hooks";
 import pluginReactRefresh from "eslint-plugin-react-refresh";
 import reactYouMightNotNeedAnEffect from "eslint-plugin-react-you-might-not-need-an-effect";
-import { isPackageListedSync } from "local-pkg";
+import { getPackageInfoSync, isPackageListedSync } from "local-pkg";
 
 const nextJsPackages = ["next"];
 const vitePackages = ["vite"];
+
+/**
+eslint-plugin-react's own version detection uses `context.getFilename()`,
+which was removed in ESLint 10, so we resolve the React version ourselves.
+*/
+function detectReactVersion(): string {
+  const reactPackage = getPackageInfoSync("react");
+  return reactPackage?.version ?? "19.0.0";
+}
 
 export async function react(): Promise<ConfigWithExtends[]> {
   const isUsingNext = nextJsPackages.some((index) =>
@@ -18,9 +27,8 @@ export async function react(): Promise<ConfigWithExtends[]> {
   const nextjsConfig: ConfigWithExtends[] = [];
 
   if (isUsingNext) {
-    const nextPlugin = await import("@next/eslint-plugin-next").then(
-      (d) => d.default,
-    );
+    const nextPluginModule = await import("@next/eslint-plugin-next");
+    const nextPlugin = nextPluginModule.default;
 
     nextjsConfig.push(
       {
@@ -39,7 +47,7 @@ export async function react(): Promise<ConfigWithExtends[]> {
         ],
         name: "solvro/next/pages",
         rules: {
-          "import/no-default-export": "off",
+          "import-x/no-default-export": "off",
         },
       },
     );
@@ -74,7 +82,7 @@ export async function react(): Promise<ConfigWithExtends[]> {
       },
       settings: {
         react: {
-          version: "detect",
+          version: detectReactVersion(),
         },
       },
       name: "solvro/react/rules",

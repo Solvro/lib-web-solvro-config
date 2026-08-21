@@ -28,82 +28,92 @@ export const installGithubActions = async () => {
   const pnpmVersion =
     manager.name === "pnpm" ? await packageJson.getPnpmVersion() : undefined;
 
-  const withCommitlint = await packageJson.hasPackage("@commitlint/cli");
+  const isWithCommitlint = await packageJson.hasPackage("@commitlint/cli");
 
-  if (type === "adonis") {
-    if (!existsSync(path.join(projectDirectory, ".env.example"))) {
-      p.cancel(
-        "Nie znaleziono pliku .env.example. Upewnij się, że jesteś w katalogu projektu Adonisa.",
+  switch (type) {
+    case "adonis": {
+      if (!existsSync(path.join(projectDirectory, ".env.example"))) {
+        p.cancel(
+          "Nie znaleziono pliku .env.example. Upewnij się, że jesteś w katalogu projektu Adonisa.",
+        );
+        process.exit(1);
+      }
+
+      await fs.writeFile(
+        path.join(ghWorkflowsDirectory, "ci.yml"),
+        adonisCi({
+          nodeVersion: "22",
+          withCommitlint: isWithCommitlint,
+          manager,
+          pnpmVersion,
+        }),
       );
-      process.exit(1);
-    }
 
-    await fs.writeFile(
-      path.join(ghWorkflowsDirectory, "ci.yml"),
-      adonisCi({
-        nodeVersion: "22",
-        withCommitlint,
-        manager,
-        pnpmVersion,
-      }),
-    );
-
-    await fs.writeFile(
-      path.join(ghWorkflowsDirectory, "db.yml"),
-      adonisMigrationsCi({ nodeVersion: "22", manager, pnpmVersion }),
-    );
-  }
-
-  if (type === "react") {
-    const usingNextJs = await packageJson.isNextJs();
-
-    await fs.writeFile(
-      path.join(ghWorkflowsDirectory, "ci.yml"),
-      reactCi({
-        nodeVersion: "22",
-        withCommitlint,
-        usingNextJs,
-        manager,
-        pnpmVersion,
-      }),
-    );
-
-    if (usingNextJs) {
-      await packageJson.addScriptIfNotExists("types:generate", "next typegen");
-    }
-    // https://github.com/Solvro/lib-web-solvro-config/issues/431
-    const formatScriptUpdated = await packageJson.updateScriptIfExists(
-      "format",
-      "prettier --write .",
-      'prettier --write "src/**/*.ts" "test/**/*.ts"',
-    );
-    if (!formatScriptUpdated) {
-      p.log.warning(
-        "Aktualizacja skryptu format została pominięta, ponieważ został on zmieniony lub nie istnieje. Ręcznie zaktualizuj skrypt format w package.json, aby formatował wszystkie pliki projektu, a nie tylko te w katalogach src i test.",
+      await fs.writeFile(
+        path.join(ghWorkflowsDirectory, "db.yml"),
+        adonisMigrationsCi({ nodeVersion: "22", manager, pnpmVersion }),
       );
+      break;
     }
-  }
+    case "react": {
+      const isUsingNextJs = await packageJson.isNextJs();
 
-  if (type === "nestjs") {
-    await fs.writeFile(
-      path.join(ghWorkflowsDirectory, "ci.yml"),
-      nestjsCi({
-        nodeVersion: "22",
-        withCommitlint,
-        manager,
-        pnpmVersion,
-      }),
-    );
-    // https://github.com/Solvro/lib-web-solvro-config/issues/431
-    const formatScriptUpdated = await packageJson.updateScriptIfExists(
-      "format",
-      "prettier --write .",
-      'prettier --write "src/**/*.ts" "test/**/*.ts"',
-    );
-    if (!formatScriptUpdated) {
-      p.log.warning(
-        "Aktualizacja skryptu format została pominięta, ponieważ został on zmieniony lub nie istnieje. Ręcznie zaktualizuj skrypt format w package.json, aby formatował wszystkie pliki projektu, a nie tylko te w katalogach src i test.",
+      await fs.writeFile(
+        path.join(ghWorkflowsDirectory, "ci.yml"),
+        reactCi({
+          nodeVersion: "22",
+          withCommitlint: isWithCommitlint,
+          usingNextJs: isUsingNextJs,
+          manager,
+          pnpmVersion,
+        }),
       );
+
+      if (isUsingNextJs) {
+        await packageJson.addScriptIfNotExists(
+          "types:generate",
+          "next typegen",
+        );
+      }
+      // https://github.com/Solvro/lib-web-solvro-config/issues/431
+      const isFormatScriptUpdated = await packageJson.updateScriptIfExists(
+        "format",
+        "prettier --write .",
+        'prettier --write "src/**/*.ts" "test/**/*.ts"',
+      );
+      if (!isFormatScriptUpdated) {
+        p.log.warning(
+          "Aktualizacja skryptu format została pominięta, ponieważ został on zmieniony lub nie istnieje. Ręcznie zaktualizuj skrypt format w package.json, aby formatował wszystkie pliki projektu, a nie tylko te w katalogach src i test.",
+        );
+      }
+      break;
+    }
+    case "nestjs": {
+      await fs.writeFile(
+        path.join(ghWorkflowsDirectory, "ci.yml"),
+        nestjsCi({
+          nodeVersion: "22",
+          withCommitlint: isWithCommitlint,
+          manager,
+          pnpmVersion,
+        }),
+      );
+      // https://github.com/Solvro/lib-web-solvro-config/issues/431
+      const isFormatScriptUpdated = await packageJson.updateScriptIfExists(
+        "format",
+        "prettier --write .",
+        'prettier --write "src/**/*.ts" "test/**/*.ts"',
+      );
+      if (!isFormatScriptUpdated) {
+        p.log.warning(
+          "Aktualizacja skryptu format została pominięta, ponieważ został on zmieniony lub nie istnieje. Ręcznie zaktualizuj skrypt format w package.json, aby formatował wszystkie pliki projektu, a nie tylko te w katalogach src i test.",
+        );
+      }
+      break;
+    }
+    case "node": {
+      // No GitHub Actions setup for plain Node.js projects
+      break;
     }
   }
 

@@ -1,6 +1,6 @@
 export { default as pluginComments } from "@eslint-community/eslint-plugin-eslint-comments";
 export { default as pluginAntfu } from "eslint-plugin-antfu";
-export { default as pluginImport } from "eslint-plugin-import";
+export { default as pluginImport } from "eslint-plugin-import-x";
 export { default as pluginNode } from "eslint-plugin-n";
 export { default as pluginRegexp } from "eslint-plugin-regexp";
 export { default as pluginUnicorn } from "eslint-plugin-unicorn";

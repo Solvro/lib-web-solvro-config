@@ -4,8 +4,8 @@ import * as fs from "node:fs/promises";
 import path from "node:path";
 
 import { projectRoot } from "../utils/git-root";
+import { hasUserConfirmed } from "../utils/has-user-confirmed";
 import { PackageJson } from "../utils/package-json";
-import { polishConfirm } from "../utils/polish-confirm";
 
 const eslintConfigNames = [
   ".eslintrc.js",
@@ -31,7 +31,7 @@ export const installEslint = async (isNonInteractive = false) => {
 
   await packageJson.install("eslint", {
     dev: true,
-    version: "^9",
+    version: "^10",
   });
 
   const type = await packageJson.getProjectType();
@@ -63,22 +63,21 @@ export const installEslint = async (isNonInteractive = false) => {
       p.log.warning("ESLint jest już skonfigurowany. Pomijam.");
 
       return;
+    }
+    if (isNonInteractive) {
+      // In non-interactive mode, automatically overwrite existing config
+      await fs.rm(path.join(root, eslintConfig));
     } else {
-      if (isNonInteractive) {
-        // In non-interactive mode, automatically overwrite existing config
-        await fs.rm(path.join(root, eslintConfig));
-      } else {
-        const isConfirmed = await polishConfirm({
-          message: `Znaleziono plik konfiguracyjny ESLint. Czy chcesz go nadpisać?`,
-        });
+      const isConfirmed = await hasUserConfirmed({
+        message: `Znaleziono plik konfiguracyjny ESLint. Czy chcesz go nadpisać?`,
+      });
 
-        if (p.isCancel(isConfirmed) || !isConfirmed) {
-          p.cancel("Nadpisz plik konfiguracyjny ESLint i spróbuj ponownie.");
-          process.exit(1);
-        }
-
-        await fs.rm(path.join(root, eslintConfig));
+      if (!isConfirmed) {
+        p.cancel("Nadpisz plik konfiguracyjny ESLint i spróbuj ponownie.");
+        process.exit(1);
       }
+
+      await fs.rm(path.join(root, eslintConfig));
     }
   }
 

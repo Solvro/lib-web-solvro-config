@@ -10,6 +10,7 @@ on:
     branches:
       - main
       - beta
+  workflow_dispatch:
 
 jobs:
   lint:
@@ -46,3 +47,44 @@ jobs:
       - name: Check dead code
         if: always()
         run: npm run knip
+
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [22, 24, 26]
+        package-manager: [npm, pnpm]
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v7
+
+      - name: Set up Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Set up pnpm
+        if: matrix.package-manager == 'pnpm'
+        uses: pnpm/action-setup@v6
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install create-next-app globally (npm)
+        if: matrix.package-manager == 'npm'
+        run: npx -y create-next-app@latest --version
+
+      - name: Install create-next-app globally (pnpm)
+        if: matrix.package-manager == 'pnpm'
+        run: pnpm dlx create-next-app@latest --version
+
+      - name: Run Vitest integration tests
+        run: npm test
+        env:
+          NODE_VERSION: ${{ matrix.node-version }}
+          PACKAGE_MANAGER: ${{ matrix.package-manager }}
