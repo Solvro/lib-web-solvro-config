@@ -125,14 +125,17 @@ export class TestEnvironment {
       console.debug(
         `🏗️  Creating new template with ${this.packageManager.name}: ${templateDir}`,
       );
-      // only npm uses '--' for separating argument lists
-      const createArguments = this.packageManager.name === "npm" ? ["--"] : [];
+      // npm needs its non-interactive flag before the initializer package.
+      const createArguments =
+        this.packageManager.name === "npm" ? ["--yes"] : [];
+      const separator = this.packageManager.name === "npm" ? ["--"] : [];
       await this.execute({
         command: "create",
         args: [
+          ...createArguments,
           creator,
           path.basename(templateDir),
-          ...createArguments,
+          ...separator,
           ...flags,
         ],
         label: `create-${creator}`,
@@ -255,7 +258,6 @@ export class TestEnvironment {
       srcDir ? "--src-dir" : "--no-src-dir",
       `--import-alias "${importAlias}"`,
       "--no-git",
-      "--yes",
     ];
     return await this.create({
       appName,
