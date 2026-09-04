@@ -115,7 +115,7 @@ export class PackageJson {
     return semver.satisfies(packageInfo.version, version);
   }
 
-  async isESM() {
+  async isEsm() {
     await this.load();
 
     assert.ok(this.json !== null);
@@ -123,8 +123,8 @@ export class PackageJson {
     return this.json.type === "module";
   }
 
-  async ensureESM() {
-    if (await this.isESM()) {
+  async ensureEsm() {
+    if (await this.isEsm()) {
       return;
     }
 

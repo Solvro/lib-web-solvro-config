@@ -81,9 +81,9 @@ export const installEslint = async (isNonInteractive = false) => {
     }
   }
 
-  const isESM = await packageJson.isESM();
+  const isEsm = await packageJson.isEsm();
 
-  const eslintFilename = isESM ? "eslint.config.js" : "eslint.config.mjs";
+  const eslintFilename = isEsm ? "eslint.config.js" : "eslint.config.mjs";
 
   await fs.writeFile(
     path.join(root, eslintFilename),

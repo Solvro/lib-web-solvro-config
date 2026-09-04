@@ -45,6 +45,10 @@ program
 program.parse();
 const options: CliOptions = program.opts();
 
+const ALLOWED_CJS_PROJECT_TYPES = new Set<
+  Awaited<ReturnType<PackageJson["getProjectType"]>>
+>(["nestjs"]);
+
 async function main() {
   printIntro(version ?? "");
   if (versionParseError != null) {
@@ -127,23 +131,20 @@ async function main() {
       }
     }
   }
-  if (projectType === "adonis" || projectType === "react") {
-    if (isNonInteractive) {
-      await packageJson.ensureESM();
-    } else {
-      if (!(await packageJson.isESM())) {
-        const isConfirmed = await hasUserConfirmed({
-          message: `Twój projekt nie używa ESM (brak "type": "module" w package.json). Czy chcesz to dodać? (Wymagane by kontynuować)`,
-        });
+  if (!ALLOWED_CJS_PROJECT_TYPES.has(projectType)) {
+    const shouldSkipEsmConfirmation =
+      isNonInteractive || (await packageJson.isEsm());
+    if (!shouldSkipEsmConfirmation) {
+      const isConfirmed = await hasUserConfirmed({
+        message: `Twój projekt nie używa ESM (brak ${c.yellow('"type": "module"')} w package.json). Czy chcesz to dodać? (Wymagane by kontynuować)`,
+      });
 
-        if (!isConfirmed) {
-          p.cancel("Zmień projekt na ESM i spróbuj ponownie.");
-          process.exit(1);
-        }
-
-        await packageJson.ensureESM();
+      if (!isConfirmed) {
+        p.cancel("Zmień projekt na ESM i spróbuj ponownie.");
+        process.exit(1);
       }
     }
+    await packageJson.ensureEsm();
   }
 
   // Determine which tools to install
