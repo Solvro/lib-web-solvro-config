@@ -45,9 +45,9 @@ program
 program.parse();
 const options: CliOptions = program.opts();
 
-const REQUIRED_ESM_PROJECT_TYPES = new Set<
+const ALLOWED_CJS_PROJECT_TYPES = new Set<
   Awaited<ReturnType<PackageJson["getProjectType"]>>
->(["adonis", "react"]);
+>(["nestjs"]);
 
 async function main() {
   printIntro(version ?? "");
@@ -131,7 +131,7 @@ async function main() {
       }
     }
   }
-  if (REQUIRED_ESM_PROJECT_TYPES.has(projectType)) {
+  if (!ALLOWED_CJS_PROJECT_TYPES.has(projectType)) {
     const shouldSkipEsmConfirmation =
       isNonInteractive || (await packageJson.isEsm());
     if (!shouldSkipEsmConfirmation) {
