@@ -45,6 +45,10 @@ program
 program.parse();
 const options: CliOptions = program.opts();
 
+const REQUIRED_ESM_PROJECT_TYPES: Awaited<
+  ReturnType<PackageJson["getProjectType"]>
+>[] = ["adonis", "react"];
+
 async function main() {
   printIntro(version ?? "");
   if (versionParseError != null) {
@@ -127,23 +131,19 @@ async function main() {
       }
     }
   }
-  if (projectType === "adonis" || projectType === "react") {
-    if (isNonInteractive) {
-      await packageJson.ensureESM();
-    } else {
-      if (!(await packageJson.isESM())) {
-        const isConfirmed = await hasUserConfirmed({
-          message: `Twój projekt nie używa ESM (brak "type": "module" w package.json). Czy chcesz to dodać? (Wymagane by kontynuować)`,
-        });
+  if (REQUIRED_ESM_PROJECT_TYPES.includes(projectType)) {
+    const skipConfirmESM = isNonInteractive || (await packageJson.isESM());
+    if (!skipConfirmESM) {
+      const isConfirmed = await hasUserConfirmed({
+        message: `Twój projekt nie używa ESM (brak ${c.yellow('"type": "module"')} w package.json). Czy chcesz to dodać? (Wymagane by kontynuować)`,
+      });
 
-        if (!isConfirmed) {
-          p.cancel("Zmień projekt na ESM i spróbuj ponownie.");
-          process.exit(1);
-        }
-
-        await packageJson.ensureESM();
+      if (!isConfirmed) {
+        p.cancel("Zmień projekt na ESM i spróbuj ponownie.");
+        process.exit(1);
       }
     }
+    await packageJson.ensureESM();
   }
 
   // Determine which tools to install
