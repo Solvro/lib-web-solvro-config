@@ -8,10 +8,12 @@ export const confirmProjectType = async (projectType: string) => {
     message: `Wygląda jakbyś używał ${projectType}'a. Czy to się zgadza?`,
   });
 
-  if (!isConfirmed) {
-    p.cancel(
-      `:( Zgłoś błąd na GitHubie, a my spróbujemy pomóc: ${BUG_TRACKER_URL}`,
-    );
-    process.exit(1);
+  if (isConfirmed) {
+    return;
   }
+
+  p.cancel(
+    `:( Zgłoś błąd na GitHubie, a my spróbujemy pomóc: ${BUG_TRACKER_URL}`,
+  );
+  process.exit(1);
 };
