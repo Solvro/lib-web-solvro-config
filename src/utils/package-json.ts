@@ -108,11 +108,10 @@ export class PackageJson {
 
     const packageInfo = await this.getPackageInfo(package_);
 
-    if (packageInfo?.version === undefined) {
-      return false;
-    }
-
-    return semver.satisfies(packageInfo.version, version);
+    return (
+      packageInfo?.version !== undefined &&
+      semver.satisfies(packageInfo.version, version)
+    );
   }
 
   async isEsm() {
@@ -154,11 +153,7 @@ export class PackageJson {
       return "adonis";
     }
 
-    if (isReact) {
-      return "react";
-    }
-
-    return "node";
+    return isReact ? "react" : "node";
   }
 
   async save() {
@@ -241,26 +236,28 @@ export class PackageJson {
       return;
     }
 
-    if (
+    if (!(
       options.alwaysUpdate === true ||
       (options.version != null &&
         semver.validRange(options.version) != null &&
         !(await this.doesSatisfy(package_, options.version)))
-    ) {
-      await runWithSpinner({
-        start: `Aktualizowanie pakietu ${package_}`,
-        stop: `${package_} zaktualizowany 😍`,
-        error: `Aktualizacja pakietu ${package_} nie powiodła się 🥶`,
-        callback: async () => {
-          await $$(installCommand, [
-            ...commandOptions,
-            `${package_}@${installVersion}`,
-          ]);
-        },
-      });
-
-      await this.load();
+    )) {
+      return;
     }
+
+    await runWithSpinner({
+      start: `Aktualizowanie pakietu ${package_}`,
+      stop: `${package_} zaktualizowany 😍`,
+      error: `Aktualizacja pakietu ${package_} nie powiodła się 🥶`,
+      callback: async () => {
+        await $$(installCommand, [
+          ...commandOptions,
+          `${package_}@${installVersion}`,
+        ]);
+      },
+    });
+
+    await this.load();
   }
 
   async localExecute(...commandArguments: string[]) {
