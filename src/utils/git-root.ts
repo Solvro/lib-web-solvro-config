@@ -5,11 +5,9 @@ import path from "node:path";
 export const projectRoot = () => {
   const packageJsonPath = findUpSync("package.json");
 
-  if (packageJsonPath !== undefined) {
-    return path.dirname(packageJsonPath);
-  }
-
-  return process.cwd();
+  return packageJsonPath === undefined
+    ? process.cwd()
+    : path.dirname(packageJsonPath);
 };
 
 export const gitRoot = () => {
