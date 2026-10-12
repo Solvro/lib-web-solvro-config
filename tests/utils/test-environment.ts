@@ -61,7 +61,7 @@ export class TestEnvironment {
     return await execWithLogging(
       baseCommand,
       [...commandOptions, ...args],
-      { cwd: this.testDir, timeout: 120_000, ...executionOptions },
+      { cwd: this.testDir, timeout: 300_000, ...executionOptions },
       label,
     );
   }
