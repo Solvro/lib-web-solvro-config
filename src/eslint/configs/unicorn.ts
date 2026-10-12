@@ -15,6 +15,8 @@ export function unicorn(): ConfigWithExtends[] {
         "unicorn/no-null": "off",
         "unicorn/no-useless-switch-case": "off",
         "unicorn/prefer-global-this": "off",
+        // the current default is stupid IMO
+        "unicorn/single-line-block-comment-style": ["error", "single-line"],
         "unicorn/name-replacements": [
           "error",
           {

@@ -32,9 +32,7 @@ export class PackageJson {
     await this.save();
   }
 
-  /**
-  Checks if the process is run from a supported package manager
-  */
+  /** Checks if the process is run from a supported package manager */
   public verifyPackageManager(): PackageManager {
     const userAgent = getUserAgent();
     if (!isSupportedPackageManager(userAgent)) {
@@ -44,9 +42,7 @@ export class PackageJson {
     return userAgent;
   }
 
-  /**
-  Checks if the user agent is consistent with the project's package manager
-  */
+  /** Checks if the user agent is consistent with the project's package manager */
   public async validateUserAgentConsistency() {
     if (this.json?.packageManager != null) {
       const [detectedPackageManager] = this.json.packageManager.split("@", 1);
@@ -180,9 +176,7 @@ export class PackageJson {
     await this.writeScript(name, script);
   }
 
-  /**
-  Always writes the script, overwriting any existing script with the same name.
-  */
+  /** Always writes the script, overwriting any existing script with the same name. */
   async addScript(name: string, script: string) {
     await this.writeScript(name, script);
   }
