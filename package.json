@@ -132,7 +132,7 @@
     "husky": "^9.1.7",
     "knip": "^6.32.2",
     "lint-staged": "^17.3.0",
-    "pkg-pr-new": "^0.0.88",
+    "pkg-pr-new": "^0.0.91",
     "prettier": "^3.9.6",
     "semantic-release": "^25.0.9",
     "tsup": "^8.5.1",
