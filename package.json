@@ -102,7 +102,7 @@
     "eslint-plugin-regexp": "^3.2.0",
     "eslint-plugin-unicorn": "^74.0.0",
     "eslint-plugin-unused-imports": "^4.4.1",
-    "eslint-plugin-zod": "^4.9.1",
+    "eslint-plugin-zod": "^5.0.0",
     "execa": "^10.0.1",
     "find-up-simple": "^1.0.1",
     "globals": "^17.11.0",
