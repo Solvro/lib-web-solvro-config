@@ -64,23 +64,7 @@ jobs:
         uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node-version }}
-
-      - name: Restore npm cache
-        if: matrix.package-manager == 'npm'
-        uses: actions/cache/restore@v6
-        id: npm-cache
-        with:
-          path: ~/.npm
-          key: npm-tests-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('package-lock.json', 'tests/nest-app/package-lock.json') }}
-          restore-keys: |
-            npm-tests-${{ runner.os }}-${{ runner.arch }}-
-
-      - name: Save npm cache
-        if: matrix.package-manager == 'npm' && matrix.node-version == 24
-        uses: actions/cache/save@v6
-        with:
-          path: ~/.npm
-          key: ${{ steps.npm-cache.outputs.cache-primary-key }}
+          cache: npm
 
       - name: Set up pnpm
         if: matrix.package-manager == 'pnpm'
