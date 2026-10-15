@@ -80,7 +80,7 @@ describe("NestJS Preset Tests", () => {
       await env.initGitRepo(appPath);
 
       // Install @nestjs/swagger
-      await env.installPackage(appPath, "@nestjs/swagger");
+      await env.installPackage(appPath, "@nestjs/swagger@^11");
 
       // Run solvro config with NestJS preset
       const output = await env.runSolvroConfig(appPath, [
@@ -108,7 +108,7 @@ describe("NestJS Preset Tests", () => {
       await env.initGitRepo(appPath);
 
       // Install @nestjs/swagger
-      await env.installPackage(appPath, "@nestjs/swagger");
+      await env.installPackage(appPath, "@nestjs/swagger@^11");
 
       // Configure ESLint
       await env.runSolvroConfig(appPath, ["--eslint", "--force"]);
@@ -149,7 +149,7 @@ export class TestController {
       await env.initGitRepo(appPath);
 
       // Install @nestjs/swagger to activate Swagger rules
-      await env.installPackage(appPath, "@nestjs/swagger");
+      await env.installPackage(appPath, "@nestjs/swagger@^11");
 
       // Configure ESLint with NestJS preset
       await env.runSolvroConfig(appPath, ["--eslint", "--force"]);
@@ -181,7 +181,7 @@ export class TestController {
       await env.initGitRepo(appPath);
 
       // Install @nestjs/swagger
-      await env.installPackage(appPath, "@nestjs/swagger");
+      await env.installPackage(appPath, "@nestjs/swagger@^11");
 
       // Configure ESLint
       await env.runSolvroConfig(appPath, ["--eslint", "--force"]);

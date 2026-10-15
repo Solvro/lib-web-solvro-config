@@ -5,7 +5,7 @@ import { stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { getUserAgent } from "package-manager-detector/detect";
 import c from "picocolors";
-import semver from "semver";
+import * as semver from "semver";
 
 import type { PackageManager, PackageManagerConfig } from "../constants";
 import { PACKAGE_MANAGER_CONFIGS } from "../constants";
@@ -18,8 +18,19 @@ import { warnMissingLockfile } from "./warn-missing-lockfile";
 import { warnUnsupportedPackageManager } from "./warn-unsupported-package-manager";
 
 export class PackageJson {
-  public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
   private _manager: PackageManagerConfig | null = null;
+  public json: Awaited<ReturnType<typeof loadPackageJSON>> = null;
+
+  private async writeScript(name: string, script: string) {
+    await this.load();
+
+    assert.ok(this.json !== null);
+
+    this.json.scripts ??= {};
+    this.json.scripts[name] = script;
+
+    await this.save();
+  }
 
   /** Checks if the process is run from a supported package manager */
   public verifyPackageManager(): PackageManager {
@@ -34,7 +45,7 @@ export class PackageJson {
   /** Checks if the user agent is consistent with the project's package manager */
   public async validateUserAgentConsistency() {
     if (this.json?.packageManager != null) {
-      const [detectedPackageManager] = this.json.packageManager.split("@");
+      const [detectedPackageManager] = this.json.packageManager.split("@", 1);
       if (detectedPackageManager !== this.manager.name) {
         warnInconsistentUserAgent({
           userAgent: this.manager,
@@ -100,7 +111,7 @@ export class PackageJson {
     return semver.satisfies(packageInfo.version, version);
   }
 
-  async isESM() {
+  async isEsm() {
     await this.load();
 
     assert.ok(this.json !== null);
@@ -108,8 +119,8 @@ export class PackageJson {
     return this.json.type === "module";
   }
 
-  async ensureESM() {
-    if (await this.isESM()) {
+  async ensureEsm() {
+    if (await this.isEsm()) {
       return;
     }
 
@@ -151,17 +162,6 @@ export class PackageJson {
       path.join(projectRoot(), "package.json"),
       `${JSON.stringify(this.json, null, 2)}\n`,
     );
-  }
-
-  private async writeScript(name: string, script: string) {
-    await this.load();
-
-    assert.ok(this.json !== null);
-
-    this.json.scripts = this.json.scripts ?? {};
-    this.json.scripts[name] = script;
-
-    await this.save();
   }
 
   async addScriptIfNotExists(name: string, script: string) {
@@ -284,8 +284,8 @@ export class PackageJson {
     await this.load();
 
     if (this.json?.packageManager?.startsWith("pnpm@") === true) {
-      const version = this.json.packageManager.split("@")[1];
-      const majorVersion = version.split(".")[0];
+      const version = this.json.packageManager.split("@", 2)[1];
+      const majorVersion = version.split(".", 1)[0];
       if (/^\d+$/.test(majorVersion)) {
         return majorVersion;
       }

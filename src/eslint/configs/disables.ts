@@ -1,5 +1,5 @@
 import type { ConfigWithExtends } from "@eslint/config-helpers";
-import tseslint from "typescript-eslint";
+import * as tseslint from "typescript-eslint";
 
 import { GLOB_JS, GLOB_SRC, GLOB_SRC_EXT } from "../globs";
 

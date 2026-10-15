@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import c from "picocolors";
-import semver from "semver";
+import * as semver from "semver";
 
 const getPackageJsonUrl = () => {
   const packageJsonUrl = new URL("../../package.json", import.meta.url);

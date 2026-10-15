@@ -5,7 +5,7 @@ declare module "eslint-plugin-react-hooks" {
 
   export = plugin;
 }
-declare module "eslint-plugin-import" {
+declare module "eslint-plugin-import-x" {
   import type { ESLint, Linter } from "eslint";
 
   interface FlatConfig {

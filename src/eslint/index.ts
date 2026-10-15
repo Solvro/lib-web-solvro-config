@@ -3,7 +3,7 @@ import { defineConfig } from "eslint/config";
 import { findUpSync } from "find-up-simple";
 import { getPackageInfo, isPackageListed } from "local-pkg";
 import path from "node:path";
-import semver from "semver";
+import * as semver from "semver";
 
 import { basePreset, defaultOverridesPreset } from "./presets/base";
 

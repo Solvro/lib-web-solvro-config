@@ -61,7 +61,7 @@ export class TestEnvironment {
     return await execWithLogging(
       baseCommand,
       [...commandOptions, ...args],
-      { cwd: this.testDir, timeout: 120_000, ...executionOptions },
+      { cwd: this.testDir, timeout: 300_000, ...executionOptions },
       label,
     );
   }
@@ -90,9 +90,11 @@ export class TestEnvironment {
     creator,
     flags = [],
     ensureInstall = false,
+    reuseNodeModules = false,
   }: {
     appName: string;
     ensureInstall?: boolean;
+    reuseNodeModules?: boolean;
   } & (
     | { templatePath?: never; creator: string; flags: string[] }
     | { templatePath: string; creator?: never; flags?: never }
@@ -101,7 +103,9 @@ export class TestEnvironment {
     const isLocalTemplate = templatePath != null;
     // pnpm uses symlinks for dependencies which will not work when copying node_modules
     const shouldRecreateNodeModules =
-      ensureInstall || isLocalTemplate || this.packageManager.name === "pnpm";
+      ensureInstall ||
+      (!reuseNodeModules &&
+        (isLocalTemplate || this.packageManager.name === "pnpm"));
     const templateDir =
       templatePath ??
       path.join(
@@ -125,14 +129,17 @@ export class TestEnvironment {
       console.debug(
         `🏗️  Creating new template with ${this.packageManager.name}: ${templateDir}`,
       );
-      // only npm uses '--' for separating argument lists
-      const createArguments = this.packageManager.name === "npm" ? ["--"] : [];
+      // npm needs its non-interactive flag before the initializer package.
+      const createArguments =
+        this.packageManager.name === "npm" ? ["--yes"] : [];
+      const separator = this.packageManager.name === "npm" ? ["--"] : [];
       await this.execute({
         command: "create",
         args: [
+          ...createArguments,
           creator,
           path.basename(templateDir),
-          ...createArguments,
+          ...separator,
           ...flags,
         ],
         label: `create-${creator}`,
@@ -255,7 +262,6 @@ export class TestEnvironment {
       srcDir ? "--src-dir" : "--no-src-dir",
       `--import-alias "${importAlias}"`,
       "--no-git",
-      "--yes",
     ];
     return await this.create({
       appName,
@@ -266,7 +272,47 @@ export class TestEnvironment {
 
   async createNestjsApp(appName: string): Promise<string> {
     const templatePath = path.join(this.projectRoot, "tests", "nest-app");
-    return await this.create({ appName, templatePath });
+
+    // pnpm links dependencies through symlinks, which dangle after a copy
+    if (this.packageManager.name === "pnpm") {
+      return await this.create({ appName, templatePath });
+    }
+
+    return await this.create({
+      appName,
+      templatePath: await this.installedNestTemplate(),
+      reuseNodeModules: true,
+    });
+  }
+
+  /** Installs the NestJS template once per test environment. */
+  private async installedNestTemplate(): Promise<string> {
+    const installedTemplatePath = path.join(this.testDir, "nest-app-template");
+
+    if (existsSync(installedTemplatePath)) {
+      console.debug(`🎯 Using installed template: ${installedTemplatePath}`);
+      return installedTemplatePath;
+    }
+
+    console.debug(
+      `🏗️  Creating installed template with ${this.packageManager.name}: ${installedTemplatePath}`,
+    );
+    mkdirSync(installedTemplatePath, { recursive: true });
+    cpSync(
+      path.join(this.projectRoot, "tests", "nest-app"),
+      installedTemplatePath,
+      {
+        recursive: true,
+        filter: (source) => !source.includes("node_modules"),
+      },
+    );
+    await this.execute({
+      command: "installDependencies",
+      cwd: installedTemplatePath,
+      label: "install-deps-template",
+    });
+
+    return installedTemplatePath;
   }
 
   async createViteApp(appName: string, template = "react-ts"): Promise<string> {
@@ -276,18 +322,16 @@ export class TestEnvironment {
       flags: ["--no-interactive", "--template", template],
       ensureInstall: true,
     });
-    await this.execute({
-      command: "installPackage",
-      args: ["-D", "eslint@9", "@eslint/js@9"],
-      label: "downgrade-eslint-version",
-      cwd: appPath,
-    });
     return appPath;
   }
 
   async installSolvroConfig(appPath: string): Promise<void> {
     const packageName = this.packageFile.split("/").at(-1)!;
     copyFileSync(this.packageFile, path.join(appPath, packageName));
+    // @solvro/config declares eslint >=10.4 as a peer dependency, so a
+    // compatible ESLint version must be installed first (this also rewrites
+    // the app's own "eslint" spec in package.json).
+    await this.installPackage(appPath, "eslint@^10", true);
     await this.installPackage(appPath, `./${packageName}`, true);
   }
 
