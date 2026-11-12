@@ -1,3 +1,4 @@
+import { RuleConfigSeverity } from "@commitlint/types";
 import type { UserConfig } from "@commitlint/types";
 
 const config: UserConfig = {
@@ -5,7 +6,7 @@ const config: UserConfig = {
   helpUrl: "https://docs.solvro.pl/git-github/solvro#nazewnictwo-commit%C3%B3w",
   rules: {
     "type-enum": [
-      2,
+      RuleConfigSeverity.Error,
       "always",
       [
         // A new feature
@@ -27,14 +28,10 @@ const config: UserConfig = {
       ],
     ],
 
-    // @ts-expect-error ???
-    "body-max-length": [0, "always"],
-    // @ts-expect-error ???
-    "body-max-line-length": [0, "always"],
-    // @ts-expect-error ???
-    "footer-max-length": [0, "always"],
-    // @ts-expect-error ???
-    "footer-max-line-length": [0, "always"],
+    "body-max-length": [RuleConfigSeverity.Disabled],
+    "body-max-line-length": [RuleConfigSeverity.Disabled],
+    "footer-max-length": [RuleConfigSeverity.Disabled],
+    "footer-max-line-length": [RuleConfigSeverity.Disabled],
   },
 };
 
