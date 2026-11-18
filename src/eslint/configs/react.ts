@@ -1,5 +1,7 @@
 import type { ConfigWithExtends, Plugin } from "@eslint/config-helpers";
 import { getPackageInfoSync, isPackageListedSync } from "local-pkg";
+import { existsSync, readFileSync } from "node:fs";
+import path from "node:path";
 
 import {
   pluginNelsonLai,
@@ -12,6 +14,10 @@ import {
 
 const nextJsPackages = ["next"];
 const vitePackages = ["vite"];
+const reactCompilerPackages = [
+  "babel-plugin-react-compiler",
+  "react-compiler-runtime",
+];
 
 /**
 eslint-plugin-react's own version detection uses `context.getFilename()`,
@@ -20,6 +26,19 @@ which was removed in ESLint 10, so we resolve the React version ourselves.
 function detectReactVersion(): string {
   const reactPackage = getPackageInfoSync("react");
   return reactPackage?.version ?? "19.0.0";
+}
+
+// shortcut: regex on next.config text instead of evaluating it, upgrade if false positives show up
+export function hasNextReactCompiler(cwd = process.cwd()): boolean {
+  return ["js", "mjs", "cjs", "ts", "mts"].some((extension) => {
+    const file = path.join(cwd, `next.config.${extension}`);
+    return (
+      existsSync(file) &&
+      /^[^/\n]*\breactCompiler\s*:\s*(true|\{)/m.test(
+        readFileSync(file, "utf8"),
+      )
+    );
+  });
 }
 
 export async function react(): Promise<ConfigWithExtends[]> {
@@ -56,6 +75,10 @@ export async function react(): Promise<ConfigWithExtends[]> {
       },
     );
   }
+
+  const isUsingReactCompiler =
+    reactCompilerPackages.some((index) => isPackageListedSync(index)) ||
+    hasNextReactCompiler();
 
   const viteConfig: ConfigWithExtends[] = [];
 
@@ -120,6 +143,20 @@ export async function react(): Promise<ConfigWithExtends[]> {
         "@nelsonlaidev/shadcn-prefer-spinner": "error",
       },
     },
+    // compiler-powered rules (purity, refs, immutability, ...) only make sense with React Compiler
+    ...(isUsingReactCompiler
+      ? [
+          {
+            name: "solvro/react/compiler",
+            files: ["**/*.{js,jsx,mjs,cjs,ts,tsx}"],
+            rules: (
+              pluginReactHooks.configs as unknown as {
+                flat: { recommended: ConfigWithExtends };
+              }
+            ).flat.recommended.rules,
+          } satisfies ConfigWithExtends,
+        ]
+      : []),
     ...pluginQuery.configs["flat/recommended"],
     pluginReactEffects.configs.recommended,
     {
