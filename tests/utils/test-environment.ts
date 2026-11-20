@@ -318,7 +318,7 @@ export class TestEnvironment {
   async createViteApp(appName: string, template = "react-ts"): Promise<string> {
     const appPath = await this.create({
       appName,
-      creator: "vite@9",
+      creator: "vite@9.3.1",
       flags: ["--no-interactive", "--template", template],
       ensureInstall: true,
     });

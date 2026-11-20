@@ -1,6 +1,6 @@
 {
   "name": "@solvro/config",
-  "version": "4.0.0",
+  "version": "4.1.0-beta.1",
   "description": "Solvro's engineering style guide",
   "keywords": [
     "eslint",
@@ -61,7 +61,7 @@
   },
   "prettier": "./dist/prettier/index.js",
   "overrides": {
-    "@typescript-eslint/parser": "^8.67.0",
+    "@typescript-eslint/parser": "^8.72.2",
     "conventional-changelog-writer": "^9.2.1",
     "eslint-plugin-jsx-a11y": {
       "eslint": "$eslint"
@@ -82,7 +82,7 @@
     "@solvro/utils": "^1.6.0",
     "@tanstack/eslint-plugin-query": "^5.101.4",
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",
-    "@typescript-eslint/eslint-plugin": "^8.67.0",
+    "@typescript-eslint/eslint-plugin": "^8.72.2",
     "@vitest/eslint-plugin": "^1.6.27",
     "commander": "^15.0.0",
     "eslint-config-flat-gitignore": "^2.3.0",
@@ -100,7 +100,7 @@
     "eslint-plugin-react-refresh": "^0.5.4",
     "eslint-plugin-react-you-might-not-need-an-effect": "^1.0.2",
     "eslint-plugin-regexp": "^3.2.0",
-    "eslint-plugin-unicorn": "^74.0.0",
+    "eslint-plugin-unicorn": "^80.0.0",
     "eslint-plugin-unused-imports": "^4.4.1",
     "eslint-plugin-zod": "^5.0.0",
     "execa": "^10.0.1",
@@ -108,13 +108,13 @@
     "globals": "^17.11.0",
     "is-interactive": "^2.0.0",
     "jiti": "^2.7.0",
-    "local-pkg": "^1.2.1",
+    "local-pkg": "^2.0.0",
     "package-manager-detector": "^1.8.0",
     "picocolors": "^1.1.1",
     "prettier-plugin-packagejson": "^3.0.2",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "semver": "^7.8.5",
-    "typescript-eslint": "~8.70.0"
+    "typescript-eslint": "~8.72.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.1.0",
@@ -124,7 +124,7 @@
     "@semantic-release/git": "^11.0.1",
     "@types/node": "^26.2.0",
     "@types/semver": "^7.8.0",
-    "@typescript-eslint/utils": "^8.67.0",
+    "@typescript-eslint/utils": "^8.72.2",
     "@typescript/native-preview": "^7.0.0-dev.20260707.2",
     "@vitest/coverage-v8": "^5.0.0",
     "@vitest/ui": "^5.0.0",
@@ -133,17 +133,18 @@
     "husky": "^9.1.7",
     "knip": "^6.32.2",
     "lint-staged": "^17.3.0",
-    "pkg-pr-new": "^0.0.91",
+    "pkg-pr-new": "^0.0.94",
     "prettier": "^3.9.6",
-    "semantic-release": "^25.0.9",
-    "tsup": "^8.5.1",
+    "semantic-release": "^26.0.1",
+    "tsup": "^9.0.0",
     "tsx": "^4.23.12",
     "typescript": "^6.0.3",
     "vitest": "^5.0.0"
   },
   "peerDependencies": {
     "@next/eslint-plugin-next": ">=12.3.0",
-    "eslint": "^10.4.0"
+    "eslint": "^10.4.0",
+    "typescript": ">=4.8.4 <6.1.0"
   },
   "packageManager": "npm@12.0.2",
   "engines": {
