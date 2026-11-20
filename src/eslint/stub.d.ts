@@ -1,7 +1,17 @@
 declare module "eslint-plugin-react-hooks" {
-  import type { ESLint } from "eslint";
+  import type { ESLint, Linter } from "eslint";
 
-  const plugin: ESLint.Plugin;
+  interface FlatConfig {
+    rules: Linter.RulesRecord;
+  }
+
+  const plugin: ESLint.Plugin & {
+    configs: {
+      flat: {
+        recommended: FlatConfig;
+      };
+    };
+  };
 
   export = plugin;
 }
