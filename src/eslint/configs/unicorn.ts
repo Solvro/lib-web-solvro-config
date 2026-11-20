@@ -17,6 +17,7 @@ export function unicorn(): ConfigWithExtends[] {
         "unicorn/prefer-global-this": "off",
         // the current default is stupid IMO
         "unicorn/single-line-block-comment-style": ["error", "single-line"],
+        "unicorn/no-asterisk-prefix-in-documentation-comments": "off",
         "unicorn/name-replacements": [
           "error",
           {
