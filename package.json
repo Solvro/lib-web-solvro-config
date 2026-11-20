@@ -56,6 +56,11 @@
     "test:watch": "vitest",
     "typecheck": "tsgo --noEmit"
   },
+  "allowScripts": {
+    "esbuild": false,
+    "fsevents": false,
+    "unrs-resolver": false
+  },
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"
   },
@@ -156,10 +161,5 @@
   },
   "publishConfig": {
     "access": "public"
-  },
-  "allowScripts": {
-    "esbuild": false,
-    "fsevents": false,
-    "unrs-resolver": false
   }
 }
