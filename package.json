@@ -56,11 +56,6 @@
     "test:watch": "vitest",
     "typecheck": "tsgo --noEmit"
   },
-  "allowScripts": {
-    "esbuild": false,
-    "fsevents": false,
-    "unrs-resolver": false
-  },
   "lint-staged": {
     "*": "prettier -w --ignore-unknown"
   },
@@ -112,6 +107,7 @@
     "find-up-simple": "^1.0.1",
     "globals": "^17.11.0",
     "is-interactive": "^2.0.0",
+    "jiti": "^2.7.0",
     "local-pkg": "^2.0.0",
     "package-manager-detector": "^1.8.0",
     "picocolors": "^1.1.1",
@@ -161,5 +157,10 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "allowScripts": {
+    "esbuild": false,
+    "fsevents": false,
+    "unrs-resolver": false
   }
 }
