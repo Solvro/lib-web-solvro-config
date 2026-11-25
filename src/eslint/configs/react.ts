@@ -1,6 +1,7 @@
 import type { ConfigWithExtends, Plugin } from "@eslint/config-helpers";
 import { getPackageInfoSync, isPackageListedSync } from "local-pkg";
 
+import { hasNextReactCompiler } from "../../utils/has-next-react-compiler";
 import {
   pluginNelsonLai,
   pluginQuery,
@@ -12,6 +13,10 @@ import {
 
 const nextJsPackages = ["next"];
 const vitePackages = ["vite"];
+const reactCompilerPackages = [
+  "babel-plugin-react-compiler",
+  "react-compiler-runtime",
+];
 
 /**
 eslint-plugin-react's own version detection uses `context.getFilename()`,
@@ -56,6 +61,10 @@ export async function react(): Promise<ConfigWithExtends[]> {
       },
     );
   }
+
+  const isUsingReactCompiler =
+    reactCompilerPackages.some((index) => isPackageListedSync(index)) ||
+    (await hasNextReactCompiler());
 
   const viteConfig: ConfigWithExtends[] = [];
 
@@ -120,6 +129,16 @@ export async function react(): Promise<ConfigWithExtends[]> {
         "@nelsonlaidev/shadcn-prefer-spinner": "error",
       },
     },
+    // compiler-powered rules (purity, refs, immutability, ...) only make sense with React Compiler
+    ...(isUsingReactCompiler
+      ? [
+          {
+            name: "solvro/react/compiler",
+            files: ["**/*.{js,jsx,mjs,cjs,ts,tsx}"],
+            rules: pluginReactHooks.configs.flat.recommended.rules,
+          } satisfies ConfigWithExtends,
+        ]
+      : []),
     ...pluginQuery.configs["flat/recommended"],
     pluginReactEffects.configs.recommended,
     {
