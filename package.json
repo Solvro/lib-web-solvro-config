@@ -30,8 +30,7 @@
     },
     "./commitlint": {
       "types": "./dist/commitlint/index.d.ts",
-      "import": "./dist/commitlint/index.js",
-      "require": "./dist/commitlint/index.cjs"
+      "default": "./dist/commitlint/index.js"
     }
   },
   "bin": {
